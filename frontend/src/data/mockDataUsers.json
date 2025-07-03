@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "name": "John",
+    "email": "john@gmail.com",
+    "password": "123123",
+    "role": "admin",
+    "gerencia": "Finanzas"
+  },
+  {
+    "id": "2",
+    "name": "Alice",
+    "email": "alice@gmail.com",
+    "password": "123123",
+    "role": "user",
+    "gerencia": "Recursos Humanos"
+  },
+  {
+    "id": "3",
+    "name": "Bob",
+    "email": "bob@gmail.com",
+    "password": "123123",
+    "role": "admin",
+    "gerencia": "Marketing"
+  },
+  {
+    "id": "4",
+    "name": "Eve",
+    "email": "eve@gmail.com",
+    "password": "123123",
+    "role": "user",
+    "gerencia": "Operaciones"
+  },
+  {
+    "id": "5",
+    "name": "Charlie",
+    "email": "charlie@gmail.com",
+    "password": "123123",
+    "role": "admin",
+    "gerencia": "Tecnología de la Información"
+  },
+  {
+    "id": "6",
+    "name": "Diana",
+    "email": "diana@gmail.com",
+    "password": "123123",
+    "role": "user",
+    "gerencia": "Ventas"
+  },
+  {
+    "id": "7",
+    "name": "Frank",
+    "email": "frank@gmail.com",
+    "password": "123123",
+    "role": "admin",
+    "gerencia": "Investigación y Desarrollo"
+  },
+  {
+    "id": "8",
+    "name": "Grace",
+    "email": "grace@gmail.com",
+    "password": "123123",
+    "role": "user",
+    "gerencia": "Finanzas"
+  },
+  {
+    "id": "9",
+    "name": "Hank",
+    "email": "hank@gmail.com",
+    "password": "123123",
+    "role": "admin",
+    "gerencia": "Recursos Humanos"
+  },
+  {
+    "id": "10",
+    "name": "Ivy",
+    "email": "ivy@gmail.com",
+    "password": "123123",
+    "role": "user",
+    "gerencia": "Marketing"
+  }
+]
