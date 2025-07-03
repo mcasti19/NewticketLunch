@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import useAuthStore from '../store/authStore';
+import {useAuthStore} from '../store/authStore';
 import users from '../data/mockDataUsers.json';
 import Swal from 'sweetalert2';
 import {useNavigate} from 'react-router';
