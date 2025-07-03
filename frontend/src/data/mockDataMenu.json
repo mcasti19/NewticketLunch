@@ -1,0 +1,35 @@
+{
+  "sopa": {
+    "nombre": "Sopa de Pollo"
+  },
+  "proteinas": [
+    {
+      "nombre": "Pollo en Salsa"
+    },
+    {
+      "nombre": "Bistec"
+    }
+  ],
+  "contornos": [
+    {
+      "nombre": "Arroz Verde"
+    },
+    {
+      "nombre": "Tajadas"
+    }
+  ],
+  "ensaladas": [
+    {
+      "nombre": "Ensalada de Berro"
+    },
+    {
+      "nombre": "Ensalada de Papa"
+    }
+  ],
+  "jugo": {
+    "nombre": "Flor de Jamaica"
+  },
+  "postre": {
+    "nombre": "Torta de Chocolate"
+  }
+}
