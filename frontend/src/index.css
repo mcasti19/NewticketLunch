@@ -33,3 +33,11 @@ body{
 .button {
   @apply bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer hover:bg-blue-700;
 }
+
+
+.img_shadow{
+  filter: drop-shadow(4px 4px 12px red);
+}
+.form_shadow{
+  filter: drop-shadow(6px 6px 6px rgb(228, 232, 227));
+}
