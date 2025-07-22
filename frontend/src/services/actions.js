@@ -1,14 +1,14 @@
 import api from "../api/api";
 
 
-export const getUsers = async ( page = 1, pageSize = 5 ) => {
-    const {data} = await api.get( '/users', {
+export const getManagements = async ( page = 1, pageSize = 5 ) => {
+    const {data} = await api.get( '/gerencias', {
         params: {
             page,
             pageSize,
         },
     } );
-    // console.log( 'GEtUsers :', data );
+    console.log( 'GetManagements :', data );
 
     return data
 }

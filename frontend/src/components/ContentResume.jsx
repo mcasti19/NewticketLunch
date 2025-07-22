@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
 
@@ -8,20 +8,24 @@ export const ContentResume = () => {
   // Ajusta el offset según el espacio superior que ya ocupa tu layout, por ejemplo 100px o lo que necesites
   const offsetTop = 200; // ejemplo, cambia este valor según tu layout
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedPaymentOption, setSelectedPaymentOption] = useState(null);
+  const [ modalIsOpen, setModalIsOpen ] = useState( false );
+  const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
 
-  const openModal = (option) => {
-    setSelectedPaymentOption(option);
+  const openModal = ( option ) => {
+    setSelectedPaymentOption( option );
     setModalIsOpen( true );
-    console.log("Abriendo modal");
-    
+    console.log( "Abriendo modal" );
+
   };
 
   const closeModal = () => {
-    setModalIsOpen(false);
-    setSelectedPaymentOption(null);
+    setModalIsOpen( false );
+    setSelectedPaymentOption( null );
   };
+
+  useEffect( () => {
+    console.log( "summary", summary );
+  } );
 
   return (
     <>
@@ -44,28 +48,28 @@ export const ContentResume = () => {
             <div className='grid grid-cols-2 md:grid-cols-4  gap-4 text-center'>
               <div
                 className='border-0 flex flex-col items-center cursor-pointer rounded-4xl shadow-amber-50'
-                onClick={() => openModal('Pago Móvil')}
+                onClick={() => openModal( 'Pago Móvil' )}
               >
                 <span className='font-black'>Pago Móvil</span>
                 <img src="./pagomovil-removebg-preview.png" alt="pago_movil" className='w-48 ' />
               </div>
               <div
                 className='border-0 flex flex-col items-center cursor-pointer rounded-4xl shadow-amber-50'
-                onClick={() => openModal('Transferencia')}
+                onClick={() => openModal( 'Transferencia' )}
               >
                 <span className='font-black'>Transferencia</span>
                 <img src="cuáles-son-los-bancos-de-venezuela.jpg" alt="" className='w-48 ' />
               </div>
               <div
                 className='border-0 flex flex-col items-center cursor-pointer rounded-4xl shadow-amber-50'
-                onClick={() => openModal('Débito')}
+                onClick={() => openModal( 'Débito' )}
               >
                 <span className='font-black'>Débito</span>
                 <img src="./tarjeta.png" alt="tarjeta_debito" className='w-48 ' />
               </div>
               <div
                 className='border-0 flex flex-col items-center cursor-pointer rounded-4xl shadow-amber-50'
-                onClick={() => openModal('Efectivo')}
+                onClick={() => openModal( 'Efectivo' )}
               >
                 <span className='font-black'>Efectivo</span>
                 <img src="./efectivo.png" alt="Bolivares_efectivo" className='w-48 ' />

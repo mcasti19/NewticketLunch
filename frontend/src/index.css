@@ -39,5 +39,5 @@ body{
   filter: drop-shadow(4px 4px 12px red);
 }
 .form_shadow{
-  filter: drop-shadow(6px 6px 6px rgb(228, 232, 227));
+  filter: drop-shadow(3px 3px 3px rgb(228, 232, 227));
 }
