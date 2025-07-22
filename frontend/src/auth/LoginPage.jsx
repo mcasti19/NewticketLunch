@@ -15,8 +15,8 @@ const LoginPage = () => {
         e.preventDefault();
         // Buscar usuario en mockData.json
         const user = users.find( u => u.email === email && u.password === password );
-        console.log(user);
-        
+        console.log( user );
+
         if ( user ) {
             // Simulate token creation with expiration 1 hour from now
             const token = 'fake-jwt-token';
@@ -43,38 +43,47 @@ const LoginPage = () => {
         if ( isAuthenticated ) {
             navigate( '/home' );
         }
-    }, [isAuthenticated, navigate]);
+    }, [ isAuthenticated, navigate ] );
 
     return (
-        <div className='w-screen h-screen bg-slate-950 flex justify-center items-center'>
-            <form onSubmit={handleSubmit} className='bg-sky-200 p-8 rounded-lg shadow-lg flex flex-col w-3/4 max-w-[25rem]'>
-                <h2 className='text-2xl font-bold text-center mb-6'>Iniciar Sesión</h2>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={( e ) => setEmail( e.target.value )}
-                    placeholder="Correo electrónico"
-                    required
-                    className='mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-sky-500'
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={( e ) => setPassword( e.target.value )}
-                    placeholder="Contraseña"
-                    required
-                    className='mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-sky-500'
-                />
-                <button
-                    type="submit"
-                    className='bg-sky-500 text-white font-semibold py-2 rounded hover:bg-sky-600 transition duration-200'
-                >
-                    Iniciar Sesión
-                </button>
-            </form>
-        </div>
+        <div className='w-screen h-screen flex flex-col md:flex-row bg-slate-950'>
+            {/* Parte izquierda: Logo y nombre de la app */}
+            <div className='flex flex-col justify-center items-center w-full md:w-1/2 p-8'>
+                <img src="/MercalMarker.png" alt="Logo de la empresa" className='mb-4 w-32 h-auto' />
+                <h1 className='text-4xl font-bold text-white text-center'>Nombre de la App</h1>
+            </div>
 
+            {/* Parte derecha: Formulario de login */}
+            <div className='flex justify-center items-center w-full md:w-1/2 p-8'>
+                <form onSubmit={handleSubmit} className='bg-sky-200 p-8 rounded-lg shadow-lg flex flex-col w-full max-w-[25rem]'>
+                    <h2 className='text-2xl font-bold text-center mb-6'>Iniciar Sesión</h2>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={( e ) => setEmail( e.target.value )}
+                        placeholder="Correo electrónico"
+                        required
+                        className='mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-sky-500'
+                    />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={( e ) => setPassword( e.target.value )}
+                        placeholder="Contraseña"
+                        required
+                        className='mb-4 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-sky-500'
+                    />
+                    <button
+                        type="submit"
+                        className='bg-sky-500 text-white font-semibold py-2 rounded hover:bg-sky-600 transition duration-200'
+                    >
+                        Iniciar Sesión
+                    </button>
+                </form>
+            </div>
+        </div>
     );
+
 };
 
 export default LoginPage;

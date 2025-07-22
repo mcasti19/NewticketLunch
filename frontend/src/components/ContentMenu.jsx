@@ -31,7 +31,7 @@ export const ContentMenu = () => {
       {isLoading && <p>Cargando...</p>}
       {error && <p>Error: {error.message}</p>}
 
-      <div className='border-0 w-full flex flex-col gap-5 h-full dark:bg-gray-950 rounded-4xl p-5 '
+      <div className='border-0 w-full flex flex-col justify-between gap-5 h-full dark:bg-gray-950 rounded-4xl p-5 '
       // style={{height: `calc(100vh - ${ offsetTop }px)`}}
       >
 
@@ -42,8 +42,8 @@ export const ContentMenu = () => {
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-10'>
           <div className=' flex flex-col gap-5 items-center  justify-center grow'>
-            <picture className=''>
-              <img src="/comedor.jpg" alt="Descripción de la imagen" className='rounded-3xl' />
+            <picture className='w-[65vw] md:w-[40vw] border-0'>
+              <img src="/comedor.jpg" alt="Descripción de la imagen" className='rounded-3xl w-full' />
             </picture>
             {/* <picture className='self-start'>
               <img src="/descarga.jpeg" alt="Descripción de la imagen" className='rounded-3xl' />
@@ -54,12 +54,12 @@ export const ContentMenu = () => {
             ? (
               <div className='grid grid-cols-2 gap-4 md:grid-cols-2 w-full  border-0 border-slate-800 rounded-2xl p-3'>
                 {Object.entries( menuDia ).map( ( [ category, value ] ) => (
-                  <div key={category} className="flex flex-col  rounded-t-md border-0">
-                    <h1 className="text-2xl font-black text-red-600">{category.charAt( 0 ).toUpperCase() + category.slice( 1 )}</h1>
+                  <div key={category} className="flex flex-col rounded-t-md border-0">
+                    <h1 className="text-[clamp(1rem,2vw,2rem)] font-black text-red-600">{category.charAt( 0 ).toUpperCase() + category.slice( 1 )}</h1>
                     {Array.isArray( value ) ? (
                       <ul>
                         {value.map( ( item, index ) => (
-                          <li key={index} className='text-left'>{item.nombre}</li>
+                          <li key={index} className='text-left text-[clamp(1rem,1vw,2rem)]'>{item.nombre}</li>
                         ) )}
                       </ul>
                     ) : (
@@ -71,7 +71,7 @@ export const ContentMenu = () => {
             ) : ( <h1>Cargando</h1> )
           }
         </div>
-        <div><h1 className='text-center text-4xl text-red-700 dark:bg-slate-900 rounded-2xl font-black'>Buen Provecho!!!!</h1></div>
+        <div className='mt-auto'><h1 className='text-center text-4xl text-red-700 dark:bg-slate-900 rounded-2xl font-black'>Buen Provecho!!!!</h1></div>
       </div>
     </>
   )
