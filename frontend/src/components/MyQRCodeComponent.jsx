@@ -15,7 +15,7 @@ export function MyQRCodeComponent() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-xl max-w-7xl mx-auto my-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-xl max-w-7xl mx-auto my-8 border-0">
       {empleados.map((empleado, index) => {
         // Construct QR value as JSON string with relevant employee info
         const qrValue = JSON.stringify({
@@ -32,14 +32,14 @@ export function MyQRCodeComponent() {
             <h3 className="text-lg font-semibold mb-2 text-gray-800">{empleado.nombre} {empleado.apellido}</h3>
             <QRCode
               value={qrValue}
-              size={180}
+              size={150}
               ecLevel="H"
               qrStyle="squares"
               fgColor="#000000"
               bgColor="#FFFFFF"
               logoImage={logoUrl}
-              logoWidth={40}
-              logoHeight={40}
+              logoWidth={20}
+              logoHeight={20}
               logoOpacity={1}
               logoPadding={5}
               logoPaddingStyle="square"
