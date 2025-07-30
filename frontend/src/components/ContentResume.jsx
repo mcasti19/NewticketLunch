@@ -1,21 +1,18 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
+import ModalResumenFinal from './ModalResumenFinal';
 
-export const ContentResume = () => {
+export const ContentResume = ({ goToTicketTab }) => {
   const summary = useTicketLunchStore( state => state.summary );
-
-  // Ajusta el offset según el espacio superior que ya ocupa tu layout, por ejemplo 100px o lo que necesites
-  const offsetTop = 200; // ejemplo, cambia este valor según tu layout
-
+  const offsetTop = 200;
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
+  const [ resumenOpen, setResumenOpen ] = useState(false);
 
   const openModal = ( option ) => {
     setSelectedPaymentOption( option );
     setModalIsOpen( true );
-    console.log( "Abriendo modal" );
-
   };
 
   const closeModal = () => {
@@ -23,9 +20,21 @@ export const ContentResume = () => {
     setSelectedPaymentOption( null );
   };
 
+  const openResumen = () => {
+    setResumenOpen(true);
+  };
+  const closeResumen = () => {
+    setResumenOpen(false);
+  };
+  const handleGenerarTickets = () => {
+    setResumenOpen(false);
+    setModalIsOpen(false);
+    if (goToTicketTab) goToTicketTab();
+  };
+
   useEffect( () => {
     console.log( "summary", summary );
-  } );
+  }, [summary] );
 
   return (
     <>
@@ -79,7 +88,17 @@ export const ContentResume = () => {
         </div>
       </div>
 
-      <ModalResume isOpen={modalIsOpen} onRequestClose={closeModal} paymentOption={selectedPaymentOption} />
+      <ModalResume
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        paymentOption={selectedPaymentOption}
+        onVerResumen={openResumen}
+      />
+      <ModalResumenFinal
+        isOpen={resumenOpen}
+        onRequestClose={closeResumen}
+        onGenerarTickets={handleGenerarTickets}
+      />
     </>
   );
 };

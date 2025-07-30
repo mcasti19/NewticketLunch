@@ -4,7 +4,7 @@ import Modal from 'react-modal';
 
 Modal.setAppElement( '#root' );
 
-const ModalResume = ( {isOpen, onRequestClose, paymentOption} ) => {
+const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) => {
   const subtitleRef = useRef( null );
 
   // Consolidate state using a single object
@@ -99,7 +99,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption} ) => {
         />
       </form>
 
-      <div className='border-0 flex justify-center items-center'>
+      <div className='border-0 flex flex-col justify-center items-center gap-2 mt-4'>
         <button
           onClick={onRequestClose}
           style={{
@@ -109,11 +109,26 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption} ) => {
             padding: '8px 16px',
             borderRadius: '4px',
             cursor: 'pointer',
-            margin: '20px auto'
+            margin: '10px auto'
           }}
-          className=''
         >
           Cerrar
+        </button>
+        <button
+          onClick={() => {
+            if (onVerResumen) onVerResumen();
+          }}
+          style={{
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            margin: '10px auto'
+          }}
+        >
+          Ver Resumen
         </button>
       </div>
     </Modal>
