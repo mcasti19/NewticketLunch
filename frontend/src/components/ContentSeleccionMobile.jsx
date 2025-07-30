@@ -1,18 +1,20 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import empleadosData from "../data/mockDataEmpleados.json";
 import { useAuthStore } from '../store/authStore';
-import { useTasaDia } from '../hooks/useTasaDia';
+// import { useTasaDia } from '../hooks/useTasaDia';
 
 export const ContentSeleccionMobile = () => {
-  const [empleados, setEmpleados] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(null); // track open dropdown by row id
-  const { user } = useAuthStore();
+  const [ empleados, setEmpleados ] = useState( [] );
+  const [ dropdownOpen, setDropdownOpen ] = useState( null ); // track open dropdown by row id
+  const {user} = useAuthStore();
   const userGerencia = user?.gerencia || null;
 
-  const {
-    data: tasaDia,
-  } = useTasaDia();
+  // const {
+  //   data: tasaDia,
+  // } = useTasaDia();
 
+  const tasaDia = 119.67;
+  
   const precioLlevar = 15;
   const precioCubierto = 20;
 

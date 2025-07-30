@@ -3,7 +3,7 @@ import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icon
 import {ContentMenu} from './ContentMenu';
 import {ContentSeleccion} from './ContentSeleccion';
 import {ContentResume} from './ContentResume';
-import {ContentPago} from './ContentPago';
+// import {ContentPago} from './ContentPago';
 import {ContentTicket} from './ContentTicket';
 import {ContentSeleccionMobile} from './ContentSeleccionMobile';
 import {HeaderLogo} from './HeaderLogo';
@@ -24,14 +24,14 @@ export const TableNav = () => {
             icon: <FaUser className="w-5 h-5" />,
             content: (
                 <>
-                    <ContentSeleccion /> <ContentSeleccionMobile />
+                    <ContentSeleccion goToResumeTab={() => setActiveTab(2)} /> <ContentSeleccionMobile />
                 </>
             ),
         },
         {
             label: 'Resumen y Pago',
             icon: <FaCog className="w-5 h-5" />,
-            content: <ContentResume />,
+            content: <ContentResume goToTicketTab={() => setActiveTab(3)} />,
         },
         {
             label: 'Generar Ticket',

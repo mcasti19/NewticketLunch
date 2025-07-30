@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import {useState} from 'react'
 import almuerzos from '../data/mockDataMenu.json';
-import {useTasaDia} from '../hooks/useTasaDia';
+// import {useTasaDia} from '../hooks/useTasaDia';
 
 export const ContentMenu = () => {
   // const {tasaDia} = useTasaDia();
@@ -10,11 +10,14 @@ export const ContentMenu = () => {
   const day = new Date().getDate();
   const month = new Date().getMonth() + 1;
 
-  const {
-    data,
-    error,
-    isLoading,
-  } = useTasaDia();
+  // const {
+  //   data,
+  //   error,
+  //   isLoading,
+  // } = useTasaDia();
+
+  //  const tasaDia = 119.67;
+  const isLoading = false;
 
   // const offsetTop = 300; // ejemplo, cambia este valor según tu layout
 
@@ -24,12 +27,12 @@ export const ContentMenu = () => {
     }
     setMenuDia( almuerzos );
     // console.log( "MENU DEL DIA: ", data );
-  }, [ data ] );
+  }, [  ] );
 
   return (
     <>
       {isLoading && <p>Cargando...</p>}
-      {error && <p>Error: {error.message}</p>}
+      {/* {error && <p>Error: {error.message}</p>} */}
 
       <div className='border-0 w-full flex flex-col justify-between gap-5 h-full dark:bg-gray-950 rounded-4xl p-5 '
       // style={{height: `calc(100vh - ${ offsetTop }px)`}}
