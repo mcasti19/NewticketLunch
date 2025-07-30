@@ -20,21 +20,22 @@ const ModalResumenFinal = ({ isOpen, onRequestClose, onGenerarTickets }) => {
           bottom: 'auto',
           marginRight: '-50%',
           transform: 'translate(-50%, -50%)',
-          width: '900px',
-          maxWidth: '98vw',
-          minWidth: '350px',
+          width: '98vw',
+          maxWidth: '900px',
+          minWidth: '320px',
           padding: '32px',
-          borderRadius: '12px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+          borderRadius: '18px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          background: 'linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%)',
         },
       }}
       contentLabel="Resumen Final"
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">Resumen de la Solicitud</h2>
-      <div className="mb-4 max-h-64 overflow-y-auto">
-        <table className="w-full text-sm border min-w-[900px]">
+      <h2 className="text-2xl font-extrabold mb-6 text-center text-blue-700 tracking-tight">Resumen de la Solicitud</h2>
+      <div className="mb-6 max-h-64 overflow-y-auto rounded-xl shadow-inner">
+        <table className="w-full text-sm border min-w-[320px] bg-white/90 rounded-xl overflow-hidden">
           <thead>
-            <tr className="bg-gray-200">
+            <tr className="bg-blue-100 text-blue-800">
               <th className="p-2 border">Empleado</th>
               <th className="p-2 border">Almuerzo</th>
               <th className="p-2 border">Para Llevar</th>
@@ -46,8 +47,8 @@ const ModalResumenFinal = ({ isOpen, onRequestClose, onGenerarTickets }) => {
           <tbody>
             {empleados.map((emp, idx) => (
               <React.Fragment key={idx}>
-                <tr className="text-center">
-                  <td className="p-2 border">{emp.nombre} {emp.apellido}</td>
+                <tr className="text-center hover:bg-blue-50 transition-colors">
+                  <td className="p-2 border font-semibold">{emp.nombre} {emp.apellido}</td>
                   <td className="p-2 border">{emp.almuerzo ? 'Sí' : 'No'}</td>
                   <td className="p-2 border">{emp.para_llevar ? 'Sí' : 'No'}</td>
                   <td className="p-2 border">{emp.cubiertos ? 'Sí' : 'No'}</td>
@@ -73,19 +74,19 @@ const ModalResumenFinal = ({ isOpen, onRequestClose, onGenerarTickets }) => {
           </tbody>
         </table>
       </div>
-      <div className="mb-4 text-right font-bold">
-        Total a pagar: Bs. {summary.totalPagar?.toFixed(2) ?? '0.00'}
+      <div className="mb-6 text-right font-bold text-lg text-blue-800">
+        Total a pagar: <span className="text-green-600">Bs. {summary.totalPagar?.toFixed(2) ?? '0.00'}</span>
       </div>
-      <div className="flex justify-between gap-2">
+      <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4">
         <button
           onClick={onRequestClose}
-          style={{ backgroundColor: '#003366', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}
+          className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 rounded-lg font-semibold transition-colors"
         >
           Cerrar
         </button>
         <button
           onClick={onGenerarTickets}
-          style={{ backgroundColor: '#28a745', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition-colors"
         >
           Generar Tickets
         </button>

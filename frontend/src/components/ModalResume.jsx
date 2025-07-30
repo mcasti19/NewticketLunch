@@ -1,43 +1,23 @@
-import React, {useRef, useEffect, useState, useCallback} from 'react';
+
+import React, { useRef, useState } from 'react';
 import Modal from 'react-modal';
 
+Modal.setAppElement('#root');
 
-Modal.setAppElement( '#root' );
-
-const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) => {
-  const subtitleRef = useRef( null );
-
-  // Consolidate state using a single object
-  const [ paymentDetails, setPaymentDetails ] = useState( {
+const ModalResume = ({ isOpen, onRequestClose, paymentOption, onVerResumen }) => {
+  const subtitleRef = useRef(null);
+  const [paymentDetails, setPaymentDetails] = useState({
     referenceNumber: '',
     phoneNumber: '',
     bank: '',
     idNumber: '',
     accountNumber: '',
     accountType: '',
-  } );
+  });
 
-  // Use useCallback to memoize the handler
-  const handleInputChange = useCallback(
-    ( field ) => ( e ) => {
-      setPaymentDetails( ( prev ) => ( {...prev, [ field ]: e.target.value} ) );
-    },
-    [ setPaymentDetails ]
-  );
-
-  useEffect( () => {
-    if ( isOpen && subtitleRef.current ) {
-      subtitleRef.current.style.color = '#003366';
-    }
-  }, [ isOpen ] );
-
-  const {referenceNumber,
-    // phoneNumber,
-    // bank,
-    // idNumber,
-    // accountNumber,
-    // accountType
-  } = paymentDetails;
+  const handleInputChange = (field) => (e) => {
+    setPaymentDetails((prev) => ({ ...prev, [field]: e.target.value }));
+  };
 
   const isPagoMovil = paymentOption === 'Pago Móvil';
   const isTransferencia = paymentOption === 'Transferencia';
@@ -46,7 +26,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      // className="top-1/2 left-1/2 -mr-[50%] w-md p-6 rounded-lg  shadow-2xl"
       style={{
         content: {
           top: '50%',
@@ -55,78 +34,134 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
           bottom: 'auto',
           marginRight: '-50%',
           transform: 'translate(-50%, -50%)',
-          width: '400px',
-          padding: '20px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-          fontFamily: 'Arial, sans-serif',
+          width: '95%',
+          maxWidth: '420px',
+          padding: '32px',
+          borderRadius: '18px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+          background: 'linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%)',
         },
       }}
       contentLabel="Payment Modal"
     >
-      <h2 ref={subtitleRef} style={{marginBottom: '20px', color: '#003366'}}>
+      <h2 ref={subtitleRef} className="text-2xl font-extrabold mb-4 text-center text-blue-700 tracking-tight">
         Pago: {paymentOption || 'Ninguno seleccionado'}
       </h2>
-      <form className='flex flex-col gap-3'>
+      <form className="flex flex-col gap-3">
         {isPagoMovil && (
           <>
-            <span>Cédula: <strong>xx.xxx.xxx</strong></span>
-            <span>Celular: <strong>04xx.xxxx.xxxx</strong></span>
-            <span>Banco: <strong>Banco xxxxx</strong></span>
+            <label htmlFor="phoneNumber" className="font-bold text-blue-700">
+              Número de Teléfono:
+            </label>
+            <input
+              id="phoneNumber"
+              type="text"
+              placeholder="Ingrese número de teléfono"
+              value={paymentDetails.phoneNumber}
+              onChange={handleInputChange('phoneNumber')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+
+            <label htmlFor="bank" className="font-bold text-blue-700">
+              Banco:
+            </label>
+            <input
+              id="bank"
+              type="text"
+              placeholder="Ingrese banco"
+              value={paymentDetails.bank}
+              onChange={handleInputChange('bank')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+
+            <label htmlFor="idNumber" className="font-bold text-blue-700">
+              Cédula:
+            </label>
+            <input
+              id="idNumber"
+              type="text"
+              placeholder="Ingrese cédula"
+              value={paymentDetails.idNumber}
+              onChange={handleInputChange('idNumber')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
           </>
         )}
 
         {isTransferencia && (
           <>
-            <span>Banco: <strong>Banco xxxxx</strong></span>
-            <span>Número de Cuenta: <strong>0102 xxxx xxxxx xxxxx xxxx</strong></span>
-            <span>Tipo de Cuenta: <strong>Ahorro / Corriente</strong></span>
-            <span>Cédula: <strong>xx.xxx.xxx</strong></span>
-            <span>Celular: <strong>04xx.xxxx.xxxx</strong></span>
+            <label htmlFor="bank" className="font-bold text-blue-700">
+              Banco:
+            </label>
+            <input
+              id="bank"
+              type="text"
+              placeholder="Ingrese banco"
+              value={paymentDetails.bank}
+              onChange={handleInputChange('bank')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+
+            <label htmlFor="accountNumber" className="font-bold text-blue-700">
+              Número de Cuenta:
+            </label>
+            <input
+              id="accountNumber"
+              type="text"
+              placeholder="Ingrese número de cuenta"
+              value={paymentDetails.accountNumber}
+              onChange={handleInputChange('accountNumber')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+
+            <label htmlFor="accountType" className="font-bold text-blue-700">
+              Tipo de Cuenta:
+            </label>
+            <input
+              id="accountType"
+              type="text"
+              placeholder="Ingrese tipo de cuenta"
+              value={paymentDetails.accountType}
+              onChange={handleInputChange('accountType')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+
+            <label htmlFor="idNumber" className="font-bold text-blue-700">
+              Cédula:
+            </label>
+            <input
+              id="idNumber"
+              type="text"
+              placeholder="Ingrese cédula"
+              value={paymentDetails.idNumber}
+              onChange={handleInputChange('idNumber')}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
           </>
         )}
 
-        <label htmlFor="referenceNumber" className='font-bold'>
+        <label htmlFor="referenceNumber" className="font-bold text-blue-700">
           Número de referencia:
         </label>
         <input
           id="referenceNumber"
           type="text"
           placeholder="Ingrese número de referencia"
-          value={referenceNumber}
-          onChange={handleInputChange( referenceNumber )}
-          className='p-2 rounded-sm border-1 border-slate-500'
+          value={paymentDetails.referenceNumber}
+          onChange={handleInputChange('referenceNumber')}
+          className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
         />
       </form>
-
-      <div className='border-0 flex flex-col justify-center items-center gap-2 mt-4'>
+      <div className="flex flex-col justify-center items-center gap-2 mt-6">
         <button
           onClick={onRequestClose}
-          style={{
-            backgroundColor: '#003366',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            margin: '10px auto'
-          }}
+          className="w-full bg-gray-400 hover:bg-gray-500 text-white py-2 rounded-lg font-semibold transition-colors mb-2"
         >
           Cerrar
         </button>
         <button
-          onClick={() => {
-            if (onVerResumen) onVerResumen();
-          }}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            margin: '10px auto'
-          }}
+          onClick={() => { if (onVerResumen) onVerResumen(); }}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition-colors"
         >
           Ver Resumen
         </button>
@@ -138,46 +173,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
 export default ModalResume;
 
 
-// import React, { useRef, useEffect, useState, useCallback } from 'react';
-// import Modal from 'react-modal';
-// import '../index.css'
-
-// Modal.setAppElement('#root');
-
-// const ModalResume = ({ isOpen, onRequestClose, paymentOption }) => {
-//   const subtitleRef = useRef(null);
-
-//   // Consolidate state using a single object
-//   const [paymentDetails, setPaymentDetails] = useState({
-//     referenceNumber: '',
-//     phoneNumber: '',
-//     bank: '',
-//     idNumber: '',
-//     accountNumber: '',
-//     accountType: '',
-//   });
-
-//   // Use useCallback to memoize the handler
-//   const handleInputChange = useCallback(
-//     (field) => (e) => {
-//       setPaymentDetails((prev) => ({ ...prev, [field]: e.target.value }));
-//     },
-//     [setPaymentDetails]
-//   );
-
-//   useEffect(() => {
-//     if (isOpen && subtitleRef.current) {
-//       subtitleRef.current.style.color = '#003366';
-//     }
-//   }, [isOpen]);
-
-//   const { referenceNumber, phoneNumber, bank, idNumber, accountNumber, accountType } =
-//     paymentDetails;
-
-//   const isPagoMovil = paymentOption === 'Pago Móvil';
-//   const isTransferencia = paymentOption === 'Transferencia';
-
-//   return (
 //     <Modal
 //       isOpen={isOpen}
 //       onRequestClose={onRequestClose}

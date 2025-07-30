@@ -10,9 +10,10 @@ export const HeaderExit = ( {className, color} ) => {
     const navigate = useNavigate();
     const logout = useAuthStore( ( state ) => state.logout );
     const handleExit = () => {
+        localStorage.clear();
         logout();
         navigate( '/auth/login' );
-        console.log("ME LLEVO AL LOGIN");
+        console.log("ME LLEVO AL LOGIN y limpio localStorage");
     }
 
     return (
