@@ -13,4 +13,7 @@ export const useTicketLunchStore = create((set) => ({
   },
 
   setSummary: (summary) => set({ summary }),
+
+  selectedEmpleadosSummary: [],
+  setSelectedEmpleadosSummary: (selectedEmpleadosSummary) => set({ selectedEmpleadosSummary }),
 }));

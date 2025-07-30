@@ -37,7 +37,8 @@ export const ContentMenu = () => {
 
         <div className='flex flex-col items-center w-full'>
           <h1 className='text-3xl font-black'>Menu de hoy: {day} de {month}</h1>
-          <h1 className='text-2xl'>Tasa del día:  <strong className='text-amber-400 bg-black rounded-2xl px-2'>Bs {data}</strong></h1>
+          {/* <h1 className='text-2xl'>Tasa del día:  <strong className='text-amber-400 bg-black rounded-2xl px-2'>Bs {data}</strong></h1> */}
+          <h1 className='text-2xl'>Tasa del día:  <strong className='text-amber-400 bg-black rounded-2xl px-2'>Bs 119,67</strong></h1>
         </div>
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-10'>
@@ -50,7 +51,8 @@ export const ContentMenu = () => {
             </picture> */}
 
           </div>
-          {data && Object.keys( menuDia ).length > 0
+          {/* {data && Object.keys( menuDia ).length > 0 */}
+          {Object.keys( menuDia ).length > 0
             ? (
               <div className='grid grid-cols-2 gap-4 md:grid-cols-2 w-full  border-0 border-slate-800 rounded-2xl p-3'>
                 {Object.entries( menuDia ).map( ( [ category, value ] ) => (
