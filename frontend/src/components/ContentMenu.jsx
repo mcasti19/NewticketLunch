@@ -33,51 +33,44 @@ export const ContentMenu = () => {
     <>
       {isLoading && <p>Cargando...</p>}
       {/* {error && <p>Error: {error.message}</p>} */}
-
-      <div className='border-0 w-full flex flex-col justify-between gap-5 h-full dark:bg-gray-950 rounded-4xl p-5 '
-      // style={{height: `calc(100vh - ${ offsetTop }px)`}}
-      >
-
-        <div className='flex flex-col items-center w-full'>
-          <h1 className='text-3xl font-black'>Menu de hoy: {day} de {month}</h1>
-          {/* <h1 className='text-2xl'>Tasa del día:  <strong className='text-amber-400 bg-black rounded-2xl px-2'>Bs {data}</strong></h1> */}
-          <h1 className='text-2xl'>Tasa del día:  <strong className='text-amber-400 bg-black rounded-2xl px-2'>Bs 119,67</strong></h1>
+        <div className="flex flex-col items-center w-full mb-6">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700 mb-1 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800">{day} de {month}</span></h1>
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-700">Tasa del día: <span className="text-amber-500 bg-blue-100 rounded-2xl px-2 py-1 ml-1 font-bold shadow">Bs 119,67</span></h2>
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-10'>
-          <div className=' flex flex-col gap-5 items-center  justify-center grow'>
-            <picture className='w-[65vw] md:w-[40vw] border-0'>
-              <img src="/comedor.jpg" alt="Descripción de la imagen" className='rounded-3xl w-full' />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+          <div className="flex flex-col gap-4 items-center justify-center grow">
+            <picture className="w-full max-w-md md:max-w-lg border-0">
+              <img src="/comedor.jpg" alt="Descripción de la imagen" className="rounded-3xl w-full shadow-lg border-4 border-blue-200" />
             </picture>
-            {/* <picture className='self-start'>
-              <img src="/descarga.jpeg" alt="Descripción de la imagen" className='rounded-3xl' />
-            </picture> */}
-
           </div>
-          {/* {data && Object.keys( menuDia ).length > 0 */}
-          {Object.keys( menuDia ).length > 0
-            ? (
-              <div className='grid grid-cols-2 gap-4 md:grid-cols-2 w-full  border-0 border-slate-800 rounded-2xl p-3'>
-                {Object.entries( menuDia ).map( ( [ category, value ] ) => (
-                  <div key={category} className="flex flex-col rounded-t-md border-0">
-                    <h1 className="text-[clamp(1rem,2vw,2rem)] font-black text-red-600">{category.charAt( 0 ).toUpperCase() + category.slice( 1 )}</h1>
-                    {Array.isArray( value ) ? (
-                      <ul>
-                        {value.map( ( item, index ) => (
-                          <li key={index} className='text-left text-[clamp(1rem,1vw,2rem)]'>{item.nombre}</li>
-                        ) )}
-                      </ul>
-                    ) : (
-                      <span>{value.nombre}</span>
-                    )}
-                  </div>
-                ) )}
-              </div>
-            ) : ( <h1>Cargando</h1> )
-          }
+          {Object.keys(menuDia).length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+              {Object.entries(menuDia).map(([category, value]) => (
+                <div key={category} className="flex flex-col bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 hover:shadow-xl transition-all">
+                  <h1 className="text-xl md:text-2xl font-bold text-blue-600 mb-2 tracking-wide">{category.charAt(0).toUpperCase() + category.slice(1)}</h1>
+                  {Array.isArray(value) ? (
+                    <ul className="list-disc list-inside space-y-1">
+                      {value.map((item, index) => (
+                        <li key={index} className="text-gray-800 text-base md:text-lg font-medium pl-2">{item.nombre}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <span className="text-gray-700 text-base md:text-lg font-medium">{value.nombre}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center w-full h-32">
+              <span className="text-lg text-blue-600 animate-pulse">Cargando menú...</span>
+            </div>
+          )}
         </div>
-        <div className='mt-auto'><h1 className='text-center text-4xl text-red-700 dark:bg-slate-900 rounded-2xl font-black'>Buen Provecho!!!!</h1></div>
-      </div>
+        <div className="mt-8">
+          <h1 className="text-center text-3xl md:text-4xl text-red-700 bg-white/80 dark:bg-slate-900 rounded-2xl font-extrabold py-3 shadow">¡Buen Provecho!</h1>
+        </div>
+
     </>
   )
 }

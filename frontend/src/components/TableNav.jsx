@@ -24,7 +24,12 @@ export const TableNav = () => {
             icon: <FaUser className="w-5 h-5" />,
             content: (
                 <>
-                    <ContentSeleccion goToResumeTab={() => setActiveTab(2)} /> <ContentSeleccionMobile />
+                    <div className="hidden md:block">
+                        <ContentSeleccion goToResumeTab={() => setActiveTab(2)} />
+                    </div>
+                    <div className="block md:hidden">
+                        <ContentSeleccionMobile goToResumeTab={() => setActiveTab(2)} />
+                    </div>
                 </>
             ),
         },
@@ -170,8 +175,8 @@ export const TableNav = () => {
                 </header>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto p-4 md:p-6">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 md:p-6 w-full h-full mx-auto">
+                <div className="flex-1 overflow-y-auto w-full flex flex-col justify-between md:justify-center gap-6 h-full bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:bg-gray-950 rounded-3xl p-4 md:p-8 shadow-xl">
+                    <div className="">
                         {tabs[ activeTab ].content}
                     </div>
                 </div>
