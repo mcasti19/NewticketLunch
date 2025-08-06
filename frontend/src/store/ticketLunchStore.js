@@ -1,8 +1,8 @@
 import {create} from "zustand";
 
-export const useTicketLunchStore = create((set) => ({
+export const useTicketLunchStore = create( ( set ) => ( {
   empleados: [],
-  setEmpleados: (empleados) => set({ empleados }),
+  setEmpleados: ( empleados ) => set( {empleados} ),
 
   summary: {
     countAlmuerzos: 0,
@@ -12,8 +12,11 @@ export const useTicketLunchStore = create((set) => ({
     totalPagar: 0,
   },
 
-  setSummary: (summary) => set({ summary }),
+  setSummary: ( summary ) => set( {summary} ),
+
+  referenceNumber: '',
+  setReferenceNumber: ( referenceNumber ) => set( {referenceNumber} ),
 
   selectedEmpleadosSummary: [],
-  setSelectedEmpleadosSummary: (selectedEmpleadosSummary) => set({ selectedEmpleadosSummary }),
-}));
+  setSelectedEmpleadosSummary: ( selectedEmpleadosSummary ) => set( {selectedEmpleadosSummary} ),
+} ) );
