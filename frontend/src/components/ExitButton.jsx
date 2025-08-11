@@ -5,7 +5,7 @@ import {useAuthStore} from '../store/authStore';
 import {IoMdExit} from "react-icons/io";
 
 
-export const HeaderExit = ( {className, color} ) => {
+export const ExitButton = ( {className, color} ) => {
     
     const navigate = useNavigate();
     const logout = useAuthStore( ( state ) => state.logout );
