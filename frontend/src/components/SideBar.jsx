@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router';
 import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
 import {ContentMenu} from './ContentMenu';
 import {ContentSeleccion} from './ContentSeleccion';
@@ -7,12 +8,19 @@ import {ContentResume} from './ContentResume';
 import {ContentTicket} from './ContentTicket';
 import {ContentSeleccionMobile} from './ContentSeleccionMobile';
 import {HeaderLogo} from './HeaderLogo';
-import {HeaderExit} from './HeaderExit';
+import {ExitButton} from './ExitButton';
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
 import {IoMdClose} from "react-icons/io";
 import {GiHamburgerMenu} from "react-icons/gi";
 
-export const TableNav = () => {
+export const SideBar = ( {initialTab} ) => {
+    const navigate = useNavigate();
+    const tabRoutes = [
+        '/menu',
+        '/seleccion',
+        '/resumen-pago',
+        '/generar-ticket',
+    ];
     const tabs = [
         {
             label: 'Menú',
@@ -25,10 +33,10 @@ export const TableNav = () => {
             content: (
                 <>
                     <div className="hidden md:block">
-                        <ContentSeleccion goToResumeTab={() => setActiveTab(2)} />
+                        <ContentSeleccion goToResumeTab={() => setActiveTab( 2 )} />
                     </div>
                     <div className="block md:hidden">
-                        <ContentSeleccionMobile goToResumeTab={() => setActiveTab(2)} />
+                        <ContentSeleccionMobile goToResumeTab={() => setActiveTab( 2 )} />
                     </div>
                 </>
             ),
@@ -36,7 +44,7 @@ export const TableNav = () => {
         {
             label: 'Resumen y Pago',
             icon: <FaCog className="w-5 h-5" />,
-            content: <ContentResume goToTicketTab={() => setActiveTab(3)} />,
+            content: <ContentResume goToTicketTab={() => setActiveTab( 3 )} />,
         },
         {
             label: 'Generar Ticket',
@@ -45,7 +53,17 @@ export const TableNav = () => {
         },
     ];
 
-    const [ activeTab, setActiveTab ] = useState( 0 );
+    // Determinar tab inicial por prop
+    const getInitialTabIndex = () => {
+        switch ( initialTab ) {
+            case 'menu': return 0;
+            case 'seleccion': return 1;
+            case 'resumen-pago': return 2;
+            case 'generar-ticket': return 3;
+            default: return 1;
+        }
+    };
+    const [ activeTab, setActiveTab ] = useState( getInitialTabIndex() );
     const [ sideMenuOpen, setSideMenuOpen ] = useState( false );
     const [ isDarkMode, setIsDarkMode ] = useState( false );
     const [ isCollapsed, setIsCollapsed ] = useState( false );
@@ -54,21 +72,21 @@ export const TableNav = () => {
         initTheme();
         const savedTheme = getSavedTheme();
         setIsDarkMode( savedTheme === 'dark' );
-        
+
         // Detect screen size for sidebar behavior
         const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setIsCollapsed(true); // Completely hidden on small screens
-            } else if (window.innerWidth < 1024) {
-                setIsCollapsed(true); // Collapsed on medium screens
+            if ( window.innerWidth < 768 ) {
+                setIsCollapsed( true ); // Completely hidden on small screens
+            } else if ( window.innerWidth < 1024 ) {
+                setIsCollapsed( true ); // Collapsed on medium screens
             } else {
-                setIsCollapsed(false); // Expanded on large screens
+                setIsCollapsed( false ); // Expanded on large screens
             }
         };
-        
+
         handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        window.addEventListener( 'resize', handleResize );
+        return () => window.removeEventListener( 'resize', handleResize );
     }, [] );
 
     const toggleDarkMode = () => {
@@ -86,18 +104,19 @@ export const TableNav = () => {
 
     const handleSideMenuClick = ( index ) => {
         setActiveTab( index );
+        navigate( tabRoutes[ index ] );
         closeSideMenu();
     };
 
     const toggleCollapse = () => {
-        setIsCollapsed(!isCollapsed);
+        setIsCollapsed( !isCollapsed );
     };
 
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900 w-full">
             {/* Sidebar Navigation - Left Column */}
-            <aside className={`hidden md:flex flex-col bg-[#0D6EFD] text-white shadow-lg transition-all duration-300 ease-in-out ${isCollapsed ? 'w-16' : 'w-64'}`}>
-                <div className={`p-4 border-b border-blue-600 ${isCollapsed ? 'flex justify-center' : ''}`}>
+            <aside className={`hidden md:flex flex-col bg-[#0D6EFD] text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
+                <div className={`p-4 border-b border-blue-600 ${ isCollapsed ? 'flex justify-center' : '' }`}>
                     {isCollapsed ? (
                         <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                             <span className="text-[#0D6EFD] font-bold text-sm">M</span>
@@ -106,18 +125,20 @@ export const TableNav = () => {
                         <HeaderLogo className="text-white" />
                     )}
                 </div>
-                
+
                 <nav className="flex-1 p-2">
                     <ul className="space-y-1">
                         {tabs.map( ( tab, index ) => (
                             <li key={index}>
                                 <button
-                                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                                        activeTab === index
-                                            ? 'bg-white text-[#0D6EFD] shadow-md'
-                                            : 'text-white hover:bg-blue-600 hover:text-white'
-                                    } ${isCollapsed ? 'justify-center' : ''}`}
-                                    onClick={() => setActiveTab( index )}
+                                    className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${ activeTab === index
+                                        ? 'bg-white text-[#0D6EFD] shadow-md'
+                                        : 'text-white hover:bg-blue-600 hover:text-white'
+                                        } ${ isCollapsed ? 'justify-center' : '' }`}
+                                    onClick={() => {
+                                        setActiveTab( index );
+                                        navigate( tabRoutes[ index ] );
+                                    }}
                                     title={isCollapsed ? tab.label : ''}
                                 >
                                     {tab.icon}
@@ -128,10 +149,10 @@ export const TableNav = () => {
                     </ul>
                 </nav>
 
-                <div className={`p-2 border-t border-blue-600 ${isCollapsed ? 'flex flex-col items-center space-y-2' : ''}`}>
+                <div className={`p-2 border-t border-blue-600 ${ isCollapsed ? 'flex flex-col items-center space-y-2' : '' }`}>
                     <button
                         onClick={toggleDarkMode}
-                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${isCollapsed ? 'w-full flex justify-center' : ''}`}
+                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : '' }`}
                         aria-label="Toggle dark mode"
                     >
                         {
@@ -143,7 +164,7 @@ export const TableNav = () => {
                     {!isCollapsed && <div className="border-t border-blue-600 my-2"></div>}
                     <button
                         onClick={toggleCollapse}
-                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${isCollapsed ? 'w-full flex justify-center' : 'w-full'}`}
+                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : 'w-full' }`}
                         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                     >
                         {isCollapsed ? (
@@ -156,7 +177,7 @@ export const TableNav = () => {
                             </svg>
                         )}
                     </button>
-                    {!isCollapsed && <HeaderExit className="cursor-pointer mt-2" color="white" />}
+                    {!isCollapsed && <ExitButton className="cursor-pointer mt-2" color="white" />}
                 </div>
             </aside>
 
@@ -175,18 +196,15 @@ export const TableNav = () => {
                 </header>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto w-full flex flex-col justify-between md:justify-center gap-6 h-full bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:bg-gray-950 rounded-3xl p-4 md:p-8 shadow-xl">
-                    <div className="">
-                        {tabs[ activeTab ].content}
-                    </div>
+                <div className="relative flex-1 overflow-y-auto w-full flex flex-col justify-between md:justify-center gap-8 h-full bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:bg-gray-950 p-4 md:p-8 shadow-xl">
+                    {tabs[ activeTab ].content}
                 </div>
             </main>
 
             {/* Mobile Side Menu */}
             <div
-                className={`fixed top-0 left-0 bottom-0 w-64 z-50 bg-blue-100 dark:bg-slate-950 text-gray-900 dark:text-amber-50 transition-transform duration-500 ease-in-out md:hidden ${
-                    sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                }`}
+                className={`fixed top-0 left-0 bottom-0 w-64 z-50 bg-blue-100 dark:bg-slate-950 text-gray-900 dark:text-amber-50 transition-transform duration-500 ease-in-out md:hidden ${ sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                    }`}
             >
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                     <button
@@ -204,11 +222,10 @@ export const TableNav = () => {
                         {tabs.map( ( tab, index ) => (
                             <li key={index}>
                                 <button
-                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
-                                        activeTab === index
-                                            ? 'text-blue-500 bg-blue-50 dark:bg-gray-700'
-                                            : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                                    }`}
+                                    className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${ activeTab === index
+                                        ? 'text-blue-500 bg-blue-50 dark:bg-gray-700'
+                                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        }`}
                                     onClick={() => handleSideMenuClick( index )}
                                 >
                                     {tab.icon}
@@ -231,7 +248,7 @@ export const TableNav = () => {
                                     : <img src='./moon-icon.png' alt='' className='w-5' />
                             }
                         </button>
-                        <HeaderExit className="cursor-pointer" color="black" />
+                        <ExitButton className="cursor-pointer" color="black" />
                     </div>
                 </div>
             </div>
