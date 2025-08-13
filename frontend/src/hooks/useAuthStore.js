@@ -86,9 +86,6 @@ const useAuthStore = create( ( set, get ) => {
     login,
     logout,
 
-
-
-
     setError: ( message ) =>
       set( () => ( {
         errorMessage: message,
