@@ -21,7 +21,7 @@ const LoginPage = () => {
         if ( user ) {
             // Simulate token creation with expiration 1 hour from now
             const token = 'fake-jwt-token';
-            const expiration = new Date().getTime() + 5 * 60 * 1000;
+            const expiration = new Date().getTime() + 20 * 60 * 1000;
 
             login( user, token, expiration ); // Inicia sesión en Zustand store
 

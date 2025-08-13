@@ -79,8 +79,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
                   style={{cursor: 'pointer', userSelect: 'none'}} />
               </div>
             </div>
-
-
             <div className="flex justify-between font-bold text-blue-700">
               <label htmlFor="">Banco:</label>
               <div

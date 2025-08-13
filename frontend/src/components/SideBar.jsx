@@ -196,7 +196,7 @@ export const SideBar = ( {initialTab} ) => {
                 </header>
 
                 {/* Content Area */}
-                <div className="relative flex-1 overflow-y-auto w-full flex flex-col justify-between md:justify-center gap-8 h-full bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:bg-gray-950 p-4 md:p-8 shadow-xl">
+                <div className="overflow-y-auto lg:overflow-y-hidden w-full flex flex-col items-center justify-between md:justify-center gap-8 h-screen dark:bg-gray-950 p-4 md:p-8 shadow-xl">
                     {tabs[ activeTab ].content}
                 </div>
             </main>
