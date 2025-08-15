@@ -36,7 +36,7 @@ export const ContentResume = ( {goToTicketTab} ) => {
         <div className="flex flex-col lg:justify-center md:items-center gap-6 w-full max-w-4xl border-0">
           <OrderDetails />
 
-          <div className="flex flex-col gap-4 w-full max-w-3xl border-1">
+          <div className="flex flex-col gap-4 w-full max-w-3xl border-0">
             <h3 className="text-xl md:text-2xl font-bold text-center text-blue-700 mb-2">Opciones de Pago</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
               <div

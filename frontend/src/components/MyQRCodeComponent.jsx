@@ -70,7 +70,7 @@ export function MyQRCodeComponent() {
           Exportar todos los QR en ZIP
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow-xl max-w-7xl mx-auto my-8 border-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6  rounded-lg shadow-xl max-w-7xl mx-auto my-8 border-0">
         {empleados.map((empleado, index) => {
           const qrValue = JSON.stringify({
             nombre: empleado.nombre,
@@ -82,10 +82,10 @@ export function MyQRCodeComponent() {
           return (
             <div
               key={index}
-              className="flex flex-col items-center justify-center bg-gray-50 p-4 rounded shadow"
+              className="flex flex-col items-center justify-center  p-4 rounded shadow"
               ref={el => qrRefs.current[index] = el}
             >
-              <h3 className="text-lg font-semibold mb-2 text-gray-800">{empleado.nombre} {empleado.apellido}</h3>
+              <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-amber-50">{empleado.nombre} {empleado.apellido}</h3>
               <QRCode
                 value={qrValue}
                 size={150}
@@ -111,7 +111,7 @@ export function MyQRCodeComponent() {
                   href={getWhatsAppLink(qrValue)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs shadow text-center w-full"
+                  className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs shadow text-center"
                 >
                   Compartir por WhatsApp
                 </a>
@@ -119,7 +119,7 @@ export function MyQRCodeComponent() {
                   href={getMailToLink(qrValue, empleado)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs shadow text-center w-full"
+                  className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-xs shadow text-center"
                 >
                   Compartir por correo
                 </a>
