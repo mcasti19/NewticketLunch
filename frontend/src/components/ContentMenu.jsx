@@ -34,9 +34,9 @@ export const ContentMenu = () => {
     <>
       {isLoading && <p>Cargando...</p>}
       {/* {error && <p>Error: {error.message}</p>} */}
-      <div className="flex-col items-center justify-center w-full text-center">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700 mb-1 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800">{day} de {month}</span></h1>
-        <h2 className="text-xl md:text-2xl font-semibold text-gray-700">Tasa del día: <span className="text-amber-500 bg-blue-100 rounded-2xl px-2 py-1 ml-1 font-bold shadow">Bs 119,67</span></h2>
+      <div className="flex flex-col items-center justify-center w-full text-center gap-5 max-h-screen">
+        <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-1 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
+        <h2 className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-amber-50">Tasa del día: <span className="text-amber-500  rounded-2xl px-2 py-1 ml-1 font-bold shadow">Bs 119,67</span></h2>
       </div>
 
       {/* <ContentHeader title={"Menu"} /> */}
