@@ -2,7 +2,7 @@
   "name": "ticketlunch",
   "private": true,
   "proxy": "http://10.20.22.83:4000",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
