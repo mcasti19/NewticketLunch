@@ -1,0 +1,67 @@
+# *******************************GETS******************************
+
+###  USUARIOS
+GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
+content-type: application/json
+
+
+### MENU
+GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
+content-type: application/json
+
+
+### GERENCIAS TODAS
+GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
+content-type: application/json
+
+###  GERENCIA x ID
+GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
+content-type: application/json
+
+
+###  PEDIDOS
+GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+content-type: application/json
+
+*******************************POSTS******************************
+
+#### USUARIOS
+POST http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Moises",
+    "email": "moises@example.com",
+    "password": "12345678",
+    "password_confirmation": "12345678",
+    "id_gerencia": 2
+}
+
+
+#### MENUS
+POST http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
+content-type: application/json
+
+{
+    "sopa": "Sopa de pescado",
+    "contourOne" : "Carne",
+    "contourTwo" : "Pollo",
+    "saladOne" : "Rayada",
+    "saladTwo" : "Rusa",
+    "juice" : "Melon",
+    "dessert" : "Torta de vainilla"
+}
+
+#### PEDIDO
+POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+content-type: application/json
+
+{
+    "numeroPedido": 1,
+    "metodoPagoId" : 1,
+    "referencia": 4521,
+    "montoTotal": 115,
+    "idMenu": 1,
+    "idEmpleado": 1
+}
+

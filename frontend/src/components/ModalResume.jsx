@@ -1,5 +1,3 @@
-// ...existing code...
-
 // El componente debe estar definido como una función
 import React, {useState} from 'react';
 import Modal from 'react-modal';
@@ -7,7 +5,7 @@ import {toast} from 'react-toastify';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {PiCopyThin} from "react-icons/pi";
 
-const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) => {
+const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen, onGenerarTickets} ) => {
   const [ paymentDetails, setPaymentDetails ] = useState( {
     phoneNumber: '',
     bank: '',
@@ -37,7 +35,22 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
   const isPagoMovil = paymentOption === 'Pago Móvil';
   const isTransferencia = paymentOption === 'Transferencia';
 
-  // Lógica para generar tickets
+  // // Lógica para generar tickets
+  // const handleGenerarTickets = ( e ) => {
+  //   e.preventDefault();
+  //   if ( !referenceNumber || referenceNumber.trim() === '' ) {
+  //     setTimeout( () => {
+  //       toast.error( 'Debe ingresar el número de referencia antes de continuar.' );
+  //     }, 100 );
+  //     return;
+  //   }
+  //   setReferenceNumberStore( referenceNumber );
+  //   if ( typeof onVerResumen === 'function' ) onVerResumen( referenceNumber );
+  //   setReferenceNumber( '' );
+  //   onRequestClose();
+  // };
+
+  // Validación y notificación
   const handleGenerarTickets = ( e ) => {
     e.preventDefault();
     if ( !referenceNumber || referenceNumber.trim() === '' ) {
@@ -46,11 +59,10 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
       }, 100 );
       return;
     }
-    setReferenceNumberStore( referenceNumber );
-    if ( typeof onVerResumen === 'function' ) onVerResumen( referenceNumber );
+    if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
     setReferenceNumber( '' );
-    onRequestClose();
   };
+
 
   return (
     <Modal
@@ -75,12 +87,11 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen} ) =>
       }}
       contentLabel="Resumen y Pago"
     >
-        <div className="mb-6 text-center font-bold text-lg text-blue-800">
+      <div className="mb-6 text-center font-bold text-lg text-blue-800">
         Total a pagar: <span className="text-green-600">Bs. {summary.totalPagar?.toFixed( 2 ) ?? '0.00'}</span>
       </div>
 
       <form onSubmit={handleGenerarTickets} className="flex flex-col gap-4">
-
 
         {isPagoMovil && (
           <div className="flex flex-col gap-2">
