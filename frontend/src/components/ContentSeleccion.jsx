@@ -8,6 +8,7 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 // import {useNavigate} from 'react-router';
 
 export const ContentSeleccion = ({ goToResumeTab }) => {
+  
   // Intenta cargar del localStorage
   const [empleados, setEmpleados] = useState(() => {
     const saved = localStorage.getItem('empleadosSeleccionados');
@@ -32,7 +33,9 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
   // const {data: tasaDia, isLoading} = useTasaDia();
   // const {isLoading} = useTasaDia();
   const {user} = useAuthStore();
-  const userGerencia = user?.gerencia || null;
+  console.log(user.gerencia.nombre_gerencia);
+  
+  const userGerencia = user?.gerencia?.nombre_gerencia || null;
   const setSummary = useTicketLunchStore( state => state.setSummary );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
 

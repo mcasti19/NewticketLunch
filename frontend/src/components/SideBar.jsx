@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
 import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
+import { IoFastFood } from "react-icons/io5";
+
 import {ContentMenu} from './ContentMenu';
 import {ContentSeleccion} from './ContentSeleccion';
 import {ContentResume} from './ContentResume';
@@ -24,7 +26,7 @@ export const SideBar = ( {initialTab} ) => {
     const tabs = [
         {
             label: 'Menú',
-            icon: <FaTachometerAlt className="w-5 h-5" />,
+            icon: <IoFastFood className="w-5 h-5" />,
             content: <ContentMenu />,
         },
         {

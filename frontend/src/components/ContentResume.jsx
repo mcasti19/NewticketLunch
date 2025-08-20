@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
-import ModalResumenFinal from './ModalResumenFinal';
+// import ModalResumenFinal from './ModalResumenFinal';
 import {OrderDetails} from './OrderDetails';
 
 
