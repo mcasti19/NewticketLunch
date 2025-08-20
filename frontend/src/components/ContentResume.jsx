@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
-// import ModalResumenFinal from './ModalResumenFinal';
 import {OrderDetails} from './OrderDetails';
 
 
@@ -66,15 +65,10 @@ export const ContentResume = ( {goToTicketTab} ) => {
           </div>
         </div>
       </div>
-
-
       <ModalResume
-        // isOpen={resumenOpen}
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         paymentOption={selectedPaymentOption}
-        // onVerResumen={openResumen}
-
         onGenerarTickets={handleGenerarTickets}
       />
     </>

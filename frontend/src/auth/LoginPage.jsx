@@ -12,18 +12,16 @@ const LoginPage = () => {
     const isAuthenticated = useAuthStore( ( state ) => state.isAuthenticated );
     const navigate = useNavigate();
 
-    const handleSubmit = ( e ) => {
-    e.preventDefault();
-    api.post('/users/login', { email, password })
-      .then(response => {
-        if (response.data && response.data.token && response.data.data) {
-          const user = response.data.data;
-          const token = response.data.token;
+    // Manejo de login asíncrono y mejor manejo de errores
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        const response = await api.post('/users/login', { email, password });
+        const { data, token, expiration } = response.data || {};
+        if (token && data) {
           // Si el backend envía expiration, úsalo. Si no, usa 30 minutos por defecto
-          const expiration = response.data.expiration
-            ? Number(response.data.expiration)
-            : new Date().getTime() + 30 * 60 * 1000; // 30 minutos
-          login(user, token, expiration);
+          const exp = expiration ? Number(expiration) : Date.now() + 30 * 60 * 1000;
+          login(data, token, exp);
           Swal.fire({
             title: "Successfully logged in",
             text: "Welcome to the System",
@@ -32,20 +30,15 @@ const LoginPage = () => {
             timer: 1500
           });
         } else {
-          Swal.fire({
-            title: "Invalid Credentials",
-            text: "Check Credentials and try again!!!",
-            icon: "error"
-          });
+          throw new Error("Invalid Credentials");
         }
-      })
-      .catch(error => {
+      } catch (error) {
         Swal.fire({
           title: "Login Error",
-          text: error?.response?.data?.message || "Check Credentials and try again!!!",
+          text: error?.response?.data?.message || error.message || "Check Credentials and try again!!!",
           icon: "error"
         });
-      });
+      }
     };
 
     useEffect( () => {
