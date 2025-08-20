@@ -8,7 +8,6 @@ import {OrderDetails} from './OrderDetails';
 export const ContentResume = ( {goToTicketTab} ) => {
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
-  const [ resumenOpen, setResumenOpen ] = useState( false );
   const setReferenceNumber = useTicketLunchStore( state => state.setReferenceNumber );
 
   const openModal = option => {
@@ -19,12 +18,10 @@ export const ContentResume = ( {goToTicketTab} ) => {
     setModalIsOpen( false );
     setSelectedPaymentOption( null );
   };
-  const openResumen = () => setResumenOpen( true );
-  const closeResumen = () => setResumenOpen( false );
-  // Recibe el referenceNumber desde ModalResumenFinal
+
   const handleGenerarTickets = ( referenceNumber ) => {
     setReferenceNumber( referenceNumber ); // Si quieres guardar en el store
-    setResumenOpen( false );
+    // setResumenOpen( false );
     setModalIsOpen( false );
     if ( goToTicketTab ) goToTicketTab();
   };
