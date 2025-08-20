@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useAuthStore} from '../store/authStore';
-import users from '../data/mockDataUsers.json';
+import api from '../api/api';
 import Swal from 'sweetalert2';
 import {useNavigate} from 'react-router';
 // import logoComedor from '../../public/logoComedor.png';
@@ -13,33 +13,39 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     const handleSubmit = ( e ) => {
-        e.preventDefault();
-        // Buscar usuario en mockData.json
-        const user = users.find( u => u.email === email && u.password === password );
-        console.log( user );
-
-        if ( user ) {
-            // Simulate token creation with expiration 1 hour from now
-            const token = 'fake-jwt-token';
-            const expiration = new Date().getTime() + 20 * 60 * 1000;
-
-            login( user, token, expiration ); // Inicia sesión en Zustand store
-
-            Swal.fire( {
-                title: "Successfully logged in",
-                text: "Welcome to the System",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 1500
-            } );
-
+    e.preventDefault();
+    api.post('/users/login', { email, password })
+      .then(response => {
+        if (response.data && response.data.token && response.data.data) {
+          const user = response.data.data;
+          const token = response.data.token;
+          // Si el backend envía expiration, úsalo. Si no, usa 30 minutos por defecto
+          const expiration = response.data.expiration
+            ? Number(response.data.expiration)
+            : new Date().getTime() + 30 * 60 * 1000; // 30 minutos
+          login(user, token, expiration);
+          Swal.fire({
+            title: "Successfully logged in",
+            text: "Welcome to the System",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500
+          });
         } else {
-            Swal.fire( {
-                title: "Invalid Credentials",
-                text: "Check Credentials and try again!!!",
-                icon: "error"
-            } );
+          Swal.fire({
+            title: "Invalid Credentials",
+            text: "Check Credentials and try again!!!",
+            icon: "error"
+          });
         }
+      })
+      .catch(error => {
+        Swal.fire({
+          title: "Login Error",
+          text: error?.response?.data?.message || "Check Credentials and try again!!!",
+          icon: "error"
+        });
+      });
     };
 
     useEffect( () => {

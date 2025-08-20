@@ -3,6 +3,7 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
+Authorization: Bearer 5|xufLrgSMwY1lpbOcmTARu8PyEvscgjXBbYxMOyv9dff5ff63
 
 
 ### MENU
@@ -25,9 +26,21 @@ content-type: application/json
 
 *******************************POSTS******************************
 
+#### LOGIN
+POST http://comedor.mercal.gob.ve/api/p1/users/login HTTP/1.1
+content-type: application/json
+
+
+{
+    "email": "moicastillo@mercal.gob.ve",
+    "password": "12345678"
+}
+
+
 #### USUARIOS
 POST http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
+Authorization: 
 
 {
     "name": "Moises",

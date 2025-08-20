@@ -6,20 +6,20 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {PiCopyThin} from "react-icons/pi";
 
 const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} ) => {
-  const [ paymentDetails, setPaymentDetails ] = useState( {
-    phoneNumber: '',
-    bank: '',
-    idNumber: '',
-    accountNumber: '',
-    accountType: '',
-  } );
+  // const [ paymentDetails, setPaymentDetails ] = useState( {
+  //   phoneNumber: '',
+  //   bank: '',
+  //   idNumber: '',
+  //   accountNumber: '',
+  //   accountType: '',
+  // } );
   const [ referenceNumber, setReferenceNumber ] = useState( '' );
-    // const empleados = useTicketLunchStore(state => state.selectedEmpleadosSummary);
+  // const empleados = useTicketLunchStore(state => state.selectedEmpleadosSummary);
   const summary = useTicketLunchStore( state => state.summary );
 
-  const handleInputChange = ( field ) => ( e ) => {
-    setPaymentDetails( ( prev ) => ( {...prev, [ field ]: e.target.value} ) );
-  };
+  // const handleInputChange = ( field ) => ( e ) => {
+  //   setPaymentDetails( ( prev ) => ( {...prev, [ field ]: e.target.value} ) );
+  // };
 
   const handleCopy = async ( text ) => {
     try {
@@ -105,42 +105,27 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
 
         {isTransferencia && (
           <div className="flex flex-col gap-2">
-            <label htmlFor="bank" className="font-bold text-blue-700">Banco:</label>
-            <input
-              id="bank"
-              type="text"
-              placeholder="Ingrese banco"
-              value={paymentDetails.bank}
-              onChange={handleInputChange( 'bank' )}
-              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
-            />
-            <label htmlFor="accountNumber" className="font-bold text-blue-700">Número de Cuenta:</label>
-            <input
-              id="accountNumber"
-              type="text"
-              placeholder="Ingrese número de cuenta"
-              value={paymentDetails.accountNumber}
-              onChange={handleInputChange( 'accountNumber' )}
-              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
-            />
-            <label htmlFor="accountType" className="font-bold text-blue-700">Tipo de Cuenta:</label>
-            <input
-              id="accountType"
-              type="text"
-              placeholder="Ingrese tipo de cuenta"
-              value={paymentDetails.accountType}
-              onChange={handleInputChange( 'accountType' )}
-              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
-            />
-            <label htmlFor="idNumber" className="font-bold text-blue-700">Cédula:</label>
-            <input
-              id="idNumber"
-              type="text"
-              placeholder="Ingrese cédula"
-              value={paymentDetails.idNumber}
-              onChange={handleInputChange( 'idNumber' )}
-              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
-            />
+            <div className="flex justify-between font-bold text-blue-700">
+              <label htmlFor="">Número de Cuenta:</label>
+              <div className="flex text-gray-800 hover:text-blue-500 transition-colors duration-200 ml-2">
+                <label htmlFor="">0000 0000 0000 0000</label>
+                <PiCopyThin onClick={() => handleCopy( '0000 0000 0000 0000' )} style={{cursor: 'pointer', userSelect: 'none'}} />
+              </div>
+            </div>
+            <div className="flex justify-between font-bold text-blue-700">
+              <label htmlFor="">Banco:</label>
+              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
+                <label htmlFor="">0108 - Provicial</label>
+                <PiCopyThin onClick={() => handleCopy( '0108' )} style={{cursor: 'pointer', userSelect: 'none'}} />
+              </div>
+            </div>
+            {/* <div className="flex justify-between font-bold text-blue-700">
+              <label htmlFor="">Cédula:</label>
+              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
+                <label htmlFor="">V-19.254.775</label>
+                <PiCopyThin onClick={() => handleCopy( '19.254.775' )} style={{cursor: 'pointer', userSelect: 'none'}} />
+              </div>
+            </div> */}
           </div>
         )}
 
@@ -177,5 +162,4 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
     </Modal>
   );
 };
-
 export default ModalResume;

@@ -12,7 +12,7 @@ export const ContentSeleccionMobile = ({ goToResumeTab }) => {
   const [dropdownOpen, setDropdownOpen] = useState(null);
   const [modalInvitadoOpen, setModalInvitadoOpen] = useState(false);
   const { user } = useAuthStore();
-  const userGerencia = user?.gerencia || null;
+  const userGerencia = user?.gerencia?.nombre_gerencia || null;
   const tasaDia = 119.67;
   const precioLlevar = 15;
   const precioCubierto = 20;
