@@ -5,7 +5,7 @@ import {toast} from 'react-toastify';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {PiCopyThin} from "react-icons/pi";
 
-const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen, onGenerarTickets} ) => {
+const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} ) => {
   const [ paymentDetails, setPaymentDetails ] = useState( {
     phoneNumber: '',
     bank: '',
@@ -14,8 +14,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen, onGe
     accountType: '',
   } );
   const [ referenceNumber, setReferenceNumber ] = useState( '' );
-  const setReferenceNumberStore = useTicketLunchStore( state => state.setReferenceNumber );
-  // const empleados = useTicketLunchStore(state => state.selectedEmpleadosSummary);
+    // const empleados = useTicketLunchStore(state => state.selectedEmpleadosSummary);
   const summary = useTicketLunchStore( state => state.summary );
 
   const handleInputChange = ( field ) => ( e ) => {
@@ -34,21 +33,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onVerResumen, onGe
 
   const isPagoMovil = paymentOption === 'Pago Móvil';
   const isTransferencia = paymentOption === 'Transferencia';
-
-  // // Lógica para generar tickets
-  // const handleGenerarTickets = ( e ) => {
-  //   e.preventDefault();
-  //   if ( !referenceNumber || referenceNumber.trim() === '' ) {
-  //     setTimeout( () => {
-  //       toast.error( 'Debe ingresar el número de referencia antes de continuar.' );
-  //     }, 100 );
-  //     return;
-  //   }
-  //   setReferenceNumberStore( referenceNumber );
-  //   if ( typeof onVerResumen === 'function' ) onVerResumen( referenceNumber );
-  //   setReferenceNumber( '' );
-  //   onRequestClose();
-  // };
 
   // Validación y notificación
   const handleGenerarTickets = ( e ) => {
