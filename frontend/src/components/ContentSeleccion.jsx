@@ -4,38 +4,32 @@ import {useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSo
 import empleadosData from "../data/mockDataEmpleados.json";
 import {useAuthStore} from '../store/authStore';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
+import {useGetEmployees} from '../hooks/useGetEmployees';
 // import {useTasaDia} from '../hooks/useTasaDia';
 // import {useNavigate} from 'react-router';
 
-export const ContentSeleccion = ({ goToResumeTab }) => {
-  
-  // Intenta cargar del localStorage
-  const [empleados, setEmpleados] = useState(() => {
-    const saved = localStorage.getItem('empleadosSeleccionados');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [modalInvitadoOpen, setModalInvitadoOpen] = useState(false);
-  const [search, setSearch] = useState("");
+export const ContentSeleccion = ( {goToResumeTab} ) => {
+  // Hook para obtener empleados desde API
+  const {user} = useAuthStore();
+  const userGerencia = user?.gerencia?.nombre_gerencia || null;
+  const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
+  const {employees, loading, error} = useGetEmployees( idGerencia );
+  const [ empleados, setEmpleados ] = useState( [] );
+  const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
+  const [ search, setSearch ] = useState( "" );
 
-  const handleAddInvitado = useCallback((nuevoInvitado) => {
-    setEmpleados(prev => {
-      const updated = [...prev, { ...nuevoInvitado, invitado: true, evento_especial: false }];
-      localStorage.setItem('empleadosSeleccionados', JSON.stringify(updated));
+  const handleAddInvitado = useCallback( ( nuevoInvitado ) => {
+    setEmpleados( prev => {
+      const updated = [ ...prev, {...nuevoInvitado, invitado: true, evento_especial: false} ];
+      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
       return updated;
-    });
-  }, []);
+    } );
+  }, [] );
   const [ dropdownOpen, setDropdownOpen ] = useState( null );
   const [ sorting, setSorting ] = useState( [] );
   const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
 
-  // const navigate = useNavigate();
 
-  // const {data: tasaDia, isLoading} = useTasaDia();
-  // const {isLoading} = useTasaDia();
-  const {user} = useAuthStore();
-  console.log(user.gerencia.nombre_gerencia);
-  
-  const userGerencia = user?.gerencia?.nombre_gerencia || null;
   const setSummary = useTicketLunchStore( state => state.setSummary );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
 
@@ -45,12 +39,15 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
   const precioLlevar = 15;
   const precioCubierto = 20;
 
-  useEffect(() => {
-    if (!empleados || empleados.length === 0) {
-      setEmpleados(empleadosData);
+  useEffect( () => {
+    if ( employees && employees.length > 0 ) {
+      console.log( "EMPLEADOS DESDES SELECCION:", employees );
+      setEmpleados( employees );
+    } else {
+      // Si no hay empleados desde API, usar mock
+      setEmpleados( empleadosData );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ employees ] );
 
   const goNext = () => {
     const selectedEmpleados = empleados.filter( emp => emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.autorizado || ( emp.almuerzos_autorizados && emp.almuerzos_autorizados.length > 0 ) );
@@ -69,37 +66,54 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
 
     setSelectedEmpleadosSummary( resumenEmpleados );
     // Guardar selección en localStorage
-    localStorage.setItem('empleadosSeleccionados', JSON.stringify(empleados));
-    localStorage.setItem('resumenEmpleados', JSON.stringify(resumenEmpleados));
-    if (goToResumeTab) goToResumeTab();
+    localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( empleados ) );
+    localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
+    if ( goToResumeTab ) goToResumeTab();
     console.log( "Resumen de Empleados:", JSON.stringify( resumenEmpleados, null, 2 ) );
   }
 
-  const filteredEmpleados = useMemo(() => {
-    let base = userGerencia
-      ? empleados.filter(emp => emp.gerencia === userGerencia || emp.invitado)
-      : empleados.filter(emp => emp.invitado); // Si no hay gerencia, solo invitados
-    if (search.trim() !== "") {
+  const filteredEmpleados = useMemo( () => {
+    let base;
+    // Si los empleados vienen de la API, filtrar por gerencia del usuario
+    if ( empleados.length > 0 && empleados[ 0 ].nombre_completo && user && user.id_gerencia ) {
+      base = empleados.filter( emp => {
+        // Si el empleado tiene id_gerencia o gerencia como objeto
+        if ( emp.id_gerencia ) {
+          return emp.id_gerencia === user.id_gerencia;
+        } else if ( emp.gerencia && emp.gerencia.id_gerencia ) {
+          return emp.gerencia.id_gerencia === user.id_gerencia;
+        }
+        return false;
+      } );
+    } else {
+      base = userGerencia
+        ? empleados.filter( emp => emp.gerencia === userGerencia || emp.invitado )
+        : empleados.filter( emp => emp.invitado );
+    }
+    if ( search.trim() !== "" ) {
       const s = search.trim().toLowerCase();
-      base = base.filter(emp =>
-        (emp.nombre && emp.nombre.toLowerCase().includes(s)) ||
-        (emp.apellido && emp.apellido.toLowerCase().includes(s))
+      base = base.filter( emp =>
+        ( emp.nombre_completo && emp.nombre_completo.toLowerCase().includes( s ) ) ||
+        ( emp.nombre && emp.nombre.toLowerCase().includes( s ) ) ||
+        ( emp.apellido && emp.apellido.toLowerCase().includes( s ) )
       );
     }
     return base;
-  }, [empleados, userGerencia, search]);
+  }, [ empleados, userGerencia, search, user ] );
 
-  const toggleEmpleadoField = useCallback((empleadoOriginal, field) => {
-    setEmpleados(prevEmpleados => {
-      const updated = prevEmpleados.map(emp =>
-        emp.nombre === empleadoOriginal.nombre && emp.apellido === empleadoOriginal.apellido
-          ? { ...emp, [field]: !emp[field] }
-          : emp
-      );
-      localStorage.setItem('empleadosSeleccionados', JSON.stringify(updated));
+  const toggleEmpleadoField = useCallback( ( empleadoOriginal, field ) => {
+    setEmpleados( prevEmpleados => {
+      const updated = prevEmpleados.map( emp => {
+        // Usar id_empleados si existe, si no nombre+apellido
+        const isSame = emp.id_empleados
+          ? emp.id_empleados === empleadoOriginal.id_empleados
+          : ( emp.nombre === empleadoOriginal.nombre && emp.apellido === empleadoOriginal.apellido );
+        return isSame ? {...emp, [ field ]: !emp[ field ]} : emp;
+      } );
+      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
       return updated;
-    });
-  }, []);
+    } );
+  }, [] );
 
   const updateAlmuerzosAutorizados = useCallback( ( empleadoOriginal, selectedAutorizados ) => {
     setEmpleados( prevEmpleados => {
@@ -108,9 +122,9 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
           ? {...emp, almuerzos_autorizados: selectedAutorizados}
           : emp
       );
-      localStorage.setItem('empleadosSeleccionados', JSON.stringify(updated));
+      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
       return updated;
-    });
+    } );
   }, [] );
 
   useEffect( () => {
@@ -143,41 +157,52 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
     updateAlmuerzosAutorizados( rowOriginal, newAutorizado );
   };
 
-  const columns = useMemo(() => [
+  const columns = useMemo( () => [
     {
       header: 'Evento Especial',
       accessorKey: 'evento_especial',
-      cell: ({ row }) => {
+      cell: ( {row} ) => {
         const checked = row.original.evento_especial || false;
         return (
           <div className="w-full flex justify-center items-center">
             <button
               type="button"
               aria-pressed={checked}
-              onClick={() => toggleEmpleadoField(row.original, 'evento_especial')}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${checked ? 'bg-blue-600' : 'bg-gray-300'}`}
+              onClick={() => toggleEmpleadoField( row.original, 'evento_especial' )}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${ checked ? 'bg-blue-600' : 'bg-gray-300' }`}
             >
               <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'}`}
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${ checked ? 'translate-x-6' : 'translate-x-1' }`}
               />
             </button>
           </div>
         );
       },
     },
+    // {
+    //   header: 'Nombre',
+    //   accessorKey: 'nombre',
+    //   cell: ( {row} ) => (
+    //     <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'nombre' )}</span>
+    //   ),
+    // },
+    // {
+    //   header: 'Apellido',
+    //   accessorKey: 'apellido',
+    //   cell: ( {row} ) => (
+    //     <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'apellido' )}</span>
+    //   ),
+    // },
     {
-      header: 'Nombre',
-      accessorKey: 'nombre',
-      cell: ( {row} ) => (
-        <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'nombre' )}</span>
-      ),
-    },
-    {
-      header: 'Apellido',
-      accessorKey: 'apellido',
-      cell: ( {row} ) => (
-        <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'apellido' )}</span>
-      ),
+      header: 'Empleado',
+      accessorKey: 'nombre_completo',
+      cell: ( {row} ) => {
+        // Si el campo no existe, intentar mostrar nombre + apellido (para mock)
+        const nombreCompleto = row.original.nombre_completo || `${ row.original.nombre || '' } ${ row.original.apellido || '' }`;
+        return (
+          <span className="text-gray-900 dark:text-gray-100">{nombreCompleto}</span>
+        );
+      },
     },
     {
       header: `Almuerzo Bs. ${ tasaDia }`,
@@ -247,23 +272,23 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
     {
       header: 'Autorizado',
       accessorKey: 'autorizado',
-      cell: ({ row }) => {
-        if (row.original.invitado) return null;
-        const checked = row.getValue('autorizado');
+      cell: ( {row} ) => {
+        if ( row.original.invitado ) return null;
+        const checked = row.getValue( 'autorizado' );
         const fullName = row.original.nombre + ' ' + row.original.apellido;
         const selectedInExtras = new Set();
-        empleados.forEach(emp => {
-          if (emp.almuerzos_autorizados && emp !== row.original) {
-            emp.almuerzos_autorizados.forEach(name => selectedInExtras.add(name));
+        empleados.forEach( emp => {
+          if ( emp.almuerzos_autorizados && emp !== row.original ) {
+            emp.almuerzos_autorizados.forEach( name => selectedInExtras.add( name ) );
           }
-        });
-        const isDisabled = selectedInExtras.has(fullName);
+        } );
+        const isDisabled = selectedInExtras.has( fullName );
         return (
           <div className='w-full flex justify-center items-center'>
             <input
               type="checkbox"
               checked={checked}
-              onChange={() => toggleEmpleadoField(row.original, 'autorizado')}
+              onChange={() => toggleEmpleadoField( row.original, 'autorizado' )}
               disabled={isDisabled}
               className="form-checkbox h-4 w-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500"
             />
@@ -274,55 +299,55 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
     {
       header: 'Almuerzos Autorizados',
       accessorKey: 'almuerzos_autorizados',
-      cell: ({ row }) => {
-        if (row.original.invitado) return null;
-        const selectedAutorizados = row.getValue('almuerzos_autorizados') || [];
+      cell: ( {row} ) => {
+        if ( row.original.invitado ) return null;
+        const selectedAutorizados = row.getValue( 'almuerzos_autorizados' ) || [];
         const rowId = row.id;
-        const autorizado = row.getValue('autorizado');
+        const autorizado = row.getValue( 'autorizado' );
         return (
           <div className="relative">
             <div
               className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer
-                ${autorizado
+                ${ autorizado
                   ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800'
-                  : 'bg-gray-100 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400'}`}
-              onClick={() => autorizado && toggleDropdown(rowId)}
+                  : 'bg-gray-100 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400' }`}
+              onClick={() => autorizado && toggleDropdown( rowId )}
             >
-              {selectedAutorizados.length > 0 ? selectedAutorizados.join(', ') : 'Seleccione'}
+              {selectedAutorizados.length > 0 ? selectedAutorizados.join( ', ' ) : 'Seleccione'}
             </div>
             {dropdownOpen === rowId && autorizado && (
               <div className="absolute z-20 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
                 <div className="py-1">
-                  {(() => {
+                  {( () => {
                     const selectedInOtherRows = new Set();
-                    empleados.forEach(emp => {
-                      if (emp.almuerzos_autorizados && emp !== row.original) {
-                        emp.almuerzos_autorizados.forEach(name => selectedInOtherRows.add(name));
+                    empleados.forEach( emp => {
+                      if ( emp.almuerzos_autorizados && emp !== row.original ) {
+                        emp.almuerzos_autorizados.forEach( name => selectedInOtherRows.add( name ) );
                       }
-                    });
+                    } );
                     return empleados
-                      .filter(emp => {
+                      .filter( emp => {
                         const fullName = emp.nombre + ' ' + emp.apellido;
                         return emp.gerencia === userGerencia &&
-                          fullName !== (row.original.nombre + ' ' + row.original.apellido) &&
-                          (!selectedInOtherRows.has(fullName) || selectedAutorizados.includes(fullName));
-                      })
-                      .map(emp => {
+                          fullName !== ( row.original.nombre + ' ' + row.original.apellido ) &&
+                          ( !selectedInOtherRows.has( fullName ) || selectedAutorizados.includes( fullName ) );
+                      } )
+                      .map( emp => {
                         const fullName = emp.nombre + ' ' + emp.apellido;
-                        const checked = selectedAutorizados.includes(fullName);
+                        const checked = selectedAutorizados.includes( fullName );
                         return (
                           <label key={fullName} className="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={checked}
-                              onChange={() => handleExtraToggle(row.original, fullName)}
+                              onChange={() => handleExtraToggle( row.original, fullName )}
                               className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-3"
                             />
                             <span className="text-sm text-gray-700 dark:text-gray-300">{fullName}</span>
                           </label>
                         );
-                      });
-                  })()}
+                      } );
+                  } )()}
                 </div>
               </div>
             )}
@@ -365,7 +390,7 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
         )
       },
     },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [ empleados, dropdownOpen, toggleEmpleadoField, updateAlmuerzosAutorizados, tasaDia, userGerencia ] );
 
   const table = useReactTable( {
@@ -385,7 +410,7 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
   return (
     <div className="w-full h-full mx-auto p-2 md:p-3 border-0 rounded-2xl flex flex-col items-center justify-start min-h-[90vh]">
       <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800 dark:text-white">
-        Gerencia {userGerencia}
+        {userGerencia}
       </h1>
 
       {isLoading ? (
@@ -400,13 +425,13 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
               <input
                 type="text"
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => setSearch( e.target.value )}
                 placeholder="Buscar por nombre o apellido..."
                 className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <select
                 value={pagination.pageSize}
-                onChange={e => setPagination(p => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))}
+                onChange={e => setPagination( p => ( {...p, pageSize: Number( e.target.value ), pageIndex: 0} ) )}
                 className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
                 <option value={5}>5 por página</option>
@@ -416,7 +441,7 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
             </div>
             <button
               className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow w-full md:w-auto"
-              onClick={() => setModalInvitadoOpen(true)}
+              onClick={() => setModalInvitadoOpen( true )}
             >
               Agregar Invitado
             </button>
@@ -463,12 +488,12 @@ export const ContentSeleccion = ({ goToResumeTab }) => {
                       ) )}
                     </tr>
                   );
-                })}
-          <ModalAgregarInvitado
-            isOpen={modalInvitadoOpen}
-            onRequestClose={() => setModalInvitadoOpen(false)}
-            onAddInvitado={handleAddInvitado}
-          />
+                } )}
+                <ModalAgregarInvitado
+                  isOpen={modalInvitadoOpen}
+                  onRequestClose={() => setModalInvitadoOpen( false )}
+                  onAddInvitado={handleAddInvitado}
+                />
               </tbody>
             </table>
           </div>
