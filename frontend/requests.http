@@ -3,35 +3,35 @@
 ###  USUARIOS
 GET http://127.0.0.1:8000/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 
 ### MENU
 GET http://127.0.0.1:8000/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 ### GERENCIAS TODAS
 GET http://127.0.0.1:8000/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 ###  GERENCIA x ID
 GET http://127.0.0.1:8000/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 
 ###  PEDIDOS
 GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 
 ###  EMPLEADOS
 GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 *******************************POSTS******************************
 
@@ -90,22 +90,13 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|HdwVLBONPx3l3xTifDRHZ7vXrJsNaRt9SvKqvoQce98acdd4
+Authorization: Bearer 4|lFIy9ntONg3HFvmobK28odlabcIsJhW00eKMYDAD3fca7fca
 
 {
-    "nombreCompleto" : "Carlos Ramírez",
-    "cedula" : "18463448",
+    "nombreCompleto" : "Carlos2 Ramírez",
+    "cedula" : "18463444",
     "idGerencia" : 22,
     "estado" : "Miranda",
     "tipoEmpleado" : "fijo",
     "cargo" : "Analista de Proyectos"
 }
-
-# {
-#     "nombreCompleto" : "Moises Castillo",
-#     "cedula" : "18467441",
-#     "idGerencia": 22,
-#     "estado" : "Sede Central",
-#     "tipoEmpleado": "Fijo",
-#     "cargo" : "Programador I"
-# }

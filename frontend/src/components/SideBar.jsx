@@ -1,19 +1,22 @@
 import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
 import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
-import { IoFastFood } from "react-icons/io5";
+import {IoFastFood} from "react-icons/io5";
+import {FiLogOut} from 'react-icons/fi'; // Nuevo icono para salir
+// import {IoMenu} from "react-icons/io"; // Usando IoMenu para hamburguesa
+import {IoMenuOutline} from "react-icons/io5";
+import {IoMdClose} from "react-icons/io";
+import {RiSunLine, RiMoonLine} from 'react-icons/ri'; // Iconos para modo claro/oscuro
+import {MdOutlineArrowBackIosNew, MdOutlineArrowForwardIos} from 'react-icons/md'; // Iconos para colapsar
 
 import {ContentMenu} from './ContentMenu';
 import {ContentSeleccion} from './ContentSeleccion';
-import {ContentResume} from './ContentResume';
-// import {ContentPago} from './ContentPago';
+import {ContentResume} from './ContentResumePago';
 import {ContentTicket} from './ContentTicket';
 import {ContentSeleccionMobile} from './ContentSeleccionMobile';
 import {HeaderLogo} from './HeaderLogo';
-import {ExitButton} from './ExitButton';
+import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica específica, sino integrar aquí
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
-import {IoMdClose} from "react-icons/io";
-import {GiHamburgerMenu} from "react-icons/gi";
 
 export const SideBar = ( {initialTab} ) => {
     const navigate = useNavigate();
@@ -34,7 +37,7 @@ export const SideBar = ( {initialTab} ) => {
             icon: <FaUser className="w-5 h-5" />,
             content: (
                 <>
-                    <div className="hidden md:block">
+                    <div className="hidden md:block w-full">
                         <ContentSeleccion goToResumeTab={() => setActiveTab( 2 )} />
                     </div>
                     <div className="block md:hidden">
@@ -55,7 +58,6 @@ export const SideBar = ( {initialTab} ) => {
         },
     ];
 
-    // Determinar tab inicial por prop
     const getInitialTabIndex = () => {
         switch ( initialTab ) {
             case 'menu': return 0;
@@ -75,14 +77,13 @@ export const SideBar = ( {initialTab} ) => {
         const savedTheme = getSavedTheme();
         setIsDarkMode( savedTheme === 'dark' );
 
-        // Detect screen size for sidebar behavior
         const handleResize = () => {
             if ( window.innerWidth < 768 ) {
-                setIsCollapsed( true ); // Completely hidden on small screens
+                setIsCollapsed( true );
             } else if ( window.innerWidth < 1024 ) {
-                setIsCollapsed( true ); // Collapsed on medium screens
+                setIsCollapsed( true );
             } else {
-                setIsCollapsed( false ); // Expanded on large screens
+                setIsCollapsed( false );
             }
         };
 
@@ -117,11 +118,11 @@ export const SideBar = ( {initialTab} ) => {
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900 w-full">
             {/* Sidebar Navigation - Left Column */}
-            <aside className={`hidden md:flex flex-col bg-[#0D6EFD] text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
-                <div className={`p-4 border-b border-blue-600 ${ isCollapsed ? 'flex justify-center' : '' }`}>
+            <aside className={`hidden md:flex flex-col bg-gradient-to-t from-blue-950 to-blue-700 text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
+                <div className={`p-4 border-b border-blue-900 ${ isCollapsed ? 'flex justify-center' : '' }`}>
                     {isCollapsed ? (
                         <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                            <span className="text-[#0D6EFD] font-bold text-sm">M</span>
+                            <span className="text-blue-900 font-bold text-sm">M</span>
                         </div>
                     ) : (
                         <HeaderLogo className="text-white" />
@@ -134,8 +135,8 @@ export const SideBar = ( {initialTab} ) => {
                             <li key={index}>
                                 <button
                                     className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${ activeTab === index
-                                        ? 'bg-white text-[#0D6EFD] shadow-md'
-                                        : 'text-white hover:bg-blue-600 hover:text-white'
+                                        ? 'bg-white text-blue-800 shadow-md border-l-4 border-white'
+                                        : 'text-white hover:bg-blue-600'
                                         } ${ isCollapsed ? 'justify-center' : '' }`}
                                     onClick={() => {
                                         setActiveTab( index );
@@ -151,72 +152,72 @@ export const SideBar = ( {initialTab} ) => {
                     </ul>
                 </nav>
 
-                <div className={`p-2 border-t border-blue-600 ${ isCollapsed ? 'flex flex-col items-center space-y-2' : '' }`}>
+                <div className="p-2 flex flex-col items-center space-y-2">
+                    {/* Botón de Modo Oscuro/Claro */}
                     <button
                         onClick={toggleDarkMode}
-                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : '' }`}
+                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : 'w-full flex items-center' }`}
                         aria-label="Toggle dark mode"
+                        title={isCollapsed ? ( isDarkMode ? 'Modo Claro' : 'Modo Oscuro' ) : ''}
                     >
-                        {
-                            isDarkMode
-                                ? <img src='./sun-icon.png' alt='' className='w-5' />
-                                : <img src='./moon-icon.png' alt='' className='w-5' />
-                        }
+                        {isDarkMode ? <RiSunLine className="w-5 h-5 text-white" /> : <RiMoonLine className="w-5 h-5 text-white" />}
+                        {!isCollapsed && <span className="ml-3 font-medium text-sm">Modo {isDarkMode ? 'Claro' : 'Oscuro'}</span>}
                     </button>
-                    {!isCollapsed && <div className="border-t border-blue-600 my-2"></div>}
+
+                    {/* Botón de Colapsar/Expandir */}
                     <button
                         onClick={toggleCollapse}
-                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : 'w-full' }`}
-                        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                        className={`p-2 rounded-lg hover:bg-blue-600 transition-colors ${ isCollapsed ? 'w-full flex justify-center' : 'w-full flex items-center' }`}
+                        aria-label={isCollapsed ? "Expandir barra lateral" : "Colapsar barra lateral"}
+                        title={isCollapsed ? "Expandir" : "Colapsar"}
                     >
                         {isCollapsed ? (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                            </svg>
+                            <MdOutlineArrowForwardIos className="w-5 h-5 text-white" />
                         ) : (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-                            </svg>
+                            <MdOutlineArrowBackIosNew className="w-5 h-5 text-white" />
                         )}
+                        {!isCollapsed && <span className="ml-3 font-medium text-sm">{isCollapsed ? 'Expandir' : 'Colapsar'}</span>}
                     </button>
-                    {!isCollapsed && <ExitButton className="cursor-pointer mt-2" color="white" />}
+
+                    {/* Botón de Salir - Integrado */}
+                    <ExitButton isCollapsed={isCollapsed} />
                 </div>
             </aside>
 
             {/* Main Content Area - Right Column */}
             <main className="flex-1 flex flex-col overflow-hidden">
                 {/* Mobile Header */}
-                <header className="md:hidden bg-[#0D6EFD] text-white p-4 flex items-center justify-between">
+                <header className="md:hidden bg-blue-900 text-white p-4 flex items-center justify-between">
                     <HeaderLogo className="text-white" />
                     <button
                         className="p-2"
                         onClick={toggleSideMenu}
                         aria-label="Open menu"
                     >
-                        <GiHamburgerMenu size={24} />
+                        <IoMenuOutline size={24} />
                     </button>
                 </header>
 
                 {/* Content Area */}
-                <div className="overflow-y-auto lg:overflow-y-hidden w-full flex flex-col items-center justify-between md:justify-center gap-4 h-screen dark:bg-gray-950 p-4 md:p-8 lg:py-4 shadow-xl">
+                <div className="overflow-y-auto w-full flex flex-col items-center  gap-4 h-screen dark:bg-gray-950 p-4 md:p-8 lg:py-4 shadow-xl">
                     {tabs[ activeTab ].content}
                 </div>
             </main>
 
             {/* Mobile Side Menu */}
             <div
-                className={`fixed top-0 left-0 bottom-0 w-64 z-50 bg-blue-100 dark:bg-slate-950 text-gray-900 dark:text-amber-50 transition-transform duration-500 ease-in-out md:hidden ${ sideMenuOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 -right-0 bottom-0 w-64 z-50 bg-gradient-to-t from-blue-950 to-blue-700 text-white transition-transform duration-500 ease-in-out md:hidden ${ sideMenuOpen ? '-translate-x-0' : 'translate-x-full'
                     }`}
             >
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-4 border-b border-blue-800 flex justify-between items-center">
+                    <HeaderLogo className="text-white" />
                     <button
-                        className="absolute top-4 right-4"
+                        className="text-white p-1"
                         onClick={closeSideMenu}
                         aria-label="Close menu"
                     >
-                        <IoMdClose color='black' size={25} />
+                        <IoMdClose size={25} />
                     </button>
-                    <HeaderLogo className="" />
                 </div>
 
                 <nav className="p-4">
@@ -225,33 +226,28 @@ export const SideBar = ( {initialTab} ) => {
                             <li key={index}>
                                 <button
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${ activeTab === index
-                                        ? 'text-blue-500 bg-blue-50 dark:bg-gray-700'
-                                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                                        ? 'bg-white text-blue-900'
+                                        : 'hover:bg-blue-800'
                                         }`}
                                     onClick={() => handleSideMenuClick( index )}
                                 >
                                     {tab.icon}
-                                    <span className="ml-3">{tab.label}</span>
+                                    <span className="ml-3 font-medium">{tab.label}</span>
                                 </button>
                             </li>
                         ) )}
                     </ul>
                 </nav>
 
-                <div className="absolute bottom-4 left-4 right-4">
-                    <div className="flex items-center justify-between">
-                        <button
-                            onClick={toggleDarkMode}
-                            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        >
-                            {
-                                isDarkMode
-                                    ? <img src='./sun-icon.png' alt='' className='w-5' />
-                                    : <img src='./moon-icon.png' alt='' className='w-5' />
-                            }
-                        </button>
-                        <ExitButton className="cursor-pointer" color="black" />
-                    </div>
+                <div className="absolute bottom-4 left-4 right-4 flex flex-col space-y-2">
+                    <button
+                        onClick={toggleDarkMode}
+                        className="w-full flex justify-center items-center p-3 rounded-lg hover:bg-blue-800 transition-colors"
+                    >
+                        {isDarkMode ? <RiSunLine className="w-5 h-5 text-white" /> : <RiMoonLine className="w-5 h-5 text-white" />}
+                        {/* <span className="ml-3 font-medium text-sm">Modo {isDarkMode ? 'Claro' : 'Oscuro'}</span> */}
+                    </button>
+                    <ExitButton isCollapsed={isCollapsed} />
                 </div>
             </div>
         </div>
