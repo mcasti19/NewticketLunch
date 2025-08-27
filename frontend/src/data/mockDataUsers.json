@@ -1,5 +1,14 @@
 [
   {
+    "id": "1500",
+    "name": "Moises",
+    "email": "moicastillo@mercal.gob.ve",
+    "password": "12345678",
+    "role": "admin",
+    "gerencia": "OFICINA DE TECNOLOGÍA",
+    "id_gerencia": 22
+  },
+  {
     "id": "1",
     "name": "John",
     "email": "john@gmail.com",

@@ -1,160 +1,262 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import ModalAgregarInvitado from './ModalAgregarInvitado';
 import {useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel} from '@tanstack/react-table';
-import empleadosData from "../data/mockDataEmpleados.json";
 import {useAuthStore} from '../store/authStore';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useGetEmployees} from '../hooks/useGetEmployees';
-// import {useTasaDia} from '../hooks/useTasaDia';
-// import {useNavigate} from 'react-router';
+import Swal from 'sweetalert2';
+
+// Utilidad para calcular resumen
+function getSummary( employees, tasaDia ) {
+  const countAlmuerzos = employees.filter( emp => emp.almuerzo ).length;
+  const countAlmuerzosAutorizados = employees.filter( emp => emp.id_autorizado ).length;
+  const countParaLlevar = employees.filter( emp => emp.para_llevar ).length;
+  const countCubiertos = employees.filter( emp => emp.cubiertos ).length;
+
+  const totalPagar = employees.reduce( ( acc, emp ) => {
+    const almuerzoCount = emp.almuerzo ? 1 : 0;
+    const paraLlevarCount = emp.para_llevar ? 1 : 0;
+    const cubiertosCount = emp.cubiertos ? 1 : 0;
+    const almuerzoAutorizadoCount = emp.id_autorizado ? 1 : 0;
+
+    // El costo del almuerzo solo se aplica si el empleado lo marcó (almuerzo) o si se autorizó a alguien (id_autorizado)
+    const costoAlmuerzos = ( almuerzoCount * parseFloat( tasaDia ) ) + ( almuerzoAutorizadoCount * parseFloat( tasaDia ) );
+    const costoParaLlevar = paraLlevarCount * 15;
+    const costoCubiertos = cubiertosCount * 20;
+
+    return acc + costoAlmuerzos + costoParaLlevar + costoCubiertos;
+  }, 0 );
+
+  return {countAlmuerzos, countAlmuerzosAutorizados, countParaLlevar, countCubiertos, totalPagar};
+}
+
+// Utilidad para filtrar empleados
+function filterEmployees( employees, search ) {
+  if ( !search.trim() ) return employees;
+  const s = search.trim().toLowerCase();
+  return employees.filter( emp =>
+    ( emp.nombre_completo && emp.nombre_completo.toLowerCase().includes( s ) )
+  );
+}
+
+// Componente para la tabla de empleados
+function EmployeesTable( {table, modalInvitadoOpen, setModalInvitadoOpen, handleAddInvitado, employeeList} ) {
+  return (
+    <div className="overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full">
+      <table className="min-w-full">
+        <thead>
+          {table.getHeaderGroups().map( headerGroup => (
+            <tr key={headerGroup.id} className="bg-blue-600 dark:bg-blue-900 text-white">
+              {headerGroup.headers.map( column => (
+                <th
+                  key={column.id}
+                  className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer  transition-colors"
+                  onClick={column.column.getToggleSortingHandler()}
+                >
+                  <div className="flex items-center">
+                    {flexRender( column.column.columnDef.header, column.getContext() )}
+                    {column.column.getIsSorted() && (
+                      <span className="ml-1 text-xs">
+                        {column.column.getIsSorted() === 'asc' ? '↑' : '↓'}
+                      </span>
+                    )}
+                  </div>
+                </th>
+              ) )}
+            </tr>
+          ) )}
+        </thead>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          {table.getRowModel().rows.map( ( row, index ) => {
+            const isInvitado = row.original && row.original.invitado;
+            return (
+              <tr
+                key={row.id}
+                className={`${ index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-600 dark:hover:bg-blue-950 transition-colors group-hover:`}
+              >
+                {row.getVisibleCells().map( cell => (
+                  <td key={cell.id} className="px-2 py-2 text-xs md:text-sm dark:text-amber-50">
+                    {flexRender( cell.column.columnDef.cell, cell.getContext() )}
+                    {cell.column.id === 'nombre_completo' && isInvitado && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
+                    )}
+                  </td>
+                ) )}
+              </tr>
+            );
+          } )}
+          <ModalAgregarInvitado
+            isOpen={modalInvitadoOpen}
+            onRequestClose={() => setModalInvitadoOpen( false )}
+            onAddInvitado={handleAddInvitado}
+            employeeList={employeeList}
+          />
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export const ContentSeleccion = ( {goToResumeTab} ) => {
-  // Hook para obtener empleados desde API
   const {user} = useAuthStore();
   const userGerencia = user?.gerencia?.nombre_gerencia || null;
   const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  const {employees, loading, error} = useGetEmployees( idGerencia );
-  const [ empleados, setEmpleados ] = useState( [] );
+  const {employees, loading, isFallback} = useGetEmployees( idGerencia );
+  const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
   const [ search, setSearch ] = useState( "" );
+  const [ sorting, setSorting ] = useState( [] );
+  const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
+  const setSummary = useTicketLunchStore( state => state.setSummary );
+  const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
+  const tasaDia = 100;
+  const precioLlevar = 15;
+  const precioCubierto = 5;
 
-  const handleAddInvitado = useCallback( ( nuevoInvitado ) => {
-    setEmpleados( prev => {
-      const updated = [ ...prev, {...nuevoInvitado, invitado: true, evento_especial: false} ];
-      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
+  // Lógica para cargar desde localStorage
+  // Lógica para cargar desde localStorage
+  useEffect( () => {
+    // Solo se ejecuta cuando la carga ha terminado
+    if ( !loading && employees && employees.length > 0 ) {
+      const storedSelections = localStorage.getItem( 'empleadosSeleccionados' );
+      if ( storedSelections ) {
+        const selections = JSON.parse( storedSelections );
+
+        // Crear un mapa de selecciones para una búsqueda rápida
+        const selectionsMap = new Map( selections.map( emp => [ emp.cedula, emp ] ) );
+
+        // Fusionar los datos de la API con las selecciones guardadas
+        const mergedList = employees.map( emp => {
+          const storedEmp = selectionsMap.get( emp.cedula );
+          // Usa las selecciones de localStorage si existen, de lo contrario, usa valores predeterminados
+          return {
+            ...emp,
+            almuerzo: storedEmp?.almuerzo || false,
+            para_llevar: storedEmp?.para_llevar || false,
+            cubiertos: storedEmp?.cubiertos || false,
+            id_autorizado: storedEmp?.id_autorizado || null,
+            evento_especial: storedEmp?.evento_especial || false,
+          };
+        } );
+
+        // Asegurarse de que los invitados también se mantengan en la lista
+        const guests = selections.filter( emp => emp.invitado );
+        const finalEmployeeList = [ ...mergedList, ...guests ];
+
+        setEmployeeList( finalEmployeeList );
+      } else {
+        // Si no hay datos guardados, inicializar con los datos de la API
+        setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
+      }
+    }
+  }, [ employees, loading ] ); // Depende de `employees` y `loading`
+
+  // Lógica para guardar en localStorage
+  useEffect( () => {
+    if ( employeeList.length > 0 ) {
+      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
+    }
+  }, [ employeeList ] );
+
+  useEffect( () => {
+    if ( !loading && isFallback ) {
+      Swal.fire( {
+        title: 'DATOS LOCALES',
+        text: 'No hubo conexión con la base de datos o está vacía.',
+        icon: 'info',
+        showConfirmButton: true
+      } );
+    }
+  }, [ loading, isFallback ] );
+
+  useEffect( () => {
+    setSummary( getSummary( employeeList, tasaDia ) );
+  }, [ employeeList, tasaDia, setSummary ] );
+
+  const filteredEmployees = useMemo( () => filterEmployees( employeeList, search ), [ employeeList, search ] );
+
+  const handleAddGuest = useCallback( ( newGuest ) => {
+    setEmployeeList( prev => {
+      const updated = [ ...prev, {...newGuest, invitado: true, evento_especial: false, almuerzo: false, para_llevar: false, cubiertos: false, id_autorizado: null} ];
       return updated;
     } );
   }, [] );
-  const [ dropdownOpen, setDropdownOpen ] = useState( null );
-  const [ sorting, setSorting ] = useState( [] );
-  const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
 
+  const handleToggleField = useCallback( ( employee, field ) => {
+    setEmployeeList( prev => {
+      const updated = prev.map( emp => {
+        if ( emp.cedula === employee.cedula ) {
+          const newState = {...emp, [ field ]: !emp[ field ]};
 
-  const setSummary = useTicketLunchStore( state => state.setSummary );
-  const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
+          if ( field === 'almuerzo' && !newState.almuerzo ) {
+            newState.para_llevar = false;
+            newState.cubiertos = false;
+            newState.id_autorizado = null;
+          }
 
-  const tasaDia = 119.67;
-  const isLoading = false;
+          if ( field === 'para_llevar' && !newState.para_llevar ) {
+            newState.id_autorizado = null;
+          }
 
-  const precioLlevar = 15;
-  const precioCubierto = 20;
+          return newState;
+        }
+        return emp;
+      } );
+      return updated;
+    } );
+  }, [] );
 
-  useEffect( () => {
-    if ( employees && employees.length > 0 ) {
-      console.log( "EMPLEADOS DESDES SELECCION:", employees );
-      setEmpleados( employees );
-    } else {
-      // Si no hay empleados desde API, usar mock
-      setEmpleados( empleadosData );
-    }
+  const handleAutorizadoChange = useCallback( ( employee, newId ) => {
+    setEmployeeList( prev => {
+      const updated = prev.map( emp => {
+        if ( emp.cedula === employee.cedula ) {
+          return {...emp, id_autorizado: newId};
+        }
+        return emp;
+      } );
+      return updated;
+    } );
+  }, [] );
+
+  const handleClearData = useCallback( () => {
+    Swal.fire( {
+      title: '¿Estás seguro?',
+      text: "Se borrará toda la selección actual y no podrás revertirlo.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, borrar!',
+      cancelButtonText: 'Cancelar'
+    } ).then( ( result ) => {
+      if ( result.isConfirmed ) {
+        localStorage.removeItem( 'empleadosSeleccionados' );
+        setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
+        Swal.fire(
+          '¡Borrado!',
+          'La selección ha sido limpiada.',
+          'success'
+        );
+      }
+    } );
   }, [ employees ] );
 
-  const goNext = () => {
-    const selectedEmpleados = empleados.filter( emp => emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.autorizado || ( emp.almuerzos_autorizados && emp.almuerzos_autorizados.length > 0 ) );
-
-    // Map to JSON with desired fields, including evento_especial
-    const resumenEmpleados = selectedEmpleados.map( emp => ( {
-      nombre: emp.nombre,
-      apellido: emp.apellido,
+  const handleGoNext = () => {
+    const selectedEmployees = employeeList.filter( emp =>
+      emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
+    );
+    const resumenEmpleados = selectedEmployees.map( emp => ( {
+      nombre: emp.nombre_completo,
       almuerzo: emp.almuerzo || false,
       para_llevar: emp.para_llevar || false,
       cubiertos: emp.cubiertos || false,
-      autorizado: emp.autorizado || false,
-      almuerzos_autorizados: emp.almuerzos_autorizados || [],
+      id_autorizado: emp.id_autorizado || null,
       evento_especial: emp.evento_especial || false
     } ) );
-
     setSelectedEmpleadosSummary( resumenEmpleados );
-    // Guardar selección en localStorage
-    localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( empleados ) );
+    localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
     if ( goToResumeTab ) goToResumeTab();
-    console.log( "Resumen de Empleados:", JSON.stringify( resumenEmpleados, null, 2 ) );
-  }
-
-  const filteredEmpleados = useMemo( () => {
-    let base;
-    // Si los empleados vienen de la API, filtrar por gerencia del usuario
-    if ( empleados.length > 0 && empleados[ 0 ].nombre_completo && user && user.id_gerencia ) {
-      base = empleados.filter( emp => {
-        // Si el empleado tiene id_gerencia o gerencia como objeto
-        if ( emp.id_gerencia ) {
-          return emp.id_gerencia === user.id_gerencia;
-        } else if ( emp.gerencia && emp.gerencia.id_gerencia ) {
-          return emp.gerencia.id_gerencia === user.id_gerencia;
-        }
-        return false;
-      } );
-    } else {
-      base = userGerencia
-        ? empleados.filter( emp => emp.gerencia === userGerencia || emp.invitado )
-        : empleados.filter( emp => emp.invitado );
-    }
-    if ( search.trim() !== "" ) {
-      const s = search.trim().toLowerCase();
-      base = base.filter( emp =>
-        ( emp.nombre_completo && emp.nombre_completo.toLowerCase().includes( s ) ) ||
-        ( emp.nombre && emp.nombre.toLowerCase().includes( s ) ) ||
-        ( emp.apellido && emp.apellido.toLowerCase().includes( s ) )
-      );
-    }
-    return base;
-  }, [ empleados, userGerencia, search, user ] );
-
-  const toggleEmpleadoField = useCallback( ( empleadoOriginal, field ) => {
-    setEmpleados( prevEmpleados => {
-      const updated = prevEmpleados.map( emp => {
-        // Usar id_empleados si existe, si no nombre+apellido
-        const isSame = emp.id_empleados
-          ? emp.id_empleados === empleadoOriginal.id_empleados
-          : ( emp.nombre === empleadoOriginal.nombre && emp.apellido === empleadoOriginal.apellido );
-        return isSame ? {...emp, [ field ]: !emp[ field ]} : emp;
-      } );
-      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
-      return updated;
-    } );
-  }, [] );
-
-  const updateAlmuerzosAutorizados = useCallback( ( empleadoOriginal, selectedAutorizados ) => {
-    setEmpleados( prevEmpleados => {
-      const updated = prevEmpleados.map( emp =>
-        emp.nombre === empleadoOriginal.nombre && emp.apellido === empleadoOriginal.apellido
-          ? {...emp, almuerzos_autorizados: selectedAutorizados}
-          : emp
-      );
-      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( updated ) );
-      return updated;
-    } );
-  }, [] );
-
-  useEffect( () => {
-    const countAlmuerzos = empleados.filter( emp => emp.almuerzo ).length;
-    const countAlmuerzosAutorizados = empleados.reduce( ( acc, emp ) => acc + ( emp.almuerzos_autorizados ? emp.almuerzos_autorizados.length : 0 ), 0 );
-    const countParaLlevar = empleados.filter( emp => emp.para_llevar || emp.cubiertos ).length;
-    const countCubiertos = empleados.filter( emp => emp.para_llevar || emp.cubiertos ).length;
-    const totalPagar = empleados.reduce( ( acc, emp ) => {
-      const almuerzoCount = emp.almuerzo ? 1 : 0;
-      const almuerzosAutorizadosCount = emp.almuerzos_autorizados ? emp.almuerzos_autorizados.length : 0;
-      const paraLlevarCount = emp.para_llevar ? 1 : 0;
-      const cubiertosCount = emp.cubiertos ? 1 : 0;
-      return acc + ( almuerzoCount + almuerzosAutorizadosCount ) * parseFloat( tasaDia || 0 ) + paraLlevarCount * 15 + cubiertosCount * 20;
-    }, 0 );
-    setSummary( {countAlmuerzos, countAlmuerzosAutorizados, countParaLlevar, countCubiertos, totalPagar} );
-  }, [ empleados, tasaDia, setSummary ] );
-
-  const toggleDropdown = ( rowId ) => {
-    setDropdownOpen( prev => ( prev === rowId ? null : rowId ) );
-  };
-
-  const handleExtraToggle = ( rowOriginal, extraName ) => {
-    const currentAutorizados = rowOriginal.almuerzos_autorizados || [];
-    let newAutorizado;
-    if ( currentAutorizados.includes( extraName ) ) {
-      newAutorizado = currentAutorizados.filter( e => e !== extraName );
-    } else {
-      newAutorizado = [ ...currentAutorizados, extraName ];
-    }
-    updateAlmuerzosAutorizados( rowOriginal, newAutorizado );
   };
 
   const columns = useMemo( () => [
@@ -168,7 +270,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             <button
               type="button"
               aria-pressed={checked}
-              onClick={() => toggleEmpleadoField( row.original, 'evento_especial' )}
+              onClick={() => handleToggleField( row.original, 'evento_especial' )}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${ checked ? 'bg-blue-600' : 'bg-gray-300' }`}
             >
               <span
@@ -179,51 +281,24 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         );
       },
     },
-    // {
-    //   header: 'Nombre',
-    //   accessorKey: 'nombre',
-    //   cell: ( {row} ) => (
-    //     <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'nombre' )}</span>
-    //   ),
-    // },
-    // {
-    //   header: 'Apellido',
-    //   accessorKey: 'apellido',
-    //   cell: ( {row} ) => (
-    //     <span className="text-gray-900 dark:text-gray-100">{row.getValue( 'apellido' )}</span>
-    //   ),
-    // },
     {
       header: 'Empleado',
       accessorKey: 'nombre_completo',
-      cell: ( {row} ) => {
-        // Si el campo no existe, intentar mostrar nombre + apellido (para mock)
-        const nombreCompleto = row.original.nombre_completo || `${ row.original.nombre || '' } ${ row.original.apellido || '' }`;
-        return (
-          <span className="text-gray-900 dark:text-gray-100">{nombreCompleto}</span>
-        );
-      },
+      cell: ( {row} ) => <span className="text-gray-900 dark:text-gray-100 hover">
+        {row.original.nombre_completo}
+      </span>,
     },
     {
       header: `Almuerzo Bs. ${ tasaDia }`,
       accessorKey: 'almuerzo',
       cell: ( {row} ) => {
         const checked = row.getValue( 'almuerzo' );
-        const fullName = row.original.nombre + ' ' + row.original.apellido;
-        const selectedInExtras = new Set();
-        empleados.forEach( emp => {
-          if ( emp.almuerzos_autorizados && emp !== row.original ) {
-            emp.almuerzos_autorizados.forEach( name => selectedInExtras.add( name ) );
-          }
-        } );
-        const isDisabled = selectedInExtras.has( fullName );
         return (
           <div className='w-full flex justify-center items-center'>
             <input
               type="checkbox"
               checked={checked}
-              onChange={() => toggleEmpleadoField( row.original, 'almuerzo' )}
-              disabled={isDisabled}
+              onChange={() => handleToggleField( row.original, 'almuerzo' )}
               className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
           </div>
@@ -241,7 +316,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             <input
               type="checkbox"
               checked={checked}
-              onChange={() => toggleEmpleadoField( row.original, 'para_llevar' )}
+              onChange={() => handleToggleField( row.original, 'para_llevar' )}
               disabled={!almuerzo}
               className="form-checkbox h-4 w-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
             />
@@ -260,7 +335,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             <input
               type="checkbox"
               checked={checked}
-              onChange={() => toggleEmpleadoField( row.original, 'cubiertos' )}
+              onChange={() => handleToggleField( row.original, 'cubiertos' )}
               disabled={!almuerzo}
               className="form-checkbox h-4 w-4 text-purple-600 rounded border-gray-300 focus:ring-purple-500"
             />
@@ -268,90 +343,39 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         );
       }
     },
-    // Mostrar columnas de autorizado solo si no es invitado
     {
-      header: 'Autorizado',
-      accessorKey: 'autorizado',
+      header: 'Persona Autorizada',
+      accessorKey: 'id_autorizado',
       cell: ( {row} ) => {
-        if ( row.original.invitado ) return null;
-        const checked = row.getValue( 'autorizado' );
-        const fullName = row.original.nombre + ' ' + row.original.apellido;
-        const selectedInExtras = new Set();
-        empleados.forEach( emp => {
-          if ( emp.almuerzos_autorizados && emp !== row.original ) {
-            emp.almuerzos_autorizados.forEach( name => selectedInExtras.add( name ) );
-          }
-        } );
-        const isDisabled = selectedInExtras.has( fullName );
+        const selectedId = row.getValue( 'id_autorizado' );
+        const paraLlevar = row.original.para_llevar;
+        const isSelectedBySomeoneElse = employeeList.some( emp => emp.id_autorizado === row.original.cedula && emp.cedula !== row.original.cedula );
+
         return (
-          <div className='w-full flex justify-center items-center'>
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={() => toggleEmpleadoField( row.original, 'autorizado' )}
-              disabled={isDisabled}
-              className="form-checkbox h-4 w-4 text-orange-600 rounded border-gray-300 focus:ring-orange-500"
-            />
-          </div>
-        );
-      },
-    },
-    {
-      header: 'Almuerzos Autorizados',
-      accessorKey: 'almuerzos_autorizados',
-      cell: ( {row} ) => {
-        if ( row.original.invitado ) return null;
-        const selectedAutorizados = row.getValue( 'almuerzos_autorizados' ) || [];
-        const rowId = row.id;
-        const autorizado = row.getValue( 'autorizado' );
-        return (
-          <div className="relative">
-            <div
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer
-                ${ autorizado
-                  ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800'
-                  : 'bg-gray-100 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400' }`}
-              onClick={() => autorizado && toggleDropdown( rowId )}
-            >
-              {selectedAutorizados.length > 0 ? selectedAutorizados.join( ', ' ) : 'Seleccione'}
-            </div>
-            {dropdownOpen === rowId && autorizado && (
-              <div className="absolute z-20 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-auto">
-                <div className="py-1">
-                  {( () => {
-                    const selectedInOtherRows = new Set();
-                    empleados.forEach( emp => {
-                      if ( emp.almuerzos_autorizados && emp !== row.original ) {
-                        emp.almuerzos_autorizados.forEach( name => selectedInOtherRows.add( name ) );
-                      }
-                    } );
-                    return empleados
-                      .filter( emp => {
-                        const fullName = emp.nombre + ' ' + emp.apellido;
-                        return emp.gerencia === userGerencia &&
-                          fullName !== ( row.original.nombre + ' ' + row.original.apellido ) &&
-                          ( !selectedInOtherRows.has( fullName ) || selectedAutorizados.includes( fullName ) );
-                      } )
-                      .map( emp => {
-                        const fullName = emp.nombre + ' ' + emp.apellido;
-                        const checked = selectedAutorizados.includes( fullName );
-                        return (
-                          <label key={fullName} className="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => handleExtraToggle( row.original, fullName )}
-                              className="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mr-3"
-                            />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">{fullName}</span>
-                          </label>
-                        );
-                      } );
-                  } )()}
-                </div>
-              </div>
-            )}
-          </div>
+          <select
+            value={selectedId || ''}
+            onChange={e => handleAutorizadoChange( row.original, e.target.value || null )}
+            disabled={!paraLlevar || isSelectedBySomeoneElse}
+            className={`px-2 py-1 text-sm rounded-md border focus:outline-none focus:ring-2
+              ${ !paraLlevar || isSelectedBySomeoneElse ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600' }`}
+          >
+            <option value="">Seleccione...</option>
+            {employeeList
+              .filter( emp => emp.id_gerencia === user.id_gerencia && emp.cedula !== row.original.cedula )
+              .map( emp => {
+                const isUnavailable = employeeList.some( otherEmp => otherEmp.id_autorizado === emp.cedula && otherEmp.cedula !== row.original.cedula );
+                const hasAuthorizedSomeone = emp.id_autorizado;
+                return (
+                  <option
+                    key={emp.cedula}
+                    value={emp.cedula}
+                    disabled={isUnavailable || hasAuthorizedSomeone}
+                  >
+                    {emp.nombre_completo}
+                  </option>
+                );
+              } )}
+          </select>
         );
       },
     },
@@ -360,12 +384,12 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       accessorKey: 'total_almuerzos',
       cell: ( {row} ) => {
         const almuerzo = row.getValue( 'almuerzo' ) ? 1 : 0;
-        const almuerzosAutorizadosCount = ( row.getValue( 'almuerzos_autorizados' ) || [] ).length;
+        const almuerzosAutorizadosCount = row.original.id_autorizado ? 1 : 0;
         return (
           <div className='w-full flex justify-center items-center'>
             <span className="font-semibold text-gray-900 dark:text-white">{almuerzo + almuerzosAutorizadosCount}</span>
           </div>
-        )
+        );
       }
     },
     {
@@ -374,167 +398,123 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       cell: ( {row} ) => {
         if ( !tasaDia ) return '0.00';
         const almuerzoCount = row.getValue( 'almuerzo' ) ? 1 : 0;
-        let paraLLevar = row.getValue( 'para_llevar' ) ? 1 : 0;
-        paraLLevar = paraLLevar * precioLlevar;
-        let cubiertos = row.getValue( 'cubiertos' ) ? 1 : 0;
-        cubiertos = cubiertos * precioCubierto;
-        const almuerzosAutorizadosCount = ( row.getValue( 'almuerzos_autorizados' ) || [] ).length;
-        let totalMontoAlmuerzosAutorizados = almuerzosAutorizadosCount > 0 ? almuerzosAutorizadosCount * parseFloat( tasaDia ) + precioLlevar : 0;
+        const paraLlevarCount = row.getValue( 'para_llevar' ) ? 1 : 0;
+        const cubiertosCount = row.getValue( 'cubiertos' ) ? 1 : 0;
+        const almuerzoAutorizadoCount = row.getValue( 'id_autorizado' ) ? 1 : 0;
+        const total = ( almuerzoCount * parseFloat( tasaDia ) ) +
+          ( almuerzoAutorizadoCount * parseFloat( tasaDia ) ) +
+          ( paraLlevarCount * precioLlevar ) +
+          ( cubiertosCount * precioCubierto );
 
-        const preTotal = almuerzoCount * parseFloat( tasaDia ) + totalMontoAlmuerzosAutorizados + paraLLevar + cubiertos;
-        const total = preTotal.toFixed( 2 );
         return (
           <div className='w-full flex justify-center items-center'>
-            <span className="font-bold text-green-600 dark:text-green-400">Bs. {total}</span>
+            <span className="font-bold text-green-800 dark:text-green-400">Bs. {total.toFixed( 2 )}</span>
           </div>
-        )
+        );
       },
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [ empleados, dropdownOpen, toggleEmpleadoField, updateAlmuerzosAutorizados, tasaDia, userGerencia ] );
+  ], [ employeeList, handleToggleField, handleAutorizadoChange, tasaDia, user.id_gerencia ] );
 
   const table = useReactTable( {
-    data: filteredEmpleados,
+    data: filteredEmployees,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    state: {
-      sorting,
-      pagination,
-    },
+    state: {sorting, pagination},
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
   } );
+
+  if ( loading ) {
+    return (
+      <div className="text-center py-8">
+        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full mx-auto p-2 md:p-3 border-0 rounded-2xl flex flex-col items-center justify-start min-h-[90vh]">
       <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-gray-800 dark:text-white">
         {userGerencia}
       </h1>
-
-      {isLoading ? (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
+      <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
+        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch( e.target.value )}
+            placeholder="Buscar por nombre o apellido..."
+            className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <select
+            value={pagination.pageSize}
+            onChange={e => setPagination( p => ( {...p, pageSize: Number( e.target.value ), pageIndex: 0} ) )}
+            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value={5}>5 por página</option>
+            <option value={10}>10 por página</option>
+            <option value={20}>20 por página</option>
+          </select>
         </div>
-      ) : (
-        <>
-          <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
-            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch( e.target.value )}
-                placeholder="Buscar por nombre o apellido..."
-                className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
-              <select
-                value={pagination.pageSize}
-                onChange={e => setPagination( p => ( {...p, pageSize: Number( e.target.value ), pageIndex: 0} ) )}
-                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                <option value={5}>5 por página</option>
-                <option value={10}>10 por página</option>
-                <option value={20}>20 por página</option>
-              </select>
-            </div>
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow w-full md:w-auto"
-              onClick={() => setModalInvitadoOpen( true )}
-            >
-              Agregar Invitado
-            </button>
-          </div>
-          <div className="overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full">
-            <table className="min-w-full">
-              <thead>
-                {table.getHeaderGroups().map( headerGroup => (
-                  <tr key={headerGroup.id} className="bg-blue-600 dark:bg-blue-900 text-white">
-                    {headerGroup.headers.map( column => (
-                      <th
-                        key={column.id}
-                        className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
-                        onClick={column.column.getToggleSortingHandler()}
-                      >
-                        <div className="flex items-center">
-                          {flexRender( column.column.columnDef.header, column.getContext() )}
-                          {column.column.getIsSorted() && (
-                            <span className="ml-1 text-xs">
-                              {column.column.getIsSorted() === 'asc' ? '↑' : '↓'}
-                            </span>
-                          )}
-                        </div>
-                      </th>
-                    ) )}
-                  </tr>
-                ) )}
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {table.getRowModel().rows.map( ( row, index ) => {
-                  const isInvitado = row.original && row.original.invitado;
-                  return (
-                    <tr
-                      key={row.id}
-                      className={`${ index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-500 dark:hover:bg-blue-950 transition-colors`}
-                    >
-                      {row.getVisibleCells().map( cell => (
-                        <td key={cell.id} className="px-2 py-2 text-xs md:text-sm">
-                          {flexRender( cell.column.columnDef.cell, cell.getContext() )}
-                          {cell.column.id === 'nombre' && isInvitado && (
-                            <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
-                          )}
-                        </td>
-                      ) )}
-                    </tr>
-                  );
-                } )}
-                <ModalAgregarInvitado
-                  isOpen={modalInvitadoOpen}
-                  onRequestClose={() => setModalInvitadoOpen( false )}
-                  onAddInvitado={handleAddInvitado}
-                />
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-4 flex flex-col md:flex-row justify-between items-center w-full gap-2">
-            <div className="flex items-center space-x-2">
-              <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
-                Mostrando {table.getRowModel().rows.length} de {filteredEmpleados.length} empleados
-              </span>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-                className="px-3 py-1 bg-blue-600 text-white dark:text-slate-950 rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs md:text-sm"
-              >
-                Anterior
-              </button>
-              <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
-                Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
-              </span>
-              <button
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-                className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs md:text-sm"
-              >
-                Siguiente
-              </button>
-            </div>
-          </div>
-          <div className="flex justify-center w-full mt-4">
-            <button
-              onClick={goNext}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow"
-            >
-              Resumen y Pago
-            </button>
-          </div>
-        </>
-      )}
+        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+          <button
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded shadow w-full md:w-auto"
+            onClick={() => setModalInvitadoOpen( true )}
+          >
+            Agregar Invitado
+          </button>
+          <button
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded shadow w-full md:w-auto"
+            onClick={handleClearData}
+          >
+            Limpiar Selección
+          </button>
+        </div>
+      </div>
+      <EmployeesTable
+        table={table}
+        modalInvitadoOpen={modalInvitadoOpen}
+        setModalInvitadoOpen={setModalInvitadoOpen}
+        handleAddInvitado={handleAddGuest}
+        employeeList={employeeList}
+      />
+      <div className="mt-4 flex flex-col md:flex-row justify-between items-center w-full gap-2">
+        <div className="flex items-center space-x-2">
+          <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
+            Mostrando {table.getRowModel().rows.length} de {filteredEmployees.length} empleados
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs md:text-sm"
+          >
+            Anterior
+          </button>
+          <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
+            Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+          </span>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-xs md:text-sm"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+      <div className="flex justify-center w-full mt-4">
+        <button
+          onClick={handleGoNext}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow"
+        >
+          Resumen y Pago
+        </button>
+      </div>
     </div>
   );
 };
