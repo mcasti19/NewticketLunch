@@ -22,8 +22,8 @@ export const getEmployees = async ( id_gerencia ) => {
         const params = id_gerencia ? {id_gerencia} : {};
         const response = await api.get( '/empleados', {params} );
         const empleados = response.data?.data?.data || [];
-        console.log("EMPLEADOS:", empleados);
-        
+        console.log( "EMPLEADOS:", empleados );
+
         return empleados;
     } catch ( error ) {
         // En caso de fallo, lanza un error para que el hook lo capture
@@ -34,18 +34,14 @@ export const getEmployees = async ( id_gerencia ) => {
 export const startLogin = async ( {email, password} ) => {
     const {login} = useAuthStore.getState();
     try {
-        console.log( "Entrando login API" );
+        console.log( "Intentando login con la API..." );
         const response = await api.post( '/users/login', {email, password} );
         const {user, token, expiration} = response.data || {};
-        console.log( "RESPUESTA DE LA API", response );
 
-        console.log( "TOKEN Y DATA:", token, user );
         if ( token && user ) {
-            // Si el backend envía expiration, úsalo. Si no, usa 30 minutos por defecto
-            const exp = expiration ? Number( expiration ) : Date.now() + 30 * 60 * 1000;
+            console.log( "Login exitoso con la API." );
+            const exp = expiration ? Number( expiration ) : Date.now() + 120 * 60 * 1000;
             login( user, token, exp );
-            console.log( "login exitoso" );
-
             Swal.fire( {
                 title: "Successfully logged in",
                 text: "Welcome to the System",
@@ -54,30 +50,41 @@ export const startLogin = async ( {email, password} ) => {
                 timer: 1500
             } );
         } else {
-            throw new Error( "Invalid Credentials" );
+            // Este caso es poco probable si la API está bien, pero es una buena práctica manejarlo.
+            throw new Error( "Invalid response from API" );
         }
     } catch ( error ) {
-        // Si la API falla, intentar login local
-        const user = users.find( u => u.email === email && u.password === password );
-        if ( user ) {
-            // Simula token y expiración local
-            const token = 'fake-jwt-token';
-            const expiration = new Date().getTime() + 30 * 60 * 1000;
-            console.log( "login LOCAL" );
-            login( user, token, expiration );
-            Swal.fire( {
-                title: "Login local exitoso",
-                text: "No hubo conexion con la BD (modo offline)",
-                icon: "success",
-                showConfirmButton: true,
-                // timer: 1900
-            } );
+        // Manejar errores de la API.
+        // Un error de red o de conexión no tendrá response.
+        if ( !error.response ) {
+            console.log( "Fallo de conexión a la API. Intentando login local..." );
+            const user = users.find( u => u.email === email && u.password === password );
+            if ( user ) {
+                // Simula token y expiración local
+                const token = 'fake-jwt-token';
+                const expiration = new Date().getTime() + 30 * 60 * 1000;
+                login( user, token, expiration );
+                Swal.fire( {
+                    title: "Login local exitoso",
+                    text: "No hubo conexión con la BD (modo offline)",
+                    icon: "success",
+                    showConfirmButton: true,
+                } );
+            } else {
+                Swal.fire( {
+                    title: "Login Error",
+                    text: "No se encontró usuario local para el modo offline. Verifique credenciales.",
+                    icon: "error"
+                } );
+            }
         } else {
+            // Error de la API (ej. credenciales inválidas, 401 Unauthorized)
+            console.log( "Error de credenciales desde la API." );
             Swal.fire( {
                 title: "Login Error",
-                text: error?.response?.data?.message || error.message || "Check Credentials and try again!!!",
+                text: error.response.data.message || error.message || "Verifique sus credenciales e intente de nuevo.",
                 icon: "error"
             } );
         }
     }
-}
+};

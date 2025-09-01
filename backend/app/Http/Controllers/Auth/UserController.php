@@ -35,8 +35,9 @@ class UserController extends Controller
                     //Traer los datos del usuario
                     $usuario = User::with('gerencia')->where('email', $request->email)->first();
                     return response()->json([
+                        'message'=>'Usuario autenticado con Exito!!!',
                         'status' => 200,
-                        'data' => $usuario,
+                        'user' => $usuario,
                         'token' => $usuario->createToken('api-key')->plainTextToken
                     ], 200);
                 }else {

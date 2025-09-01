@@ -4,7 +4,9 @@ import {useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSo
 import {useAuthStore} from '../store/authStore';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useGetEmployees} from '../hooks/useGetEmployees';
+import {EmployeesTable} from "./EmployeesTable";
 import Swal from 'sweetalert2';
+import {EmployeesCards} from './EmployeesCards';
 
 // Utilidad para calcular resumen
 function getSummary( employees, tasaDia ) {
@@ -36,64 +38,6 @@ function filterEmployees( employees, search ) {
   const s = search.trim().toLowerCase();
   return employees.filter( emp =>
     ( emp.nombre_completo && emp.nombre_completo.toLowerCase().includes( s ) )
-  );
-}
-
-// Componente para la tabla de empleados
-function EmployeesTable( {table, modalInvitadoOpen, setModalInvitadoOpen, handleAddInvitado, employeeList} ) {
-  return (
-    <div className="overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full">
-      <table className="min-w-full">
-        <thead>
-          {table.getHeaderGroups().map( headerGroup => (
-            <tr key={headerGroup.id} className="bg-blue-600 dark:bg-blue-900 text-white">
-              {headerGroup.headers.map( column => (
-                <th
-                  key={column.id}
-                  className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer  transition-colors"
-                  onClick={column.column.getToggleSortingHandler()}
-                >
-                  <div className="flex items-center">
-                    {flexRender( column.column.columnDef.header, column.getContext() )}
-                    {column.column.getIsSorted() && (
-                      <span className="ml-1 text-xs">
-                        {column.column.getIsSorted() === 'asc' ? '↑' : '↓'}
-                      </span>
-                    )}
-                  </div>
-                </th>
-              ) )}
-            </tr>
-          ) )}
-        </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-          {table.getRowModel().rows.map( ( row, index ) => {
-            const isInvitado = row.original && row.original.invitado;
-            return (
-              <tr
-                key={row.id}
-                className={`${ index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-600 dark:hover:bg-blue-950 transition-colors group-hover:`}
-              >
-                {row.getVisibleCells().map( cell => (
-                  <td key={cell.id} className="px-2 py-2 text-xs md:text-sm dark:text-amber-50">
-                    {flexRender( cell.column.columnDef.cell, cell.getContext() )}
-                    {cell.column.id === 'nombre_completo' && isInvitado && (
-                      <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
-                    )}
-                  </td>
-                ) )}
-              </tr>
-            );
-          } )}
-          <ModalAgregarInvitado
-            isOpen={modalInvitadoOpen}
-            onRequestClose={() => setModalInvitadoOpen( false )}
-            onAddInvitado={handleAddInvitado}
-            employeeList={employeeList}
-          />
-        </tbody>
-      </table>
-    </div>
   );
 }
 
@@ -231,6 +175,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     } ).then( ( result ) => {
       if ( result.isConfirmed ) {
         localStorage.removeItem( 'empleadosSeleccionados' );
+        localStorage.removeItem( 'resumenEmpleados' );
         setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
         Swal.fire(
           '¡Borrado!',
@@ -480,7 +425,26 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         setModalInvitadoOpen={setModalInvitadoOpen}
         handleAddInvitado={handleAddGuest}
         employeeList={employeeList}
+        ModalAgregarInvitado={ModalAgregarInvitado}
       />
+
+
+      <EmployeesCards
+        userGerencia={userGerencia}
+        modalInvitadoOpen={modalInvitadoOpen}
+        setModalInvitadoOpen={setModalInvitadoOpen}
+        handleAddInvitado={handleAddGuest}
+        employeeList={employeeList}
+        ModalAgregarInvitado={ModalAgregarInvitado}
+        goToResumeTab={goToResumeTab}
+        tasaDia={tasaDia}
+        precioLlevar={precioLlevar}
+        precioCubierto={precioCubierto}
+      />
+
+
+
+
       <div className="mt-4 flex flex-col md:flex-row justify-between items-center w-full gap-2">
         <div className="flex items-center space-x-2">
           <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
