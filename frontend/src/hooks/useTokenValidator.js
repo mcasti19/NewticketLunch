@@ -25,7 +25,7 @@ export function useTokenValidator() {
       const minutesLeft = Math.max(remainingTimeRef.current / 60000, 0);
       const currentTime = Date.now();
       const tokenValid = tokenExpiration && currentTime < tokenExpiration;
-      console.log(`Token validation check in: ${minutesLeft} minutes. Token is ${tokenValid ? 'valid' : 'expired'}.`);
+      // console.log(`Token validation check in: ${minutesLeft} minutes. Token is ${tokenValid ? 'valid' : 'expired'}.`);
       if (remainingTimeRef.current <= 0) {
         remainingTimeRef.current = CHECK_INTERVAL;
       }
