@@ -31,17 +31,31 @@ export const getEmployees = async ( id_gerencia ) => {
     }
 }
 
+export const getMenu = async ( ) => {
+    try {
+        // const params = id_gerencia ? {id_gerencia} : {};
+        const response = await api.get( '/menus');
+        const menu = response.data || [];
+        console.log( "MENU:", {menu} );
+
+        return menu;
+    } catch ( error ) {
+        // En caso de fallo, lanza un error para que el hook lo capture
+        throw new Error( "API Connection Failed", error );
+    }
+}
+
 export const startLogin = async ( {email, password} ) => {
     const {login} = useAuthStore.getState();
     try {
         console.log( "Intentando login con la API..." );
         const response = await api.post( '/users/login', {email, password} );
-        const {user, token, expiration} = response.data || {};
+        const {data, token, expiration} = response.data || {};
 
-        if ( token && user ) {
+        if ( token && data ) {
             console.log( "Login exitoso con la API." );
             const exp = expiration ? Number( expiration ) : Date.now() + 120 * 60 * 1000;
-            login( user, token, exp );
+            login( data, token, exp );
             Swal.fire( {
                 title: "Successfully logged in",
                 text: "Welcome to the System",
