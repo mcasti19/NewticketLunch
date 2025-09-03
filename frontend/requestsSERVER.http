@@ -3,35 +3,35 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|xufLrgSMwY1lpbOcmTARu8PyEvscgjXBbYxMOyv9dff5ff63
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 25|6WD0SKs5TQZ75MFE9hu4uNa5GH4ioRWn7ZcW4tWg13ff500c
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 25|6WD0SKs5TQZ75MFE9hu4uNa5GH4ioRWn7ZcW4tWg13ff500c
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 25|6WD0SKs5TQZ75MFE9hu4uNa5GH4ioRWn7ZcW4tWg13ff500c
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 *******************************POSTS******************************
 
@@ -90,7 +90,7 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 25|6WD0SKs5TQZ75MFE9hu4uNa5GH4ioRWn7ZcW4tWg13ff500c
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
 
 {
     "nombreCompleto" : "Carlos Ramírez",

@@ -3,6 +3,7 @@ import {useState} from 'react'
 import almuerzos from '../data/mockDataMenu.json';
 import {ContentHeader} from './ContentHeader';
 // import {useTasaDia} from '../hooks/useTasaDia';
+import {getMenu} from "../services/actions";
 
 export const ContentMenu = () => {
   // const {tasaDia} = useTasaDia();
@@ -29,6 +30,12 @@ export const ContentMenu = () => {
     setMenuDia( almuerzos );
     // console.log( "MENU DEL DIA: ", data );
   }, [] );
+
+  useEffect( () => {
+    getMenu()
+
+  }, [] )
+
 
   return (
     <>
