@@ -3,35 +3,40 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+
+### EXTRAS
+GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
+content-type: application/json
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 *******************************POSTS******************************
 
@@ -90,7 +95,7 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
 
 {
     "nombreCompleto" : "Carlos Ramírez",
