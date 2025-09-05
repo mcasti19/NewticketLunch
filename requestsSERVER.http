@@ -1,0 +1,111 @@
+# *******************************GETS******************************
+
+###  USUARIOS
+GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+
+### MENU
+GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+### GERENCIAS TODAS
+GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+###  GERENCIA x ID
+GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+
+###  PEDIDOS
+GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+
+###  EMPLEADOS
+GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+*******************************POSTS******************************
+
+#### LOGIN
+POST http://comedor.mercal.gob.ve/api/p1/users/login HTTP/1.1
+content-type: application/json
+
+
+{
+    "email": "moicastillo@mercal.gob.ve",
+    "password": "12345678"
+}
+
+
+#### USUARIOS
+POST http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
+content-type: application/json
+Authorization: 
+
+{
+    "name": "Moises",
+    "email": "moises@example.com",
+    "password": "12345678",
+    "password_confirmation": "12345678",
+    "id_gerencia": 2
+}
+
+
+#### MENUS
+POST http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
+content-type: application/json
+
+{
+    "sopa": "Sopa de pescado",
+    "contourOne" : "Carne",
+    "contourTwo" : "Pollo",
+    "saladOne" : "Rayada",
+    "saladTwo" : "Rusa",
+    "juice" : "Melon",
+    "dessert" : "Torta de vainilla"
+}
+
+#### PEDIDO
+POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+content-type: application/json
+
+{
+    "numeroPedido": 1,
+    "metodoPagoId" : 1,
+    "referencia": 4521,
+    "montoTotal": 115,
+    "idMenu": 1,
+    "idEmpleado": 1
+}
+
+#### EMPLEADOS
+POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|LCHJ8R77aKOraNIZtnyyYC10CjUIheINbhikPxamca1893db
+
+{
+    "nombreCompleto" : "Carlos Ramírez",
+    "cedula" : "18463448",
+    "idGerencia" : 22,
+    "estado" : "Miranda",
+    "tipoEmpleado" : "fijo",
+    "cargo" : "Analista de Proyectos"
+}
+
+# {
+#     "nombreCompleto" : "Moises Castillo",
+#     "cedula" : "18467441",
+#     "idGerencia": 22,
+#     "estado" : "Sede Central",
+#     "tipoEmpleado": "Fijo",
+#     "cargo" : "Programador I"
+# }
