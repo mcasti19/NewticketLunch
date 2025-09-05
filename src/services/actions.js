@@ -22,7 +22,7 @@ export const getEmployees = async ( id_gerencia ) => {
         const params = id_gerencia ? {id_gerencia} : {};
         const response = await api.get( '/empleados', {params} );
         const empleados = response.data.employees || [];
-        console.log( "EMPLEADOS:", empleados     );
+        // console.log( "EMPLEADOS:", empleados     );
 
         return empleados;
     } catch ( error ) {

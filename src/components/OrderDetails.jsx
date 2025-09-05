@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useGetEmployees} from '../hooks/useGetEmployees';
 import empleadosData from '../data/mockDataEmpleados.json';
@@ -20,6 +20,22 @@ export const OrderDetails = () => {
         } );
         return map;
     }, [ empleados ] );
+
+
+useEffect(() => {
+
+console.log("RESUME", selectedEmpleadosSummary);
+
+}, [])
+
+
+
+
+
+
+
+
+
     return (
         <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl">
             <div className='flex justify-between'>

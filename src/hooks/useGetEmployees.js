@@ -19,7 +19,7 @@ export function useGetEmployees( idGerencia ) {
       .then( data => {
         if ( isMounted ) {
           setEmployees( data );
-          console.log( "DAAAAAAAAAAAAAAAATA:", data );
+          // console.log( "DAAAAAAAAAAAAAAAATA:", data );
 
           if ( !data.length > 0 ) {
             const empleadosFiltrados = empleadosData.filter( e => e.id_gerencia === idGerencia );

@@ -15,7 +15,7 @@ import './index.css'
 const queryClient = new QueryClient()
 
 createRoot( document.getElementById( 'root' ) ).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AppRouter />
@@ -23,5 +23,6 @@ createRoot( document.getElementById( 'root' ) ).render(
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </BrowserRouter>
-  </StrictMode >,
+  // </StrictMode >
+  ,
 )

@@ -100,8 +100,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     if ( employeeList.length > 0 ) {
       localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     }
-    console.log("EMPLOYEELIST:", employeeList);
-    
+    // console.log("EMPLOYEELIST:", employeeList);
+
   }, [ employeeList ] );
 
   useEffect( () => {
@@ -189,17 +189,35 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   }, [ employees ] );
 
   const handleGoNext = () => {
+    // 1. Filtra los empleados que tienen alguna selección.
     const selectedEmployees = employeeList.filter( emp =>
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
-    const resumenEmpleados = selectedEmployees.map( emp => ( {
-      nombre: emp.first_name,
-      almuerzo: emp.almuerzo || false,
-      para_llevar: emp.para_llevar || false,
-      cubiertos: emp.cubiertos || false,
-      id_autorizado: emp.id_autorizado || null,
-      evento_especial: emp.evento_especial || false
-    } ) );
+
+    // 2. Mapea los empleados seleccionados para crear el resumen y los extras.
+    const resumenEmpleados = selectedEmployees.map( emp => {
+      // 3. Inicializa el arreglo de extras para cada empleado.
+      const extras = [];
+      if ( emp.para_llevar ) {
+        extras.push( 1 ); // 1 para "Para llevar"
+      } 
+      if ( emp.cubiertos ) {
+        extras.push( 2 ); // 2 para "Cubiertos"
+      }
+
+      // 4. Retorna el objeto con la estructura deseada, incluyendo los extras.
+      return {
+        nombre: emp.first_name,
+        almuerzo: emp.almuerzo || false,
+        para_llevar: emp.para_llevar || false,
+        cubiertos: emp.cubiertos || false,
+        id_autorizado: emp.id_autorizado || null,
+        evento_especial: emp.evento_especial || false,
+        extras: extras // Agrega el array de extras aquí
+      };
+    } );
+
+    // 5. Almacena y navega como lo haces actualmente.
     setSelectedEmpleadosSummary( resumenEmpleados );
     localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
@@ -212,9 +230,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       accessorKey: 'evento_especial',
       cell: ( {row} ) => {
         const checked = row.original.evento_especial || false;
+        const uniqueId = `eventoEspecial-${ row.original.cedula }-${ row.index }`;
         return (
           <div className="w-full flex justify-center items-center">
             <button
+              id={uniqueId}
               type="button"
               aria-pressed={checked}
               onClick={() => handleToggleField( row.original, 'evento_especial' )}
@@ -240,9 +260,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       accessorKey: 'almuerzo',
       cell: ( {row} ) => {
         const checked = row.getValue( 'almuerzo' );
+        const uniqueId = `almuerzo-${ row.original.cedula }-${ row.index }`
         return (
           <div className='w-full flex justify-center items-center'>
             <input
+              id={uniqueId}
               type="checkbox"
               checked={checked}
               onChange={() => handleToggleField( row.original, 'almuerzo' )}
@@ -258,9 +280,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       cell: ( {row} ) => {
         const checked = row.getValue( 'para_llevar' );
         const almuerzo = row.getValue( 'almuerzo' );
+        const uniqueId = `ToGo-${ row.original.cedula }-${ row.index }`;
         return (
           <div className='w-full flex justify-center items-center'>
             <input
+              id={uniqueId}
               type="checkbox"
               checked={checked}
               onChange={() => handleToggleField( row.original, 'para_llevar' )}
@@ -277,9 +301,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       cell: ( {row} ) => {
         const checked = row.getValue( 'cubiertos' );
         const almuerzo = row.getValue( 'almuerzo' );
+        const uniqueId = `cubiertos-${ row.original.cedula }-${ row.index }`;
         return (
           <div className='w-full flex justify-center items-center'>
             <input
+              id={uniqueId}
               type="checkbox"
               checked={checked}
               onChange={() => handleToggleField( row.original, 'cubiertos' )}
@@ -297,9 +323,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         const selectedId = row.getValue( 'id_autorizado' );
         const paraLlevar = row.original.para_llevar;
         const isSelectedBySomeoneElse = employeeList.some( emp => emp.id_autorizado === row.original.cedula && emp.cedula !== row.original.cedula );
+        const uniqueId = `authorized-${ row.original.cedula }-${ row.index }`;
 
         return (
           <select
+            id={uniqueId}
             value={selectedId || ''}
             onChange={e => handleAutorizadoChange( row.original, e.target.value || null )}
             disabled={!paraLlevar || isSelectedBySomeoneElse}
@@ -314,6 +342,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
                 const hasAuthorizedSomeone = emp.id_autorizado;
                 return (
                   <option
+                    id={uniqueId}
                     key={emp.cedula}
                     value={emp.cedula}
                     disabled={isUnavailable || hasAuthorizedSomeone}
@@ -333,7 +362,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         if ( !tasaDia ) return '0.00';
         const almuerzoCount = row.getValue( 'almuerzo' ) ? 1 : 0;
         const paraLlevarCount = row.getValue( 'para_llevar' ) ? 1 : 0;
-        const cubiertosCount = row.getValue( 'cubiertos' ) ? 1 : 0;
+        const cubiertosCount = row.getValue( 'cubiertos' ) ? 2 : 0;
         const almuerzoAutorizadoCount = row.getValue( 'id_autorizado' ) ? 1 : 0;
         const total = ( almuerzoCount * parseFloat( tasaDia ) ) +
           ( almuerzoAutorizadoCount * parseFloat( tasaDia ) ) +
@@ -377,6 +406,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
         <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
           <input
+            id='findByName'
             type="text"
             value={search}
             onChange={e => setSearch( e.target.value )}
@@ -384,6 +414,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <select
+            id='pageSelector'
             value={pagination.pageSize}
             onChange={e => setPagination( p => ( {...p, pageSize: Number( e.target.value ), pageIndex: 0} ) )}
             className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"

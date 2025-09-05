@@ -49,7 +49,10 @@ export const SideBar = ( {initialTab} ) => {
         {
             label: 'Resumen y Pago',
             icon: <FaCog className="w-5 h-5" />,
-            content: <ContentResume goToTicketTab={() => setActiveTab( 3 )} />,
+            content: <ContentResume
+                goToTicketTab={() => setActiveTab( 3 )}
+                goBackSeleccionTab={() => setActiveTab( 1 )}
+            />,
         },
         {
             label: 'Generar Ticket',
