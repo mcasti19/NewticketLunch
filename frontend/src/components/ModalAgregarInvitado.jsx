@@ -18,8 +18,11 @@ const ModalAgregarInvitado = ({ isOpen, onRequestClose, onAddInvitado, employeeL
   const [form, setForm] = useState(initialState);
   
   const employeesForSelect = useMemo(() => {
-    return employeeList ? employeeList.filter(emp => !emp.invitado) : [];
-  }, [employeeList]);
+    return employeeList ? employeeList.filter(emp => !emp.type_employee) : [];
+  }, [ employeeList ] );
+  
+  console.log("EMPLOYEELIST MODAL:", employeesForSelect);
+  
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
@@ -48,7 +51,7 @@ const ModalAgregarInvitado = ({ isOpen, onRequestClose, onAddInvitado, employeeL
     const invitadoCompleto = {
       ...form,
       cedula: `INVITADO-${Date.now()}`, // Genera una cédula única para el invitado
-      nombre_completo: `${form.nombre} ${form.apellido}`,
+      first_name: `${form.nombre} ${form.apellido}`,
       invitado: true,
       evento_especial: false,
     };
@@ -114,7 +117,7 @@ const ModalAgregarInvitado = ({ isOpen, onRequestClose, onAddInvitado, employeeL
             <option value="">Seleccione...</option>
             {employeesForSelect.map(emp => (
               <option key={emp.cedula} value={emp.cedula}>
-                {emp.nombre_completo}
+                {emp.first_name}
               </option>
             ))}
           </select>

@@ -12,11 +12,11 @@ export const OrderDetails = () => {
     } = useGetEmployees();
     // Usar empleados cargados en memoria, si no hay, usar mock
     const empleados = employees && employees.length > 0 ? employees : empleadosData;
-    // Crear un mapa cedula -> nombre_completo para búsqueda rápida
+    // Crear un mapa cedula -> first_name para búsqueda rápida
     const cedulaToNombre = React.useMemo( () => {
         const map = {};
         empleados.forEach( emp => {
-            map[ emp.cedula ] = emp.nombre_completo;
+            map[ emp.cedula ] = emp.first_name;
         } );
         return map;
     }, [ empleados ] );

@@ -21,8 +21,8 @@ export const getEmployees = async ( id_gerencia ) => {
     try {
         const params = id_gerencia ? {id_gerencia} : {};
         const response = await api.get( '/empleados', {params} );
-        const empleados = response.data?.data?.data || [];
-        console.log( "EMPLEADOS:", empleados );
+        const empleados = response.data.employees || [];
+        console.log( "EMPLEADOS:", empleados     );
 
         return empleados;
     } catch ( error ) {
@@ -31,17 +31,22 @@ export const getEmployees = async ( id_gerencia ) => {
     }
 }
 
-export const getMenu = async ( ) => {
-    try {
-        // const params = id_gerencia ? {id_gerencia} : {};
-        const response = await api.get( '/menus');
-        const menu = response.data || [];
-        console.log( "MENU:", {menu} );
 
+export const getMenu = async () => {
+    try {
+        const {data} = await api.get('/menus');
+        // console.log(response);
+        // Si el backend responde con un mensaje indicando que no hay registros
+        if (data && data.message) {
+            // Puedes lanzar un error personalizado o devolver el mensaje
+            throw new Error(response.data.message);
+        }
+        const menu = data.menus || [];
+        console.log("MENU:",  menu );
         return menu;
-    } catch ( error ) {
-        // En caso de fallo, lanza un error para que el hook lo capture
-        throw new Error( "API Connection Failed", error );
+    } catch (error) {
+        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
+        throw new Error(error.message || "API Connection Failed");
     }
 }
 
@@ -50,6 +55,8 @@ export const startLogin = async ( {email, password} ) => {
     try {
         console.log( "Intentando login con la API..." );
         const response = await api.post( '/users/login', {email, password} );
+        console.log( "RESPONSE", response );
+
         const {data, token, expiration} = response.data || {};
 
         if ( token && data ) {

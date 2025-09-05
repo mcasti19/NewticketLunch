@@ -37,7 +37,7 @@ function filterEmployees( employees, search ) {
   if ( !search.trim() ) return employees;
   const s = search.trim().toLowerCase();
   return employees.filter( emp =>
-    ( emp.nombre_completo && emp.nombre_completo.toLowerCase().includes( s ) )
+    ( emp.first_name && emp.first_name.toLowerCase().includes( s ) )
   );
 }
 
@@ -100,6 +100,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     if ( employeeList.length > 0 ) {
       localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     }
+    console.log("EMPLOYEELIST:", employeeList);
+    
   }, [ employeeList ] );
 
   useEffect( () => {
@@ -191,7 +193,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
     const resumenEmpleados = selectedEmployees.map( emp => ( {
-      nombre: emp.nombre_completo,
+      nombre: emp.first_name,
       almuerzo: emp.almuerzo || false,
       para_llevar: emp.para_llevar || false,
       cubiertos: emp.cubiertos || false,
@@ -228,9 +230,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     },
     {
       header: 'Empleado',
-      accessorKey: 'nombre_completo',
+      accessorKey: 'first_name',
       cell: ( {row} ) => <span className="text-gray-900 dark:text-gray-100 hover">
-        {row.original.nombre_completo}
+        {row.original.first_name}
       </span>,
     },
     {
@@ -316,26 +318,13 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
                     value={emp.cedula}
                     disabled={isUnavailable || hasAuthorizedSomeone}
                   >
-                    {emp.nombre_completo}
+                    {emp.first_name}
                   </option>
                 );
               } )}
           </select>
         );
       },
-    },
-    {
-      header: 'Total Almuerzos',
-      accessorKey: 'total_almuerzos',
-      cell: ( {row} ) => {
-        const almuerzo = row.getValue( 'almuerzo' ) ? 1 : 0;
-        const almuerzosAutorizadosCount = row.original.id_autorizado ? 1 : 0;
-        return (
-          <div className='w-full flex justify-center items-center'>
-            <span className="font-semibold text-gray-900 dark:text-white">{almuerzo + almuerzosAutorizadosCount}</span>
-          </div>
-        );
-      }
     },
     {
       header: 'Total a Pagar (Bs.)',
