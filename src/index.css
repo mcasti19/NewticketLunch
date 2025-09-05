@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+body{
+    @apply  dark:bg-slate-950 h-screen
+}
+
+
+/* styles.css or App.css */
+.modal-container {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+}
+
+.text-blue-dark {
+  color: #003366;
+}
+
+.input-field {
+  @apply p-2 rounded-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.button {
+  @apply bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer hover:bg-blue-700;
+}
+
+
+.img_shadow{
+  filter: drop-shadow(4px 4px 12px red);
+}
+.form_shadow{
+  filter: drop-shadow(3px 3px 3px rgb(228, 232, 227));
+}
