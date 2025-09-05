@@ -14,7 +14,7 @@ export const EmployeesCards = ( {
 } ) => {
     const [ dropdownOpen, setDropdownOpen ] = useState( null );
     
-    console.log(employeeList);
+    // console.log(employeeList);
     
     return (
         <div className="md:hidden w-full max-w-3xl mx-auto bg-gradient-to-br from-white via-blue-50 to-blue-100 dark:bg-gray-950 rounded-3xl shadow-xl p-4 flex flex-col gap-4 min-h-[90vh] relative">
@@ -31,8 +31,8 @@ export const EmployeesCards = ( {
                 onAddInvitado={handleAddInvitado}
             />
             <div className="grid grid-cols-1 gap-4 pb-24">
-                {employeeList.map( ( empleado ) => (
-                    <div key={empleado.nombre + empleado.apellido} className="bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 flex flex-col gap-2 relative">
+                {employeeList.map( ( empleado, idx ) => (
+                    <div key={idx} className="bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 flex flex-col gap-2 relative">
                         <div className="flex items-center gap-2 mb-1">
                             <h3 className="text-lg font-bold text-blue-700">{empleado.nombre} {empleado.apellido}</h3>
                             {empleado.invitado && (

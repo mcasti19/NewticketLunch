@@ -44,7 +44,7 @@ export const EmployeesTable = ( {
                 {row.getVisibleCells().map( cell => (
                   <td key={cell.id} className="px-2 py-2 text-xs md:text-sm dark:text-amber-50">
                     {flexRender( cell.column.columnDef.cell, cell.getContext() )}
-                    {cell.column.id === 'nombre_completo' && isInvitado && (
+                    {cell.column.id === 'first_name' && isInvitado && (
                       <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
                     )}
                   </td>

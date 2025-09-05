@@ -77,8 +77,8 @@ export const ContentSeleccionMobile = ({ goToResumeTab }) => {
         onAddInvitado={handleAddInvitado}
       />
       <div className="grid grid-cols-1 gap-4 pb-24">
-        {filteredEmpleados.map((empleado) => (
-          <div key={empleado.nombre + empleado.apellido} className="bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 flex flex-col gap-2 relative">
+        {filteredEmpleados.map((empleado, idx) => (
+          <div key={idx} className="bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 flex flex-col gap-2 relative">
             <div className="flex items-center gap-2 mb-1">
               <h3 className="text-lg font-bold text-blue-700">{empleado.nombre} {empleado.apellido}</h3>
               {empleado.invitado && (

@@ -49,14 +49,14 @@ export const useAuthStore = create((set) => {
   };
 
   const logout = () => {
-    console.log("VALIDANDO SESION ANTES DE LOGOUT");
+    // console.log("VALIDANDO SESION ANTES DE LOGOUT");
     clearSession();
     set({ user: null, isAuthenticated: false, status: 'unauthenticated', tokenExpiration: null });
   };
 
   const checkSession = () => {
     if (!isTokenValid()) {
-      console.log("VALIDANDO SESION");
+      // console.log("VALIDANDO SESION");
       logout();
     }
   };
