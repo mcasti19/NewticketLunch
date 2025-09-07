@@ -19,4 +19,10 @@ export const useTicketLunchStore = create( ( set ) => ( {
 
   selectedEmpleadosSummary: [],
   setSelectedEmpleadosSummary: ( selectedEmpleadosSummary ) => set( {selectedEmpleadosSummary} ),
+
+  // Flags para habilitar tabs
+  isResumenEnabled: false,
+  setResumenEnabled: (enabled) => set({ isResumenEnabled: enabled }),
+  isTicketEnabled: false,
+  setTicketEnabled: (enabled) => set({ isTicketEnabled: enabled }),
 } ) );

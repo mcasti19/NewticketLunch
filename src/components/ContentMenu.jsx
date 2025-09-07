@@ -13,8 +13,11 @@ export const ContentMenu = () => {
       try {
         const data = await getMenu();
         setMenuDia(Array.isArray(data) ? data : []);
-      } catch (error) {
-        setMenuDia([]);
+      } catch ( error ) {
+        
+        setMenuDia( [] );
+        throw new Error("error", error);
+        
       } finally {
         setIsLoading(false); // <--- SIEMPRE CAMBIA A FALSE CUANDO TERMINA LA CARGA
       }

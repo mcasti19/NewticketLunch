@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useTicketLunchStore } from '../store/ticketLunchStore';
 import {useNavigate} from 'react-router';
 import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
 import {IoFastFood} from "react-icons/io5";
@@ -19,6 +20,11 @@ import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
 
 export const SideBar = ( {initialTab} ) => {
+    // Store flags para habilitar/deshabilitar tabs
+    const isResumenEnabled = useTicketLunchStore(state => state.isResumenEnabled);
+    const setResumenEnabled = useTicketLunchStore(state => state.setResumenEnabled);
+    const isTicketEnabled = useTicketLunchStore(state => state.isTicketEnabled);
+    const setTicketEnabled = useTicketLunchStore(state => state.setTicketEnabled);
     const navigate = useNavigate();
     const tabRoutes = [
         '/menu',
@@ -31,6 +37,7 @@ export const SideBar = ( {initialTab} ) => {
             label: 'Menú',
             icon: <IoFastFood className="w-5 h-5" />,
             content: <ContentMenu />,
+            enabled: true,
         },
         {
             label: 'Selección',
@@ -38,26 +45,38 @@ export const SideBar = ( {initialTab} ) => {
             content: (
                 <>
                     <div className="hidden md:block w-full">
-                        <ContentSeleccion goToResumeTab={() => setActiveTab( 2 )} />
+                        <ContentSeleccion goToResumeTab={() => {
+                            setResumenEnabled(true);
+                            setActiveTab(2);
+                        }} />
                     </div>
                     <div className="block md:hidden">
-                        <ContentSeleccionMobile goToResumeTab={() => setActiveTab( 2 )} />
+                        <ContentSeleccionMobile goToResumeTab={() => {
+                            setResumenEnabled(true);
+                            setActiveTab(2);
+                        }} />
                     </div>
                 </>
             ),
+            enabled: true,
         },
         {
             label: 'Resumen y Pago',
             icon: <FaCog className="w-5 h-5" />,
             content: <ContentResume
-                goToTicketTab={() => setActiveTab( 3 )}
-                goBackSeleccionTab={() => setActiveTab( 1 )}
+                goToTicketTab={() => {
+                    setTicketEnabled(true);
+                    setActiveTab(3);
+                }}
+                goBackSeleccionTab={() => setActiveTab(1)}
             />,
+            enabled: isResumenEnabled,
         },
         {
             label: 'Generar Ticket',
             icon: <FaTicketAlt className="w-5 h-5" />,
             content: <ContentTicket />,
+            enabled: isTicketEnabled,
         },
     ];
 
@@ -140,12 +159,14 @@ export const SideBar = ( {initialTab} ) => {
                                     className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${ activeTab === index
                                         ? 'bg-white text-blue-800 shadow-md border-l-4 border-white'
                                         : 'text-white hover:bg-blue-600'
-                                        } ${ isCollapsed ? 'justify-center' : '' }`}
+                                        } ${ isCollapsed ? 'justify-center' : '' } ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     onClick={() => {
+                                        if (!tab.enabled) return;
                                         setActiveTab( index );
                                         navigate( tabRoutes[ index ] );
                                     }}
                                     title={isCollapsed ? tab.label : ''}
+                                    disabled={!tab.enabled}
                                 >
                                     {tab.icon}
                                     {!isCollapsed && <span className="ml-3 font-medium text-sm">{tab.label}</span>}
@@ -231,8 +252,12 @@ export const SideBar = ( {initialTab} ) => {
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${ activeTab === index
                                         ? 'bg-white text-blue-900'
                                         : 'hover:bg-blue-800'
-                                        }`}
-                                    onClick={() => handleSideMenuClick( index )}
+                                        } ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    onClick={() => {
+                                        if (!tab.enabled) return;
+                                        handleSideMenuClick( index );
+                                    }}
+                                    disabled={!tab.enabled}
                                 >
                                     {tab.icon}
                                     <span className="ml-3 font-medium">{tab.label}</span>
