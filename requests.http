@@ -3,35 +3,35 @@
 ###  USUARIOS
 GET http://127.0.0.1:8000/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 
 ### MENU
 GET http://127.0.0.1:8000/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 ### GERENCIAS TODAS
 GET http://127.0.0.1:8000/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 ###  GERENCIA x ID
 GET http://127.0.0.1:8000/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 
 ###  PEDIDOS
 GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 
 ###  EMPLEADOS
 GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 *******************************POSTS******************************
 
@@ -90,7 +90,7 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 9|09e8WhbsANzq6LKkWpp8aMzJCb3vGsSqvULNYnajfa5b98fe
+Authorization: Bearer 1|uXCg98kpWFfokhFmPpT6a8zKzC6qirQpIgXVCTwkda2e938b
 
 {
     "nombreCompleto" : "Carlos2 Ramírez",

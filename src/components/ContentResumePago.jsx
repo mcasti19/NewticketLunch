@@ -8,6 +8,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
   const setReferenceNumber = useTicketLunchStore( state => state.setReferenceNumber );
+  const setTicketEnabled = useTicketLunchStore(state => state.setTicketEnabled);
 
   const openModal = option => {
     setSelectedPaymentOption( option );
@@ -20,8 +21,8 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
 
   const handleGenerarTickets = ( referenceNumber ) => {
     setReferenceNumber( referenceNumber ); // Si quieres guardar en el store
-    // setResumenOpen( false );
     setModalIsOpen( false );
+    setTicketEnabled(true); // Habilita la tab de ticket
     if ( goToTicketTab ) goToTicketTab();
   };
 

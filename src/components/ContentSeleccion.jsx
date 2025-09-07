@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import ModalAgregarInvitado from './ModalAgregarInvitado';
-import {useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel} from '@tanstack/react-table';
+import {useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from '@tanstack/react-table';
 import {useAuthStore} from '../store/authStore';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useGetEmployees} from '../hooks/useGetEmployees';
@@ -53,6 +53,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
   const setSummary = useTicketLunchStore( state => state.setSummary );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
+  const setResumenEnabled = useTicketLunchStore(state => state.setResumenEnabled);
   const tasaDia = 100;
   const precioLlevar = 15;
   const precioCubierto = 5;
@@ -132,7 +133,12 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     setEmployeeList( prev => {
       const updated = prev.map( emp => {
         if ( emp.cedula === employee.cedula ) {
-          const newState = {...emp, [ field ]: !emp[ field ]};
+          let newState = { ...emp, [field]: !emp[field] };
+
+          if (field === 'evento_especial' && !emp.evento_especial) {
+            // Si se activa evento especial, marcar almuerzo
+            newState.almuerzo = true;
+          }
 
           if ( field === 'almuerzo' && !newState.almuerzo ) {
             newState.para_llevar = false;
@@ -147,9 +153,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
           return newState;
         }
         return emp;
-      } );
+      });
       return updated;
-    } );
+    });
   }, [] );
 
   const handleAutorizadoChange = useCallback( ( employee, newId ) => {
@@ -193,6 +199,10 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     const selectedEmployees = employeeList.filter( emp =>
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
+
+    // Si no hay selección, no habilitar la tab de resumen
+    setResumenEnabled(selectedEmployees.length > 0);
+    if (selectedEmployees.length === 0) return;
 
     // 2. Mapea los empleados seleccionados para crear el resumen y los extras.
     const resumenEmpleados = selectedEmployees.map( emp => {
@@ -492,12 +502,22 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         </div>
       </div>
       <div className="flex justify-center w-full mt-4">
-        <button
-          onClick={handleGoNext}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow"
-        >
-          Resumen y Pago
-        </button>
+        {(() => {
+          const selectedEmployees = employeeList.filter(emp =>
+            emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
+          );
+          const isDisabled = selectedEmployees.length === 0;
+          return (
+            <button
+              onClick={handleGoNext}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow"
+              disabled={isDisabled}
+              title={isDisabled ? 'Debe seleccionar al menos 1 empleado primero' : ''}
+            >
+              Resumen y Pago
+            </button>
+          );
+        })()}
       </div>
     </div>
   );
