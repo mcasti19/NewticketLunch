@@ -34,12 +34,13 @@ export const getEmployees = async ( id_gerencia ) => {
 
 export const getMenu = async () => {
     try {
+        console.log("CONSULTANDO MENU");
         const {data} = await api.get('/menus');
-        // console.log(response);
+        console.log("RESPONSE",data);
         // Si el backend responde con un mensaje indicando que no hay registros
         if (data && data.message) {
             // Puedes lanzar un error personalizado o devolver el mensaje
-            throw new Error(response.data.message);
+            throw new Error(data.message);
         }
         const menu = data.menus || [];
         console.log("MENU:",  menu );

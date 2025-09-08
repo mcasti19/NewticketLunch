@@ -59,7 +59,6 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const precioCubierto = 5;
 
   // Lógica para cargar desde localStorage
-  // Lógica para cargar desde localStorage
   useEffect( () => {
     // Solo se ejecuta cuando la carga ha terminado
     if ( !loading && employees && employees.length > 0 ) {
@@ -97,13 +96,13 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   }, [ employees, loading ] ); // Depende de `employees` y `loading`
 
   // Lógica para guardar en localStorage
-  useEffect( () => {
-    if ( employeeList.length > 0 ) {
-      localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
-    }
-    // console.log("EMPLOYEELIST:", employeeList);
+  // useEffect( () => {
+  //   if ( employeeList.length > 0 ) {
+  //     localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
+  //   }
+  //   console.log("EMPLOYEELIST:", employeeList);
 
-  }, [ employeeList ] );
+  // }, [ employeeList ] );
 
   useEffect( () => {
     if ( !loading && isFallback ) {
