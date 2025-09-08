@@ -1,5 +1,5 @@
+import React from 'react';
 import {Routes, Route, Navigate} from 'react-router';
-
 import LoginPage from '../auth/LoginPage';
 import {useCheckToken} from '../hooks/useCheckToken';
 import {useTokenValidator} from '../hooks/useTokenValidator';
@@ -10,8 +10,16 @@ export const AppRouter = () => {
 
     const {isAuthenticated} = useCheckToken();
 
+    // Importar aquí para evitar problemas de ciclo
+    const TicketPage = React.lazy(() => import('../pages/TicketPage'));
     return (
         <Routes>
+            {/* Ruta pública para mostrar ticket por ID */}
+            <Route path="/ticket/:id" element={
+                <React.Suspense fallback={<div>Cargando ticket...</div>}>
+                    <TicketPage />
+                </React.Suspense>
+            } />
             {
                 isAuthenticated
                     ? (

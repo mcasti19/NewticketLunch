@@ -22,7 +22,7 @@ const ModalAgregarInvitado = ( {isOpen, onRequestClose, onAddInvitado, employeeL
   }, [ employeeList ] );
 
   useEffect( () => {
-    console.log( "EMPLOYEELIST MODAL:", employeesForSelect );
+    // console.log( "EMPLOYEELIST MODAL:", employeesForSelect );
   }, [] )
 
 

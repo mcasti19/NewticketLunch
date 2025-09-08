@@ -3,40 +3,40 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 ### EXTRAS
 GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 *******************************POSTS******************************
 
@@ -93,12 +93,13 @@ content-type: application/json
 }
 
 #### EMPLEADOS
-POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
+POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|hOKxXfMDcUxayKFO3vbgcEnMrGY8WbDKsfa25ACzdbaff5f5
+Authorization: Bearer 14|NA6vyIov7lYQaFeYIezClVCrXbUPTv17h8KM90873502c4b2
 
 {
-    "nombreCompleto" : "Carlos Ramírez",
+    "nombre" : "Carlos",
+    "apellido" : "Ramírez",
     "cedula" : "18463448",
     "idGerencia" : 22,
     "estado" : "Miranda",
