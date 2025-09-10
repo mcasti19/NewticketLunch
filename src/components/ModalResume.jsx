@@ -3,6 +3,8 @@ import React, {useState} from 'react';
 import Modal from 'react-modal';
 import {toast} from 'react-toastify';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
+import {useAuthStore} from '../store/authStore';
+import {createOrder} from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
 const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} ) => {
@@ -14,7 +16,10 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
   //   accountType: '',
   // } );
   const [ referenceNumber, setReferenceNumber ] = useState( '' );
-  // const empleados = useTicketLunchStore(state => state.selectedEmpleadosSummary);
+  const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: ''} );
+  const [ voucher, setVoucher ] = useState( null );
+  const empleados = useTicketLunchStore( state => state.selectedEmpleadosSummary );
+  const user = useAuthStore( state => state.user );
   const summary = useTicketLunchStore( state => state.summary );
 
   // const handleInputChange = ( field ) => ( e ) => {
@@ -35,7 +40,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
   const isTransferencia = paymentOption === 'Transferencia';
 
   // Validación y notificación
-  const handleGenerarTickets = ( e ) => {
+  const handleGenerarTickets = async ( e ) => {
     e.preventDefault();
     if ( !referenceNumber || referenceNumber.trim() === '' ) {
       setTimeout( () => {
@@ -43,9 +48,34 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
       }, 100 );
       return;
     }
-    if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
+    if ( ( isPagoMovil || isTransferencia ) && ( !payer.nombre || !payer.apellido || !payer.cedula || !payer.gerencia ) ) {
+      toast.error( 'Debe completar los datos de quien realiza el pago.' );
+      return;
+    }
+    if ( ( isPagoMovil || isTransferencia ) && !voucher ) {
+      toast.error( 'Debe adjuntar el voucher del pago.' );
+      return;
+    }
+    // Construir y loguear la orden (listo para backend)
+    const ordenes = await createOrder( {
+      empleados,
+      paymentOption,
+      referenceNumber,
+      payer,
+      voucher,
+      totalPagar: summary.totalPagar,
+      user,
+    } );
+    // Guardar en localStorage para que esté disponible en ContentTicket
+    localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenes ) );
+    if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
     setReferenceNumber( '' );
+    setPayer( {nombre: '', apellido: '', cedula: '', gerencia: ''} );
+    setVoucher( null );
   };
+
+
+  console.log( "EMPLEADOS A ENVIAR A LA ORDEN:", empleados );
 
 
   return (
@@ -63,6 +93,8 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
           width: '95vw',
           maxWidth: '400px',
           minWidth: '320px',
+          maxHeight: '95vh',
+          overflowY: 'auto',
           padding: '32px',
           borderRadius: '18px',
           boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
@@ -103,6 +135,8 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
           </div>
         )}
 
+        {/* TRANSFERENCIA BANCARIA */}
+
         {isTransferencia && (
           <div className="flex flex-col gap-2">
             <div className="flex justify-between font-bold text-blue-700">
@@ -127,6 +161,56 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
               </div>
             </div> */}
           </div>
+        )}
+
+        {/* DATOS DE QUIEN REALIZA EL PAGO */}
+
+        {( isPagoMovil || isTransferencia ) && (
+          <>
+            <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
+              <div className="font-bold text-blue-700 mb-1 text-center">Quien realiza el pago</div>
+              <input
+                type="text"
+                placeholder="Nombre"
+                className="p-2 border border-blue-200 rounded mb-1"
+                value={payer.nombre}
+                onChange={e => setPayer( p => ( {...p, nombre: e.target.value} ) )}
+              />
+              <input
+                type="text"
+                placeholder="Apellido"
+                className="p-2 border border-blue-200 rounded mb-1"
+                value={payer.apellido}
+                onChange={e => setPayer( p => ( {...p, apellido: e.target.value} ) )}
+              />
+              <input
+                type="text"
+                placeholder="Cédula"
+                className="p-2 border border-blue-200 rounded mb-1"
+                value={payer.cedula}
+                onChange={e => setPayer( p => ( {...p, cedula: e.target.value} ) )}
+              />
+              <input
+                type="text"
+                placeholder="Gerencia"
+                className="p-2 border border-blue-200 rounded mb-1"
+                value={payer.gerencia}
+                onChange={e => setPayer( p => ( {...p, gerencia: e.target.value} ) )}
+              />
+            </div>
+            <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
+              <label className="font-bold text-blue-700 mb-1 text-center">Adjuntar Captura de pago</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={e => setVoucher( e.target.files[ 0 ] )}
+                className="p-2 border border-blue-200 rounded"
+              />
+              {voucher && (
+                <img src={URL.createObjectURL( voucher )} alt="Voucher" className="mt-2 max-h-32 rounded shadow" />
+              )}
+            </div>
+          </>
         )}
 
         <div className='flex flex-col  justify-center items-center m-auto py-1.5'>

@@ -7,6 +7,7 @@ import {useGetEmployees} from '../hooks/useGetEmployees';
 import {EmployeesTable} from "./EmployeesTable";
 import Swal from 'sweetalert2';
 import {EmployeesCards} from './EmployeesCards';
+import {getExtras} from '../services/actions';
 
 // Utilidad para calcular resumen
 function getSummary( employees, tasaDia ) {
@@ -45,7 +46,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
   const userGerencia = user?.gerencia?.nombre_gerencia || null;
   const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  const {employees, loading, isFallback} = useGetEmployees( idGerencia );
+  const {employees, loading} = useGetEmployees( idGerencia );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
   const [ search, setSearch ] = useState( "" );
@@ -53,10 +54,22 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
   const setSummary = useTicketLunchStore( state => state.setSummary );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
-  const setResumenEnabled = useTicketLunchStore(state => state.setResumenEnabled);
+  const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
   const tasaDia = 100;
   const precioLlevar = 15;
   const precioCubierto = 5;
+
+
+  useEffect( () => {
+    getExtras();
+  }, [] );
+
+  useEffect( () => {
+    if ( !loading ) {
+      console.log( "EMPLEADOSsssss", employees );
+    }
+  }, [ employees, loading ] );
+
 
   // Lógica para cargar desde localStorage
   useEffect( () => {
@@ -88,6 +101,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         const finalEmployeeList = [ ...mergedList, ...guests ];
 
         setEmployeeList( finalEmployeeList );
+        console.log( employeeList );
+
       } else {
         // Si no hay datos guardados, inicializar con los datos de la API
         setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
@@ -104,16 +119,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
 
   // }, [ employeeList ] );
 
-  useEffect( () => {
-    if ( !loading && isFallback ) {
-      Swal.fire( {
-        title: 'DATOS LOCALES',
-        text: 'No hubo conexión con la base de datos o está vacía.',
-        icon: 'info',
-        showConfirmButton: true
-      } );
-    }
-  }, [ loading, isFallback ] );
+
 
   useEffect( () => {
     setSummary( getSummary( employeeList, tasaDia ) );
@@ -132,9 +138,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     setEmployeeList( prev => {
       const updated = prev.map( emp => {
         if ( emp.cedula === employee.cedula ) {
-          let newState = { ...emp, [field]: !emp[field] };
+          let newState = {...emp, [ field ]: !emp[ field ]};
 
-          if (field === 'evento_especial' && !emp.evento_especial) {
+          if ( field === 'evento_especial' && !emp.evento_especial ) {
             // Si se activa evento especial, marcar almuerzo
             newState.almuerzo = true;
           }
@@ -152,9 +158,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
           return newState;
         }
         return emp;
-      });
+      } );
       return updated;
-    });
+    } );
   }, [] );
 
   const handleAutorizadoChange = useCallback( ( employee, newId ) => {
@@ -200,8 +206,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     );
 
     // Si no hay selección, no habilitar la tab de resumen
-    setResumenEnabled(selectedEmployees.length > 0);
-    if (selectedEmployees.length === 0) return;
+    setResumenEnabled( selectedEmployees.length > 0 );
+    if ( selectedEmployees.length === 0 ) return;
 
     // 2. Mapea los empleados seleccionados para crear el resumen y los extras.
     const resumenEmpleados = selectedEmployees.map( emp => {
@@ -209,20 +215,21 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       const extras = [];
       if ( emp.para_llevar ) {
         extras.push( 1 ); // 1 para "Para llevar"
-      } 
+      }
       if ( emp.cubiertos ) {
         extras.push( 2 ); // 2 para "Cubiertos"
       }
 
       // 4. Retorna el objeto con la estructura deseada, incluyendo los extras.
       return {
-        nombre: emp.first_name,
-        almuerzo: emp.almuerzo || false,
-        para_llevar: emp.para_llevar || false,
-        cubiertos: emp.cubiertos || false,
-        id_autorizado: emp.id_autorizado || null,
-        evento_especial: emp.evento_especial || false,
-        extras: extras // Agrega el array de extras aquí
+        Nombre: emp.first_name,
+        IdEmpleado: emp.id_employee,
+        Almuerza: emp.almuerzo || false,
+        Envase: emp.para_llevar || false,
+        Cubiertos: emp.cubiertos || false,
+        Autorizo_a: emp.id_autorizado || null,
+        EventoEspecial: emp.evento_especial || false,
+        Extras: extras // Agrega el array de extras aquí
       };
     } );
 
@@ -501,8 +508,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         </div>
       </div>
       <div className="flex justify-center w-full mt-4">
-        {(() => {
-          const selectedEmployees = employeeList.filter(emp =>
+        {( () => {
+          const selectedEmployees = employeeList.filter( emp =>
             emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
           );
           const isDisabled = selectedEmployees.length === 0;
@@ -516,7 +523,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
               Resumen y Pago
             </button>
           );
-        })()}
+        } )()}
       </div>
     </div>
   );

@@ -27,7 +27,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
   };
 
   const handleBackToSeleccionTab = () => {
-    console.log( "REGRESANDO" );
+    // console.log( "REGRESANDO" );
 
     if ( goBackSeleccionTab ) goBackSeleccionTab();
   }

@@ -1,10 +1,111 @@
 import api from "../api/api";
-// import empleadosData from '../data/mockDataEmpleados.json';
-import users from '../data/mockDataUsers.json';
 import {useAuthStore} from "../store/authStore";
+import  users  from "../data/mockDataUsers.json";
 
 import Swal from 'sweetalert2';
 
+// Mapeo de métodos de pago
+const paymentMethodMap = {
+    'Pago Móvil': 1,
+    'Transferencia': 2,
+    'Débito': 3,
+    'Efectivo': 4,
+};
+
+// Función para convertir archivo a base64
+export const fileToBase64 = ( file ) => {
+    return new Promise( ( resolve, reject ) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve( reader.result );
+        reader.onerror = reject;
+        reader.readAsDataURL( file );
+    } );
+};
+
+// Construye y (futuro) envía la orden al backend
+export const createOrder = async ( {
+    empleados, // array de empleados seleccionados
+    paymentOption, // string
+    referenceNumber, // string
+    payer, // {nombre, apellido, cedula, gerencia}
+    voucher, // File o base64
+    totalPagar, // number
+} ) => {
+
+    console.log( "EMPLEADOS EN LA ORDEN:", empleados );
+
+    // Si hay voucher archivo, conviértelo a base64
+    let voucherBase64 = null;
+    if ( voucher && typeof voucher !== 'string' ) {
+        voucherBase64 = await fileToBase64( voucher );
+    } else if ( typeof voucher === 'string' ) {
+        voucherBase64 = voucher;
+    }
+
+    // Obtener extras del backend (o local)
+    let extrasList = [];
+    try {
+        extrasList = await getExtras();
+    } catch ( e ) {
+        console.warn( 'No se pudieron obtener los extras, se usará demo:', e );
+        // Demo fallback
+        extrasList = [
+            {id_extra: 1, name_extra: 'Envase'},
+            {id_extra: 2, name_extra: 'Cubiertos'},
+        ];
+    }
+
+    // Por cada empleado, crea una orden
+    const date_order = new Date().toISOString().slice( 0, 10 );
+    const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+    const orders = empleados.map( emp => {
+        // Determinar extras seleccionados para este empleado
+        const extras = [];
+        if ( emp.para_llevar ) {
+            const envase = extrasList.find( e => e.name_extra.toLowerCase().includes( 'envase' ) );
+            if ( envase ) extras.push( envase.id_extra.toString() );
+        }
+        if ( emp.cubiertos ) {
+            const cubiertos = extrasList.find( e => e.name_extra.toLowerCase().includes( 'cubierto' ) );
+            if ( cubiertos ) extras.push( cubiertos.id_extra.toString() );
+        }
+
+        // Datos completos del empleado
+        const id_employee = emp.id_employee || emp.id || '';
+        const cedula_employee = emp.cedula || '';
+        const name_employee = ( emp.first_name ? emp.first_name.trim() : '' ) + ( emp.last_name ? ' ' + emp.last_name.trim() : '' );
+        const phone_employee = emp.telefono || emp.phone_employee || '';
+        const management = ( emp.gerencias && emp.gerencias.management_name ) ? emp.gerencias.management_name : ( payer.gerencia || '' );
+
+        return {
+            order: {
+                special_event: emp.evento_especial ? 'Si' : 'No',
+                authorized_person: emp.id_autorizado || '',
+                id_payment_method,
+                reference: referenceNumber,
+                total_amount: totalPagar,
+                id_employee,
+                id_order_status: 1,
+                id_orders_consumption: 2,
+                date_order,
+                voucher: voucherBase64,
+                extras,
+            },
+            employeePayment: {
+                management,
+                payer_nombre: payer.nombre,
+                payer_apellido: payer.apellido,
+                payer_cedula: payer.cedula,
+            },
+        };
+    } );
+
+    // Aquí harías el POST al backend (por ahora solo log)
+    console.log( 'ORDENES A ENVIAR:', orders );
+    // Ejemplo de POST:
+    // await api.post('/ordenes', orders);
+    return orders;
+};
 
 export const getManagements = async ( page = 1, pageSize = 5 ) => {
     const {data} = await api.get( '/gerencias', {
@@ -34,20 +135,38 @@ export const getEmployees = async ( id_gerencia ) => {
 
 export const getMenu = async () => {
     try {
-        console.log("CONSULTANDO MENU");
-        const {data} = await api.get('/menus');
-        console.log("RESPONSE",data);
+        console.log( "CONSULTANDO MENU" );
+        const {data} = await api.get( '/menus' );
+        console.log( "RESPONSE", data );
         // Si el backend responde con un mensaje indicando que no hay registros
-        if (data && data.message) {
+        if ( data && data.message ) {
             // Puedes lanzar un error personalizado o devolver el mensaje
-            throw new Error(data.message);
+            throw new Error( data.message );
         }
         const menu = data.menus || [];
-        console.log("MENU:",  menu );
+        console.log( "MENU:", menu );
         return menu;
-    } catch (error) {
+    } catch ( error ) {
         // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
-        throw new Error(error.message || "API Connection Failed");
+        throw new Error( error.message || "API Connection Failed" );
+    }
+}
+export const getExtras = async () => {
+    try {
+        console.log( "CONSULTANDO Extas" );
+        const {data} = await api.get( '/extras' );
+        console.log( "RESPONSE Extras", data );
+        // Si el backend responde con un mensaje indicando que no hay registros
+        if ( data && data.message ) {
+            // Puedes lanzar un error personalizado o devolver el mensaje
+            throw new Error( data.message );
+        }
+        const extras = data.extras || [];
+        console.log( "Extras:", extras );
+        return extras;
+    } catch ( error ) {
+        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
+        throw new Error( error.message || "API Connection Failed" );
     }
 }
 

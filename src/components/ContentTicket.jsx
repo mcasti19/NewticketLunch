@@ -1,9 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {MyQRCodeComponent} from './MyQRCodeComponent'
 // import {useTicketLunchStore} from '../store/ticketLunchStore'
 
 export const ContentTicket = () => {
-  // const empleados = useTicketLunchStore( state => state.empleados );
+  const [ordenes, setOrdenes] = useState([]);
+
+  useEffect(() => {
+    const data = localStorage.getItem('ordenesGeneradas');
+    if (data) {
+      const parsed = JSON.parse(data);
+      setOrdenes(parsed);
+      console.log('ORDENES GENERADAS:', parsed);
+    } else {
+      setOrdenes([]);
+      console.log('No hay ordenes generadas en localStorage');
+    }
+  }, []);
 
   return (
     <div className='w-full max-h-screen overflow-y-auto '>
@@ -11,6 +23,12 @@ export const ContentTicket = () => {
       <div className="w-full">
         <MyQRCodeComponent  />
         <p className="text-center text-gray-700 text-base md:text-lg mt-2">Escanea el código QR para ver tu ticket de almuerzo.</p>
+      </div>
+      <div className="w-full max-w-2xl mx-auto mt-6 bg-white rounded shadow p-4 overflow-x-auto">
+        <h3 className="text-lg font-bold text-blue-700 mb-2 text-center">Orden generada (estructura enviada al backend):</h3>
+        <pre className="text-xs md:text-sm bg-gray-100 rounded p-2 overflow-x-auto">
+          {ordenes.length > 0 ? JSON.stringify(ordenes, null, 2) : 'No hay orden generada.'}
+        </pre>
       </div>
     </div>
   )
