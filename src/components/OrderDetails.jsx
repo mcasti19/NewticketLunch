@@ -24,7 +24,7 @@ export const OrderDetails = () => {
 
 useEffect(() => {
 
-console.log("RESUME", selectedEmpleadosSummary);
+console.log("selectedEmpleadosSummary", selectedEmpleadosSummary);
 
 }, [])
 
