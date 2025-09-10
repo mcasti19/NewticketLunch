@@ -1,6 +1,6 @@
 import api from "../api/api";
 import {useAuthStore} from "../store/authStore";
-import  users  from "../data/mockDataUsers.json";
+import users from "../data/mockDataUsers.json";
 
 import Swal from 'sweetalert2';
 
@@ -32,7 +32,7 @@ export const createOrder = async ( {
     totalPagar, // number
 } ) => {
 
-    console.log( "EMPLEADOS EN LA ORDEN:", empleados );
+    // console.log( "EMPLEADOS EN LA ORDEN:", empleados );
 
     // Si hay voucher archivo, conviértelo a base64
     let voucherBase64 = null;
@@ -58,7 +58,19 @@ export const createOrder = async ( {
     // Por cada empleado, crea una orden
     const date_order = new Date().toISOString().slice( 0, 10 );
     const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+
+    // Construir mapa para buscar autorizaciones cruzadas
+    const idToEmpleado = {};
+    empleados.forEach( emp => {
+        // Puede ser IdEmpleado o id_empleado según backend
+        const id = emp.id_employee || '';
+        idToEmpleado[ id ] = emp;
+    } );
+
     const orders = empleados.map( emp => {
+        // console.log("CADA EMPLEADO:", emp);
+
+
         // Determinar extras seleccionados para este empleado
         const extras = [];
         if ( emp.para_llevar ) {
@@ -71,20 +83,43 @@ export const createOrder = async ( {
         }
 
         // Datos completos del empleado
-        const id_employee = emp.id_employee || emp.id || '';
-        const cedula_employee = emp.cedula || '';
-        const name_employee = ( emp.first_name ? emp.first_name.trim() : '' ) + ( emp.last_name ? ' ' + emp.last_name.trim() : '' );
-        const phone_employee = emp.telefono || emp.phone_employee || '';
+        
         const management = ( emp.gerencias && emp.gerencias.management_name ) ? emp.gerencias.management_name : ( payer.gerencia || '' );
+
+        // Total individual
+        const total_pagar = emp.total_pagar || 0;
+
+        // Autorizaciones
+        // 1. ¿A quién autoriza este empleado?
+        // let autoriza_a = '';
+        // if (emp.id_autorizado) {
+        //     // console.log("SI EXISTE ID_AUTORIZADO:", emp.id_autorizado);
+        //     const autorizado = emp.autoriza_a;
+        //     console.log("AUTORIZDO:", autorizado);
+        //     // if ( autorizado ) {
+        //     //     autoriza_a = `${autorizado.first_name || ''} ${autorizado.last_name || ''}`.trim();
+        //     // }
+        //     // console.log("AUTORIZADO NOMBRE:", emp.id_autorizado);
+
+        // }
+
+        // 2. ¿Quién lo autorizó a él?
+        // let autorizado_por = '';
+        // const quienAutoriza = empleados.find(e => (e.id_autorizado === id_employee));
+        // if (quienAutoriza) {
+        //     autorizado_por = `${quienAutoriza.first_name || quienAutoriza.nombre || ''} ${quienAutoriza.last_name || quienAutoriza.apellido || ''}`.trim();
+        // }
 
         return {
             order: {
                 special_event: emp.evento_especial ? 'Si' : 'No',
                 authorized_person: emp.id_autorizado || '',
+                autoriza_a: emp.autoriza_a, // Nombre de a quién autoriza
+                autorizado_por: emp.autorizado_por,   // Nombre de quien lo autoriza
                 id_payment_method,
                 reference: referenceNumber,
-                total_amount: totalPagar,
-                id_employee,
+                total_amount: total_pagar, // total individual
+                id_employee: emp.id_employee,
                 id_order_status: 1,
                 id_orders_consumption: 2,
                 date_order,
@@ -101,7 +136,7 @@ export const createOrder = async ( {
     } );
 
     // Aquí harías el POST al backend (por ahora solo log)
-    console.log( 'ORDENES A ENVIAR:', orders );
+    // console.log( 'ORDENES A ENVIAR:', orders );
     // Ejemplo de POST:
     // await api.post('/ordenes', orders);
     return orders;
@@ -114,7 +149,7 @@ export const getManagements = async ( page = 1, pageSize = 5 ) => {
             pageSize,
         },
     } );
-    console.log( 'GetManagements :', data );
+    // console.log( 'GetManagements :', data );
     return data
 }
 
@@ -135,16 +170,16 @@ export const getEmployees = async ( id_gerencia ) => {
 
 export const getMenu = async () => {
     try {
-        console.log( "CONSULTANDO MENU" );
+        // console.log( "CONSULTANDO MENU" );
         const {data} = await api.get( '/menus' );
-        console.log( "RESPONSE", data );
+        // console.log( "RESPONSE", data );
         // Si el backend responde con un mensaje indicando que no hay registros
         if ( data && data.message ) {
             // Puedes lanzar un error personalizado o devolver el mensaje
             throw new Error( data.message );
         }
         const menu = data.menus || [];
-        console.log( "MENU:", menu );
+        // console.log( "MENU:", menu );
         return menu;
     } catch ( error ) {
         // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
@@ -153,16 +188,16 @@ export const getMenu = async () => {
 }
 export const getExtras = async () => {
     try {
-        console.log( "CONSULTANDO Extas" );
+        // console.log( "CONSULTANDO Extas" );
         const {data} = await api.get( '/extras' );
-        console.log( "RESPONSE Extras", data );
+        // console.log( "RESPONSE Extras", data );
         // Si el backend responde con un mensaje indicando que no hay registros
         if ( data && data.message ) {
             // Puedes lanzar un error personalizado o devolver el mensaje
             throw new Error( data.message );
         }
         const extras = data.extras || [];
-        console.log( "Extras:", extras );
+        // console.log( "Extras:", extras );
         return extras;
     } catch ( error ) {
         // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
@@ -175,12 +210,12 @@ export const startLogin = async ( {email, password} ) => {
     try {
         console.log( "Intentando login con la API..." );
         const response = await api.post( '/users/login', {email, password} );
-        console.log( "RESPONSE", response );
+        // console.log( "RESPONSE", response );
 
         const {data, token, expiration} = response.data || {};
 
         if ( token && data ) {
-            console.log( "Login exitoso con la API." );
+            // console.log( "Login exitoso con la API." );
             const exp = expiration ? Number( expiration ) : Date.now() + 120 * 60 * 1000;
             login( data, token, exp );
             Swal.fire( {

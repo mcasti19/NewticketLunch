@@ -209,29 +209,61 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     setResumenEnabled( selectedEmployees.length > 0 );
     if ( selectedEmployees.length === 0 ) return;
 
-    // 2. Mapea los empleados seleccionados para crear el resumen y los extras.
-    const resumenEmpleados = selectedEmployees.map( emp => {
-      // 3. Inicializa el arreglo de extras para cada empleado.
+
+    // 2. Mapea los empleados seleccionados para crear el resumen y los extras, incluyendo total_pagar y relaciones de autorización.
+    const tasaDia = 100;
+    const precioLlevar = 15;
+    const precioCubierto = 5;
+
+    // Mapa para buscar empleados por cédula
+    const cedulaToEmpleado = {};
+    employeeList.forEach(emp => {
+      cedulaToEmpleado[emp.cedula] = emp;
+    });
+
+    const resumenEmpleados = selectedEmployees.map(emp => {
+      // Extras
       const extras = [];
-      if ( emp.para_llevar ) {
-        extras.push( 1 ); // 1 para "Para llevar"
+      if (emp.para_llevar) extras.push(1);
+      if (emp.cubiertos) extras.push(2);
+
+      // Cálculo de total individual
+      const almuerzoCount = emp.almuerzo ? 1 : 0;
+      const paraLlevarCount = emp.para_llevar ? 1 : 0;
+      const cubiertosCount = emp.cubiertos ? 1 : 0;
+      const almuerzoAutorizadoCount = emp.id_autorizado ? 1 : 0;
+      const total_pagar = (almuerzoCount * tasaDia) + (almuerzoAutorizadoCount * tasaDia) + (paraLlevarCount * precioLlevar) + (cubiertosCount * precioCubierto);
+
+      // Relaciones de autorización
+      let autoriza_a = '';
+      if (emp.id_autorizado) {
+        const autorizado = cedulaToEmpleado[emp.id_autorizado];
+        if (autorizado) {
+          autoriza_a = `${autorizado.first_name || autorizado.nombre || ''} ${autorizado.last_name || autorizado.apellido || ''}`.trim();
+        }
       }
-      if ( emp.cubiertos ) {
-        extras.push( 2 ); // 2 para "Cubiertos"
+      let autorizado_por = '';
+      const quienAutoriza = employeeList.find(e => (e.id_autorizado === emp.cedula));
+      if (quienAutoriza) {
+        autorizado_por = `${quienAutoriza.first_name || quienAutoriza.nombre || ''} ${quienAutoriza.last_name || quienAutoriza.apellido || ''}`.trim();
       }
 
-      // 4. Retorna el objeto con la estructura deseada, incluyendo los extras.
       return {
-        Nombre: emp.first_name,
-        IdEmpleado: emp.id_employee,
-        Almuerza: emp.almuerzo || false,
-        Envase: emp.para_llevar || false,
-        Cubiertos: emp.cubiertos || false,
-        Autorizo_a: emp.id_autorizado || null,
-        EventoEspecial: emp.evento_especial || false,
-        Extras: extras // Agrega el array de extras aquí
+        nombre: emp.first_name || emp.nombre || '',
+        apellido: emp.last_name || emp.apellido || '',
+        cedula: emp.cedula,
+        id_employee: emp.id_employee || emp.IdEmpleado || emp.id || '',
+        almuerzo: emp.almuerzo || false,
+        para_llevar: emp.para_llevar || false,
+        cubiertos: emp.cubiertos || false,
+        id_autorizado: emp.id_autorizado || null,
+        evento_especial: emp.evento_especial || false,
+        extras,
+        total_pagar,
+        autoriza_a,
+        autorizado_por,
       };
-    } );
+    });
 
     // 5. Almacena y navega como lo haces actualmente.
     setSelectedEmpleadosSummary( resumenEmpleados );

@@ -57,6 +57,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
       return;
     }
     // Construir y loguear la orden (listo para backend)
+    console.log( "EMPLEADOS A ENVIAR A LA ORDEN:", empleados );
     const ordenes = await createOrder( {
       empleados,
       paymentOption,
@@ -75,7 +76,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
   };
 
 
-  console.log( "EMPLEADOS A ENVIAR A LA ORDEN:", empleados );
 
 
   return (
