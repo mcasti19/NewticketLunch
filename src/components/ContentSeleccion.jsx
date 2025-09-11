@@ -38,7 +38,8 @@ function filterEmployees( employees, search ) {
   if ( !search.trim() ) return employees;
   const s = search.trim().toLowerCase();
   return employees.filter( emp =>
-    ( emp.first_name && emp.first_name.toLowerCase().includes( s ) )
+    ( emp.first_name && emp.first_name.toLowerCase().includes( s ) ) ||
+    ( emp.last_name && emp.last_name.toLowerCase().includes( s ) )
   );
 }
 
@@ -70,22 +71,14 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     }
   }, [ employees, loading ] );
 
-
-  // Lógica para cargar desde localStorage
   useEffect( () => {
-    // Solo se ejecuta cuando la carga ha terminado
     if ( !loading && employees && employees.length > 0 ) {
       const storedSelections = localStorage.getItem( 'empleadosSeleccionados' );
       if ( storedSelections ) {
         const selections = JSON.parse( storedSelections );
-
-        // Crear un mapa de selecciones para una búsqueda rápida
         const selectionsMap = new Map( selections.map( emp => [ emp.cedula, emp ] ) );
-
-        // Fusionar los datos de la API con las selecciones guardadas
         const mergedList = employees.map( emp => {
           const storedEmp = selectionsMap.get( emp.cedula );
-          // Usa las selecciones de localStorage si existen, de lo contrario, usa valores predeterminados
           return {
             ...emp,
             almuerzo: storedEmp?.almuerzo || false,
@@ -95,31 +88,15 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             evento_especial: storedEmp?.evento_especial || false,
           };
         } );
-
-        // Asegurarse de que los invitados también se mantengan en la lista
         const guests = selections.filter( emp => emp.invitado );
         const finalEmployeeList = [ ...mergedList, ...guests ];
-
         setEmployeeList( finalEmployeeList );
-        console.log( employeeList );
-
+        console.log( "employeeList: ", employeeList );
       } else {
-        // Si no hay datos guardados, inicializar con los datos de la API
         setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
       }
     }
-  }, [ employees, loading ] ); // Depende de `employees` y `loading`
-
-  // Lógica para guardar en localStorage
-  // useEffect( () => {
-  //   if ( employeeList.length > 0 ) {
-  //     localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
-  //   }
-  //   console.log("EMPLOYEELIST:", employeeList);
-
-  // }, [ employeeList ] );
-
-
+  }, [ employees, loading ] );
 
   useEffect( () => {
     setSummary( getSummary( employeeList, tasaDia ) );
@@ -139,22 +116,17 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       const updated = prev.map( emp => {
         if ( emp.cedula === employee.cedula ) {
           let newState = {...emp, [ field ]: !emp[ field ]};
-
           if ( field === 'evento_especial' && !emp.evento_especial ) {
-            // Si se activa evento especial, marcar almuerzo
             newState.almuerzo = true;
           }
-
           if ( field === 'almuerzo' && !newState.almuerzo ) {
             newState.para_llevar = false;
             newState.cubiertos = false;
             newState.id_autorizado = null;
           }
-
           if ( field === 'para_llevar' && !newState.para_llevar ) {
             newState.id_autorizado = null;
           }
-
           return newState;
         }
         return emp;
@@ -200,52 +172,39 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   }, [ employees ] );
 
   const handleGoNext = () => {
-    // 1. Filtra los empleados que tienen alguna selección.
     const selectedEmployees = employeeList.filter( emp =>
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
-
-    // Si no hay selección, no habilitar la tab de resumen
     setResumenEnabled( selectedEmployees.length > 0 );
     if ( selectedEmployees.length === 0 ) return;
 
-
-    // 2. Mapea los empleados seleccionados para crear el resumen y los extras, incluyendo total_pagar y relaciones de autorización.
-    const tasaDia = 100;
-    const precioLlevar = 15;
-    const precioCubierto = 5;
-
-    // Mapa para buscar empleados por cédula
     const cedulaToEmpleado = {};
-    employeeList.forEach(emp => {
-      cedulaToEmpleado[emp.cedula] = emp;
-    });
+    employeeList.forEach( emp => {
+      cedulaToEmpleado[ emp.cedula ] = emp;
+    } );
 
-    const resumenEmpleados = selectedEmployees.map(emp => {
-      // Extras
+    const resumenEmpleados = selectedEmployees.map( emp => {
       const extras = [];
-      if (emp.para_llevar) extras.push(1);
-      if (emp.cubiertos) extras.push(2);
+      if ( emp.para_llevar ) extras.push( 1 );
+      if ( emp.cubiertos ) extras.push( 2 );
 
-      // Cálculo de total individual
       const almuerzoCount = emp.almuerzo ? 1 : 0;
       const paraLlevarCount = emp.para_llevar ? 1 : 0;
       const cubiertosCount = emp.cubiertos ? 1 : 0;
       const almuerzoAutorizadoCount = emp.id_autorizado ? 1 : 0;
-      const total_pagar = (almuerzoCount * tasaDia) + (almuerzoAutorizadoCount * tasaDia) + (paraLlevarCount * precioLlevar) + (cubiertosCount * precioCubierto);
+      const total_pagar = ( almuerzoCount * tasaDia ) + ( almuerzoAutorizadoCount * tasaDia ) + ( paraLlevarCount * precioLlevar ) + ( cubiertosCount * precioCubierto );
 
-      // Relaciones de autorización
       let autoriza_a = '';
-      if (emp.id_autorizado) {
-        const autorizado = cedulaToEmpleado[emp.id_autorizado];
-        if (autorizado) {
-          autoriza_a = `${autorizado.first_name || autorizado.nombre || ''} ${autorizado.last_name || autorizado.apellido || ''}`.trim();
+      if ( emp.id_autorizado ) {
+        const autorizado = cedulaToEmpleado[ emp.id_autorizado ];
+        if ( autorizado ) {
+          autoriza_a = `${ autorizado.first_name || autorizado.nombre || '' } ${ autorizado.last_name || autorizado.apellido || '' }`.trim();
         }
       }
       let autorizado_por = '';
-      const quienAutoriza = employeeList.find(e => (e.id_autorizado === emp.cedula));
-      if (quienAutoriza) {
-        autorizado_por = `${quienAutoriza.first_name || quienAutoriza.nombre || ''} ${quienAutoriza.last_name || quienAutoriza.apellido || ''}`.trim();
+      const quienAutoriza = employeeList.find( e => ( e.id_autorizado === emp.cedula ) );
+      if ( quienAutoriza ) {
+        autorizado_por = `${ quienAutoriza.first_name || quienAutoriza.nombre || '' } ${ quienAutoriza.last_name || quienAutoriza.apellido || '' }`.trim();
       }
 
       return {
@@ -263,9 +222,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         autoriza_a,
         autorizado_por,
       };
-    });
+    } );
 
-    // 5. Almacena y navega como lo haces actualmente.
     setSelectedEmpleadosSummary( resumenEmpleados );
     localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
@@ -439,7 +397,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
 
   if ( loading ) {
     return (
-      <div className="text-center py-8">
+      <div className="text-center py-8 flex justify-center items-center">
         <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
       </div>
@@ -452,7 +410,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         {userGerencia}
       </h1>
       <div className="w-full flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
-        <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+        <div className="hidden md:flex flex-col md:flex-row gap-2 w-full md:w-auto">
           <input
             id='findByName'
             type="text"
@@ -487,6 +445,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
           </button>
         </div>
       </div>
+
       <EmployeesTable
         table={table}
         modalInvitadoOpen={modalInvitadoOpen}
@@ -496,24 +455,24 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         ModalAgregarInvitado={ModalAgregarInvitado}
       />
 
+      <div className='md:hidden scroll-auto'>
+        <EmployeesCards
+          userGerencia={userGerencia}
+          modalInvitadoOpen={modalInvitadoOpen}
+          setModalInvitadoOpen={setModalInvitadoOpen}
+          handleAddInvitado={handleAddGuest}
+          employeeList={employeeList}
+          ModalAgregarInvitado={ModalAgregarInvitado}
+          goToResumeTab={goToResumeTab}
+          tasaDia={tasaDia}
+          precioLlevar={precioLlevar}
+          precioCubierto={precioCubierto}
+          handleToggleField={handleToggleField}
+          handleAutorizadoChange={handleAutorizadoChange}
+        />
+      </div>
 
-      <EmployeesCards
-        userGerencia={userGerencia}
-        modalInvitadoOpen={modalInvitadoOpen}
-        setModalInvitadoOpen={setModalInvitadoOpen}
-        handleAddInvitado={handleAddGuest}
-        employeeList={employeeList}
-        ModalAgregarInvitado={ModalAgregarInvitado}
-        goToResumeTab={goToResumeTab}
-        tasaDia={tasaDia}
-        precioLlevar={precioLlevar}
-        precioCubierto={precioCubierto}
-      />
-
-
-
-
-      <div className="mt-4 flex flex-col md:flex-row justify-between items-center w-full gap-2">
+      <div className="hidden md:flex mt-4  flex-col md:flex-row justify-between items-center w-full gap-2">
         <div className="flex items-center space-x-2">
           <span className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
             Mostrando {table.getRowModel().rows.length} de {filteredEmployees.length} empleados

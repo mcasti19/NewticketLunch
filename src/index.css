@@ -1,3 +1,23 @@
+/* Ocultar o hacer delgada la barra de scroll en todos los componentes */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  width: 0px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  width: 0px;
+}
+
+/* Para Firefox */
+/* html {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+} */
 @import "tailwindcss";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));

@@ -29,7 +29,7 @@ export const createOrder = async ( {
     referenceNumber, // string
     payer, // {nombre, apellido, cedula, gerencia}
     voucher, // File o base64
-    totalPagar, // number
+    // totalPagar, // number
 } ) => {
 
     // console.log( "EMPLEADOS EN LA ORDEN:", empleados );
