@@ -83,33 +83,11 @@ export const createOrder = async ( {
         }
 
         // Datos completos del empleado
-        
+
         const management = ( emp.gerencias && emp.gerencias.management_name ) ? emp.gerencias.management_name : ( payer.gerencia || '' );
 
         // Total individual
         const total_pagar = emp.total_pagar || 0;
-
-        // Autorizaciones
-        // 1. ¿A quién autoriza este empleado?
-        // let autoriza_a = '';
-        // if (emp.id_autorizado) {
-        //     // console.log("SI EXISTE ID_AUTORIZADO:", emp.id_autorizado);
-        //     const autorizado = emp.autoriza_a;
-        //     console.log("AUTORIZDO:", autorizado);
-        //     // if ( autorizado ) {
-        //     //     autoriza_a = `${autorizado.first_name || ''} ${autorizado.last_name || ''}`.trim();
-        //     // }
-        //     // console.log("AUTORIZADO NOMBRE:", emp.id_autorizado);
-
-        // }
-
-        // 2. ¿Quién lo autorizó a él?
-        // let autorizado_por = '';
-        // const quienAutoriza = empleados.find(e => (e.id_autorizado === id_employee));
-        // if (quienAutoriza) {
-        //     autorizado_por = `${quienAutoriza.first_name || quienAutoriza.nombre || ''} ${quienAutoriza.last_name || quienAutoriza.apellido || ''}`.trim();
-        // }
-
         return {
             order: {
                 special_event: emp.evento_especial ? 'Si' : 'No',
@@ -154,18 +132,28 @@ export const getManagements = async ( page = 1, pageSize = 5 ) => {
 }
 
 export const getEmployees = async ( id_gerencia ) => {
-    try {
-        const params = id_gerencia ? {id_gerencia} : {};
-        const response = await api.get( '/empleados', {params} );
-        const empleados = response.data.employees || [];
-        // console.log( "EMPLEADOS:", empleados     );
-
-        return empleados;
-    } catch ( error ) {
-        // En caso de fallo, lanza un error para que el hook lo capture
-        throw new Error( "API Connection Failed", error );
+    // Se valida que exista el ID de la gerencia antes de hacer el get
+    if ( !id_gerencia ) {
+        console.error( "ID de gerencia no proporcionado." );
+        return [];
     }
-}
+
+    try {
+        const response = await api.get( `/empleados`, {
+            params: {gerencias: id_gerencia}, // Se usa el params como buena practica
+        } );
+
+        // Se desestructura para un código más limpio.
+        const {employees = []} = response.data;
+
+        console.log( "Empleados desde FUNCIÓN:", employees );
+        return employees;
+
+    } catch ( error ) {
+        console.error( "Error al obtener empleados:", error.message );
+        throw error;
+    }
+};
 
 
 export const getMenu = async () => {
