@@ -1,15 +1,23 @@
 import {flexRender} from '@tanstack/react-table';
+import ModalAgregarInvitado from './ModalAgregarInvitado';
 
 export const EmployeesTable = ( {
-    table,
-    modalInvitadoOpen,
-    setModalInvitadoOpen,
-    handleAddInvitado,
-    employeeList,
-    ModalAgregarInvitado
+  table,
+  modalInvitadoOpen,
+  setModalInvitadoOpen,
+  handleAddInvitado,
+  employeeList,
+  // ModalAgregarInvitado
 } ) => {
- return (
-    <div className="overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full">
+  return (
+    <div className="hidden md:flex overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full"
+      style={{
+        maxHeight: 'calc(100vh - 25vh)', // Ajusta este valor según el header, filtros y margen deseado
+        minHeight:'200px',
+        overflowY: 'auto',
+        marginBottom: '1rem',
+      }}
+    >
       <table className="min-w-full">
         <thead>
           {table.getHeaderGroups().map( headerGroup => (

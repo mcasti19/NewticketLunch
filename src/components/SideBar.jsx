@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { useTicketLunchStore } from '../store/ticketLunchStore';
+import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useNavigate} from 'react-router';
 import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
 import {IoFastFood} from "react-icons/io5";
@@ -21,10 +21,10 @@ import {initTheme, toggleTheme, getSavedTheme} from '../theme';
 
 export const SideBar = ( {initialTab} ) => {
     // Store flags para habilitar/deshabilitar tabs
-    const isResumenEnabled = useTicketLunchStore(state => state.isResumenEnabled);
-    const setResumenEnabled = useTicketLunchStore(state => state.setResumenEnabled);
-    const isTicketEnabled = useTicketLunchStore(state => state.isTicketEnabled);
-    const setTicketEnabled = useTicketLunchStore(state => state.setTicketEnabled);
+    const isResumenEnabled = useTicketLunchStore( state => state.isResumenEnabled );
+    const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
+    const isTicketEnabled = useTicketLunchStore( state => state.isTicketEnabled );
+    const setTicketEnabled = useTicketLunchStore( state => state.setTicketEnabled );
     const navigate = useNavigate();
     const tabRoutes = [
         '/menu',
@@ -44,18 +44,10 @@ export const SideBar = ( {initialTab} ) => {
             icon: <FaUser className="w-5 h-5" />,
             content: (
                 <>
-                    <div className="hidden md:block w-full">
-                        <ContentSeleccion goToResumeTab={() => {
-                            setResumenEnabled(true);
-                            setActiveTab(2);
-                        }} />
-                    </div>
-                    <div className="block md:hidden">
-                        <ContentSeleccionMobile goToResumeTab={() => {
-                            setResumenEnabled(true);
-                            setActiveTab(2);
-                        }} />
-                    </div>
+                    <ContentSeleccion goToResumeTab={() => {
+                        setResumenEnabled( true );
+                        setActiveTab( 2 );
+                    }} />
                 </>
             ),
             enabled: true,
@@ -65,10 +57,10 @@ export const SideBar = ( {initialTab} ) => {
             icon: <FaCog className="w-5 h-5" />,
             content: <ContentResume
                 goToTicketTab={() => {
-                    setTicketEnabled(true);
-                    setActiveTab(3);
+                    setTicketEnabled( true );
+                    setActiveTab( 3 );
                 }}
-                goBackSeleccionTab={() => setActiveTab(1)}
+                goBackSeleccionTab={() => setActiveTab( 1 )}
             />,
             enabled: isResumenEnabled,
         },
@@ -159,9 +151,9 @@ export const SideBar = ( {initialTab} ) => {
                                     className={`w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${ activeTab === index
                                         ? 'bg-white text-blue-800 shadow-md border-l-4 border-white'
                                         : 'text-white hover:bg-blue-600'
-                                        } ${ isCollapsed ? 'justify-center' : '' } ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        } ${ isCollapsed ? 'justify-center' : '' } ${ !tab.enabled ? 'opacity-50 cursor-not-allowed' : '' }`}
                                     onClick={() => {
-                                        if (!tab.enabled) return;
+                                        if ( !tab.enabled ) return;
                                         setActiveTab( index );
                                         navigate( tabRoutes[ index ] );
                                     }}
@@ -252,9 +244,9 @@ export const SideBar = ( {initialTab} ) => {
                                     className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${ activeTab === index
                                         ? 'bg-white text-blue-900'
                                         : 'hover:bg-blue-800'
-                                        } ${!tab.enabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        } ${ !tab.enabled ? 'opacity-50 cursor-not-allowed' : '' }`}
                                     onClick={() => {
-                                        if (!tab.enabled) return;
+                                        if ( !tab.enabled ) return;
                                         handleSideMenuClick( index );
                                     }}
                                     disabled={!tab.enabled}
