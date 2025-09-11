@@ -46,7 +46,8 @@ function filterEmployees( employees, search ) {
 export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
   const userGerencia = user?.gerencia?.nombre_gerencia || null;
-  const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
+  // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
+  const idGerencia = user?.id_management || null;
   const {employees, loading} = useGetEmployees( idGerencia );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
@@ -67,9 +68,11 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
 
   useEffect( () => {
     if ( !loading ) {
-      console.log( "EMPLEADOSsssss", employees );
+      // console.log( "EMPLEADOSsssss", employees );
+      console.log( "USER", user );
+      console.log( "ID GERENCIA", idGerencia );
     }
-  }, [ employees, loading ] );
+  }, [ idGerencia, loading, user ] );
 
   useEffect( () => {
     if ( !loading && employees && employees.length > 0 ) {
