@@ -38,7 +38,7 @@ export const EmployeesCards = ({
 
     return (
         <>
-            <h1 className="text-2xl font-bold text-center mb-2 text-gray-800 dark:text-white">{userGerencia}</h1>
+            {/* <h1 className="text-2xl font-bold text-center mb-2 text-gray-800 dark:text-white">{userGerencia}</h1> */}
             <input
                 type="text"
                 value={search}
