@@ -39,13 +39,14 @@ function filterEmployees( employees, search ) {
   const s = search.trim().toLowerCase();
   return employees.filter( emp =>
     ( emp.first_name && emp.first_name.toLowerCase().includes( s ) ) ||
-    ( emp.last_name && emp.last_name.toLowerCase().includes( s ) )
+    ( emp.last_name && emp.last_name.toLowerCase().includes( s ) ) ||
+    ( emp.cedula.includes( s ) )
   );
 }
 
 export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
-  const userGerencia = user?.gerencia?.nombre_gerencia || null;
+  const userGerencia = user?.management?.management_name || null;
   // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
   const idGerencia = user?.id_management || null;
   const {employees, loading} = useGetEmployees( idGerencia );
