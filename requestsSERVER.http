@@ -3,40 +3,40 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 ### EXTRAS
 GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 *******************************POSTS******************************
 
@@ -95,7 +95,7 @@ content-type: application/json
 #### EMPLEADOS
 POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 13|YzrJE5ixsUDUmKl7hZd06kLJOf74nQmWxcKY8264926fde41
+Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
 
 {
     "nombre" : "Carlos",

@@ -10,31 +10,21 @@ export const OrderDetails = () => {
     const {employees,
         // loading
     } = useGetEmployees();
-    // Usar empleados cargados en memoria, si no hay, usar mock
-    const empleados = employees && employees.length > 0 ? employees : empleadosData;
+
     // Crear un mapa cedula -> first_name para búsqueda rápida
-    const cedulaToNombre = React.useMemo( () => {
-        const map = {};
-        empleados.forEach( emp => {
-            map[ emp.cedula ] = emp.first_name;
-        } );
-        return map;
-    }, [ empleados ] );
+    // const cedulaToNombre = React.useMemo( () => {
+    //     const map = {};
+    //     employees.forEach( emp => {
+    //         map[ emp.cedula.trim() ] = emp.first_name.trim();
+    //     } );
+    //     return map;
+    // }, [ employees ] );
 
+    useEffect( () => {
+        // console.log( {cedulaToNombre} );
 
-useEffect(() => {
-
-console.log("selectedEmpleadosSummary", selectedEmpleadosSummary);
-
-}, [])
-
-
-
-
-
-
-
-
+        console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
+    }, [] )
 
     return (
         <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl">
@@ -67,7 +57,8 @@ console.log("selectedEmpleadosSummary", selectedEmpleadosSummary);
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.para_llevar ? 'Sí' : 'No'}</td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.cubiertos ? 'Sí' : 'No'}</td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">
-                                    {emp.id_autorizado ? cedulaToNombre[ emp.id_autorizado ] || 'N/A' : 'Mismo Empleado'}
+                                    {/* {emp.id_autorizado ? cedulaToNombre[ emp.id_autorizado ] || 'N/A' : 'Mismo Empleado'} */}
+                                    {emp.id_autorizado ? emp.autoriza_a || 'N/A' : 'Mismo Empleado'}
                                 </td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.evento_especial ? 'Sí' : 'No'}</td>
                             </tr>
