@@ -8,6 +8,8 @@ import {EmployeesTable} from "./EmployeesTable";
 import Swal from 'sweetalert2';
 import {EmployeesCards} from './EmployeesCards';
 import {getExtras} from '../services/actions';
+import {AutorizarSelector} from "./AutorizarSelector";
+import {Spinner} from './Spinner';
 
 // Utilidad para calcular resumen
 function getSummary( employees, tasaDia ) {
@@ -56,6 +58,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const [ sorting, setSorting ] = useState( [] );
   const [ pagination, setPagination ] = useState( {pageIndex: 0, pageSize: 10} );
   const setSummary = useTicketLunchStore( state => state.setSummary );
+  const setOrderOrigin = useTicketLunchStore( state => state.setOrderOrigin );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
   const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
   const tasaDia = 100;
@@ -67,13 +70,13 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     getExtras();
   }, [] );
 
-  useEffect( () => {
-    if ( !loading ) {
-      // console.log( "EMPLEADOSsssss", employees );
-      console.log( "USER", user );
-      console.log( "ID GERENCIA", idGerencia );
-    }
-  }, [ idGerencia, loading, user ] );
+  // useEffect( () => {
+  //   if ( !loading ) {
+  //     // console.log( "EMPLEADOSsssss", employees );
+  //     console.log( "USER", user );
+  //     console.log( "ID GERENCIA", idGerencia );
+  //   }
+  // }, [ idGerencia, loading, user ] );
 
   useEffect( () => {
     if ( !loading && employees && employees.length > 0 ) {
@@ -95,7 +98,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         const guests = selections.filter( emp => emp.invitado );
         const finalEmployeeList = [ ...mergedList, ...guests ];
         setEmployeeList( finalEmployeeList );
-        console.log( "employeeList: ", employeeList );
+        // console.log( "employeeList: ", employeeList );
       } else {
         setEmployeeList( employees.map( emp => ( {...emp, id_autorizado: null, almuerzo: false, para_llevar: false, cubiertos: false, evento_especial: false} ) ) );
       }
@@ -176,9 +179,12 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   }, [ employees ] );
 
   const handleGoNext = () => {
+    console.log( "GO NEXT" );
+
     const selectedEmployees = employeeList.filter( emp =>
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
+
     setResumenEnabled( selectedEmployees.length > 0 );
     if ( selectedEmployees.length === 0 ) return;
 
@@ -211,7 +217,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         autorizado_por = `${ quienAutoriza.first_name || quienAutoriza.nombre || '' } ${ quienAutoriza.last_name || quienAutoriza.apellido || '' }`.trim();
       }
 
-      return {
+      let orderSumary = {
         nombre: emp.first_name || emp.nombre || '',
         apellido: emp.last_name || emp.apellido || '',
         cedula: emp.cedula,
@@ -226,9 +232,14 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         autoriza_a,
         autorizado_por,
       };
+
+      // console.log( "orderSumary", orderSumary );
+
+      return orderSumary
     } );
 
     setSelectedEmpleadosSummary( resumenEmpleados );
+    setOrderOrigin( 'seleccion' ); // Etiquetar el origen
     localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
     localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
     if ( goToResumeTab ) goToResumeTab();
@@ -261,7 +272,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     {
       header: 'Empleado',
       accessorKey: 'first_name',
-      cell: ( {row} ) => <span className="text-gray-900 dark:text-gray-100 hover">
+      cell: ( {row} ) => <span className="text-gray-900 dark:text-gray-100 hover group-hover:text-white">
         {row.original.first_name}
       </span>,
     },
@@ -336,32 +347,18 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
         const uniqueId = `authorized-${ row.original.cedula }-${ row.index }`;
 
         return (
-          <select
-            id={uniqueId}
-            value={selectedId || ''}
-            onChange={e => handleAutorizadoChange( row.original, e.target.value || null )}
-            disabled={!paraLlevar || isSelectedBySomeoneElse}
-            className={`px-2 py-1 text-sm rounded-md border focus:outline-none focus:ring-2
-              ${ !paraLlevar || isSelectedBySomeoneElse ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600' }`}
-          >
-            <option value="">Seleccione...</option>
-            {employeeList
-              .filter( emp => emp.id_gerencia === user.id_gerencia && emp.cedula !== row.original.cedula )
-              .map( emp => {
-                const isUnavailable = employeeList.some( otherEmp => otherEmp.id_autorizado === emp.cedula && otherEmp.cedula !== row.original.cedula );
-                const hasAuthorizedSomeone = emp.id_autorizado;
-                return (
-                  <option
-                    id={uniqueId}
-                    key={emp.cedula}
-                    value={emp.cedula}
-                    disabled={isUnavailable || hasAuthorizedSomeone}
-                  >
-                    {emp.first_name}
-                  </option>
-                );
-              } )}
-          </select>
+          <AutorizarSelector
+            uniqueId={uniqueId}
+            selectedId={selectedId}
+            handleAutorizadoChange={handleAutorizadoChange}
+            paraLlevar={paraLlevar}
+            isSelectedBySomeoneElse={isSelectedBySomeoneElse}
+            employeeList={employeeList}
+            user={user}
+            row={row}
+          />
+
+
         );
       },
     },
@@ -380,13 +377,13 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
           ( cubiertosCount * precioCubierto );
 
         return (
-          <div className='w-full flex justify-center items-center'>
-            <span className="font-bold text-green-800 dark:text-green-400">Bs. {total.toFixed( 2 )}</span>
+          <div className='w-full flex justify-end items-center'>
+            <span className="font-bold text-green-800 dark:text-green-400 group-hover:text-white dark:group-hover:text-gray-100">Bs. {total.toFixed( 2 )}</span>
           </div>
         );
       },
     },
-  ], [ employeeList, handleToggleField, handleAutorizadoChange, tasaDia, user.id_gerencia ] );
+  ], [ handleToggleField, employeeList, handleAutorizadoChange, user ] );
 
   const table = useReactTable( {
     data: filteredEmployees,
@@ -401,9 +398,8 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
 
   if ( loading ) {
     return (
-      <div className="text-center py-8 flex justify-center items-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">Cargando datos...</p>
+      <div className="text-center py-8 flex justify-center items-center w-full h-full">
+        <Spinner />
       </div>
     );
   }
@@ -421,17 +417,17 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
             value={search}
             onChange={e => setSearch( e.target.value )}
             placeholder="Buscar por nombre o apellido..."
-            className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded px-2 py-1 text-sm w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 dark:placeholder:text-gray-400 dark:text-amber-300"
           />
           <select
             id='pageSelector'
             value={pagination.pageSize}
             onChange={e => setPagination( p => ( {...p, pageSize: Number( e.target.value ), pageIndex: 0} ) )}
-            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-500 dark:text-gray-200 dark:bg-black"
           >
-            <option value={5}>5 por página</option>
-            <option value={10}>10 por página</option>
-            <option value={20}>20 por página</option>
+            <option value={5} >5 por página</option>
+            <option value={10} >10 por página</option>
+            <option value={20} >20 por página</option>
           </select>
         </div>
         <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">

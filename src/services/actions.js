@@ -146,7 +146,7 @@ export const getEmployees = async ( id_gerencia ) => {
         // Se desestructura para un código más limpio.
         const {employees = []} = response.data;
 
-        console.log( "Empleados desde FUNCIÓN:", employees );
+        // console.log( "Empleados desde FUNCIÓN:", employees );
         return employees;
 
     } catch ( error ) {

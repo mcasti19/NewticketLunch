@@ -1,26 +1,24 @@
 import React, {useEffect, useState} from 'react';
 import {getMenu} from "../services/actions";
 import {NoMenu} from './NoMenu';
+import {Spinner} from './Spinner';
 
 export const ContentMenu = () => {
   const [ menuDia, setMenuDia ] = useState( [] );
-  const [ isLoading, setIsLoading ] = useState( true ); // <--- INICIA EN TRUE
-  const [ isMenu, setIsMenu ] = useState( false )
+  const [ isLoading, setIsLoading ] = useState( true );
 
   const day = new Date().getDate();
   const month = new Date().getMonth() + 1;
 
   useEffect( () => {
     const fetchMenu = async () => {
+      setIsLoading(true);
       try {
         const data = await getMenu();
         setMenuDia( Array.isArray( data ) ? data : [] );
-        setIsMenu( true )
       } catch ( error ) {
-        // Maneja el error aquí, por ejemplo, mostrando un mensaje al usuario
         console.error( "Error al obtener el menú:", error );
         setMenuDia( [] );
-        setIsMenu( false )
       } finally {
         setIsLoading( false );
       }
@@ -28,78 +26,57 @@ export const ContentMenu = () => {
     fetchMenu();
   }, [] );
 
-  const MenuSkeleton = () => {
+  // 1. Muestra el Spinner mientras carga
+  if (isLoading) {
+    return <Spinner text="Cargando menú..." />;
+  }
+
+  // 2. Muestra el componente NoMenu si no hay menú y la carga ha terminado
+  if (menuDia.length === 0) {
     return (
-      <div className="grid md:col-span-2 grid-cols-1 sm:grid-cols-2 gap-6 w-full animate-pulse">
-        {[ ...Array( 6 ) ].map( ( _, index ) => (
-          <div key={index} className="flex flex-col bg-gray-200 rounded-2xl p-4 dark:bg-gray-700">
-            <div className="h-6 bg-gray-300 rounded w-3/4 mb-4 dark:bg-gray-600"></div>
-            <ul className="list-disc list-inside space-y-2">
-              {[ ...Array( 3 ) ].map( ( _, idx ) => (
-                <li key={idx} className="h-4 bg-gray-300 rounded w-full dark:bg-gray-600"></li>
-              ) )}
-            </ul>
-          </div>
-        ) )}
+      <div className="flex flex-col items-center justify-around w-full text-center h-full border-2">
+        <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-4 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
+        <NoMenu />
       </div>
     );
-  };
+  }
 
+  // 3. Muestra el menú si la carga ha terminado y hay datos
   return (
     <>
-      <div className="flex flex-col items-center justify-center w-full text-center gap-5 max-h-screen">
+      <div className="flex flex-col items-center justify-center w-full text-center gap-5">
         <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-1 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
         <h2 className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-amber-50">Tasa del día: <span className="text-amber-500  rounded-2xl px-2 py-1 ml-1 font-bold shadow">Bs 119,67</span></h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 md:gap-2 items-center border-0 border-amber-300 lg:w-full lg:justify-between">
-        {
-          menuDia.length > 0 && (
-            <div className="flex flex-col gap-2 items-center justify-center grow border-0">
-              <picture className="w-full border-0 flex justify-center items-center">
-                <source srcSet="/comedor3.jpg" media="(min-width: 768px)" />
-                <img src="/comedor2.jpg" alt="Descripción de la imagen" className="rounded-3xl md:w-[25vw] shadow-lg border-0 border-blue-800 object-contain" />
-              </picture>
-            </div>
-          )
-        }
-
-        {
-          isLoading ? (
-            <MenuSkeleton /> // Muestra el esqueleto si está cargando
-          ) : (
-            <div className="grid md:col-span-2 grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-              {menuDia.length > 0 && (
-                menuDia.map( ( item ) => (
-                  <div key={item.id_menu} className="flex flex-col bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 hover:shadow-xl transition-all dark:bg-slate-900">
-                    <h1 className="text-xl font-bold text-blue-600 mb-2 tracking-wide dark:text-red-600">
-                      {item.food_category}
-                    </h1>
-                    <ul className="list-disc list-inside space-y-1">
-                      {item.name_ingredient.split( ',' ).map( ( ingredient, idx ) => (
-                        <li key={idx} className="text-gray-800 dark:text-white text-base md:text-lg font-medium pl-2">
-                          {ingredient.trim()}
-                        </li>
-                      ) )}
-                    </ul>
-                  </div>
-                ) )
-              )}
-            </div>
-          )}
-
+        <div className="flex flex-col gap-2 items-center justify-center grow border-0">
+          <picture className="w-full border-0 flex justify-center items-center">
+            <source srcSet="/comedor3.jpg" media="(min-width: 768px)" />
+            <img src="/comedor2.jpg" alt="Descripción de la imagen" className="rounded-3xl md:w-[25vw] shadow-lg border-0 border-blue-800 object-contain" />
+          </picture>
+        </div>
+        
+        <div className="grid md:col-span-2 grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+          {menuDia.map( ( item ) => (
+              <div key={item.id_menu} className="flex flex-col bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 hover:shadow-xl transition-all dark:bg-slate-900">
+                <h1 className="text-xl font-bold text-blue-600 mb-2 tracking-wide dark:text-red-600">
+                  {item.food_category}
+                </h1>
+                <ul className="list-disc list-inside space-y-1">
+                  {item.name_ingredient.split( ',' ).map( ( ingredient, idx ) => (
+                    <li key={idx} className="text-gray-800 dark:text-white text-base md:text-lg font-medium pl-2">
+                      {ingredient.trim()}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
       </div>
-        {
-          !isMenu && (
-            <NoMenu />
-          )
-        }
       <div className="mt-8">
-        {
-          isMenu && (
-            <h1 className="text-center text-3xl md:text-4xl text-red-700 font-extrabold py-3">¡Buen Provecho!</h1>
-          )
-        }
+        <h1 className="text-center text-3xl md:text-4xl text-red-700 font-extrabold py-3">¡Buen Provecho!</h1>
       </div>
     </>
   );

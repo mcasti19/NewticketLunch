@@ -4,11 +4,12 @@ import ModalResume from './ModalResume';
 import {OrderDetails} from './OrderDetails';
 
 
-export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
+export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicketTab} ) => {
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
   const setReferenceNumber = useTicketLunchStore( state => state.setReferenceNumber );
   const setTicketEnabled = useTicketLunchStore(state => state.setTicketEnabled);
+  const orderOrigin = useTicketLunchStore(state => state.orderOrigin);
 
   const openModal = option => {
     setSelectedPaymentOption( option );
@@ -26,10 +27,15 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
     if ( goToTicketTab ) goToTicketTab();
   };
 
-  const handleBackToSeleccionTab = () => {
-    // console.log( "REGRESANDO" );
-
-    if ( goBackSeleccionTab ) goBackSeleccionTab();
+  const handleModifyOrder = () => {
+    if (orderOrigin === 'mi-ticket' && goBackMiTicketTab) {
+        goBackMiTicketTab();
+    } else if (orderOrigin === 'seleccion' && goBackSeleccionTab) {
+        goBackSeleccionTab();
+    } else {
+        // Comportamiento por defecto si el origen no está claro
+        if (goBackSeleccionTab) goBackSeleccionTab();
+    }
   }
 
   return (
@@ -81,7 +87,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab} ) => {
 
       <div className="flex justify-center w-full mt-4">
         <button
-          onClick={handleBackToSeleccionTab}
+          onClick={handleModifyOrder}
           className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow"
         >
           Modificar Orden

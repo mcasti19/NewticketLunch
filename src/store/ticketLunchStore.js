@@ -25,4 +25,8 @@ export const useTicketLunchStore = create( ( set ) => ( {
   setResumenEnabled: (enabled) => set({ isResumenEnabled: enabled }),
   isTicketEnabled: false,
   setTicketEnabled: (enabled) => set({ isTicketEnabled: enabled }),
+
+  // Nuevo estado para rastrear el origen del pedido
+  orderOrigin: null, // Puede ser 'mi-ticket' o 'seleccion'
+  setOrderOrigin: (origin) => set({ orderOrigin: origin }),
 } ) );

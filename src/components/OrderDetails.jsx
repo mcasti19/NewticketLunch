@@ -1,30 +1,17 @@
-import React, {useEffect} from 'react'
+// import React, {useEffect} from 'react'
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-import {useGetEmployees} from '../hooks/useGetEmployees';
-import empleadosData from '../data/mockDataEmpleados.json';
+
 
 export const OrderDetails = () => {
     const summary = useTicketLunchStore( state => state.summary );
     const selectedEmpleadosSummary = useTicketLunchStore( state => state.selectedEmpleadosSummary );
-    // Obtener empleados desde API o mock
-    const {employees,
-        // loading
-    } = useGetEmployees();
 
-    // Crear un mapa cedula -> first_name para búsqueda rápida
-    // const cedulaToNombre = React.useMemo( () => {
-    //     const map = {};
-    //     employees.forEach( emp => {
-    //         map[ emp.cedula.trim() ] = emp.first_name.trim();
-    //     } );
-    //     return map;
-    // }, [ employees ] );
 
-    useEffect( () => {
-        // console.log( {cedulaToNombre} );
+    // useEffect( () => {
+    //     // console.log( {cedulaToNombre} );
 
-        console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
-    }, [] )
+    //     console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
+    // }, [] )
 
     return (
         <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl">
