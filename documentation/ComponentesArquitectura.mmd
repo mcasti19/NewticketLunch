@@ -1,0 +1,34 @@
+graph TD
+    subgraph " "
+        A(Usuario) --> B(AppRouter.jsx);
+    end
+
+    subgraph "Flujo de Autenticación"
+        B --> C[LoginPage.jsx];
+        C --> D(useAuthStore.js);
+        D --> E[authStore.js];
+        D --> F(api.js);
+    end
+
+    subgraph "Flujo Principal de la App"
+        B --> G[Pages (Home, TicketPage)];
+        G -- Usa --> H(Layout.jsx);
+        H -- Contiene --> I(Header.jsx / SideBar.jsx);
+        G -- Compuesto por --> J[Components (Content*, Employees*, Modal*)];
+        J -- Usan Lógica de --> K(Custom Hooks);
+        K -- Leen/Escriben en --> L[Stores (ticketLunchStore)];
+        K -- Realizan llamadas con --> F(api.js);
+    end
+
+    subgraph "Capa de Datos"
+        F -- Interactúa con --> M[Backend API];
+        F -- Puede usar --> N[Mock Data (JSON)];
+    end
+
+    %% Estilos para claridad
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#ccf,stroke:#333,stroke-width:2px
+    style E fill:#fec,stroke:#333,stroke-width:2px
+    style L fill:#fec,stroke:#333,stroke-width:2px
+    style M fill:#bbf,stroke:#333,stroke-width:2px
+    style N fill:#ddd,stroke:#333,stroke-width:1px

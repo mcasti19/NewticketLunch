@@ -13,7 +13,7 @@ export const EmployeesTable = ( {
     <div className="hidden md:flex overflow-x-auto bg-white dark:bg-gray-200 rounded-lg shadow-lg w-full"
       style={{
         maxHeight: 'calc(100vh - 25vh)', // Ajusta este valor según el header, filtros y margen deseado
-        minHeight:'200px',
+        minHeight:'70px',
         overflowY: 'auto',
         marginBottom: '1rem',
       }}
@@ -47,7 +47,7 @@ export const EmployeesTable = ( {
             return (
               <tr
                 key={row.id}
-                className={`${ index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-600 dark:hover:bg-blue-950 transition-colors group-hover:`}
+                className={`${ index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-600 dark:hover:bg-blue-950 transition-colors group`}
               >
                 {row.getVisibleCells().map( cell => (
                   <td key={cell.id} className="px-2 py-2 text-xs md:text-sm dark:text-amber-50">

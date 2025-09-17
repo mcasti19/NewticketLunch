@@ -29,5 +29,7 @@ export function useGetEmployees( idGerencia ) {
     return () => { isMounted = false; };
   }, [idGerencia]);
 
+  // console.log("Fetched Employees:", employees);
+  
   return { employees, loading };
 }
