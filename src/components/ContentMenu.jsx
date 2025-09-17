@@ -26,22 +26,22 @@ export const ContentMenu = () => {
     fetchMenu();
   }, [] );
 
-  // 1. Muestra el Spinner mientras carga
+  
   if (isLoading) {
     return <Spinner text="Cargando menú..." />;
   }
 
-  // 2. Muestra el componente NoMenu si no hay menú y la carga ha terminado
+  
   if (menuDia.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-around w-full text-center h-full border-2">
+      <div className="flex flex-col items-center justify-around w-full text-center h-full border-0">
         <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-4 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
         <NoMenu />
       </div>
     );
   }
 
-  // 3. Muestra el menú si la carga ha terminado y hay datos
+  
   return (
     <>
       <div className="flex flex-col items-center justify-center w-full text-center gap-5">
