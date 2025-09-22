@@ -156,13 +156,16 @@ export const SideBar = ( {initialTab} ) => {
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900 w-full">
             {/* Sidebar Navigation - Left Column */}
             <aside className={`hidden md:flex flex-col bg-gradient-to-t from-blue-950 to-blue-700 text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
-                <div className={`p-4 border-b border-blue-900 ${ isCollapsed ? 'flex justify-center' : '' }`}>
+                <div className={`border-b border-blue-900 ${ isCollapsed ? 'flex justify-center' : '' }`}>
                     {isCollapsed ? (
-                        <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
                             <span className="text-blue-900 font-bold text-sm">M</span>
                         </div>
                     ) : (
-                        <HeaderLogo className="text-white" />
+                        // <HeaderLogo className="text-white" />
+                        <div className='p-4 text-center'>
+                            <h1>TICKET LUNCH</h1>
+                        </div>
                     )}
                 </div>
 
