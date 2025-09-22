@@ -133,8 +133,8 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
     }
 
     return (
-        <div className="p-4 md:p-8 bg-gray-800 rounded-lg shadow-xl text-white max-w-2xl mx-auto my-8 border border-gray-700">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400">Mi Ticket del Comedor</h1>
+        <div className="p-4 md:p-8 bg-gray-800 rounded-lg shadow-xl text-white w-[90vw] md:w-[75dvw] mx-auto my-8 border border-gray-700">
+            <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400">Mi Ticket</h1>
             <div className="flex flex-col items-center mb-6">
                 <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-2">
                     <span className="text-2xl font-semibold">

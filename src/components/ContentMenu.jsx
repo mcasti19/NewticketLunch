@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {getMenu} from "../services/actions";
 import {NoMenu} from './NoMenu';
 import {Spinner} from './Spinner';
@@ -7,12 +7,20 @@ export const ContentMenu = () => {
   const [ menuDia, setMenuDia ] = useState( [] );
   const [ isLoading, setIsLoading ] = useState( true );
 
-  const day = new Date().getDate();
-  const month = new Date().getMonth() + 1;
+  // const day = new Date().getDate();
+  // const month = new Date().getMonth() + 1;
+
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.toLocaleString( 'es-ES', {month: 'long'} ); // Ejemplo: "septiembre"
+
+
+
+  const maxMenu = 5;
 
   useEffect( () => {
     const fetchMenu = async () => {
-      setIsLoading(true);
+      setIsLoading( true );
       try {
         const data = await getMenu();
         setMenuDia( Array.isArray( data ) ? data : [] );
@@ -26,22 +34,22 @@ export const ContentMenu = () => {
     fetchMenu();
   }, [] );
 
-  
-  if (isLoading) {
+
+  if ( isLoading ) {
     return <Spinner text="Cargando menú..." />;
   }
 
-  
-  if (menuDia.length === 0) {
+
+  if ( menuDia.length === 0 ) {
     return (
-      <div className="flex flex-col items-center justify-around w-full text-center h-full border-0">
+      <div className="flex flex-col items-center justify-center w-full text-center h-full border-0">
         <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-4 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
         <NoMenu />
       </div>
     );
   }
 
-  
+
   return (
     <>
       <div className="flex flex-col items-center justify-center w-full text-center gap-5">
@@ -56,9 +64,10 @@ export const ContentMenu = () => {
             <img src="/comedor2.jpg" alt="Descripción de la imagen" className="rounded-3xl md:w-[25vw] shadow-lg border-0 border-blue-800 object-contain" />
           </picture>
         </div>
-        
+
         <div className="grid md:col-span-2 grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-          {menuDia.map( ( item ) => (
+          {
+            menuDia.slice( 0, maxMenu ).map( ( item ) => (
               <div key={item.id_menu} className="flex flex-col bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 hover:shadow-xl transition-all dark:bg-slate-900">
                 <h1 className="text-xl font-bold text-blue-600 mb-2 tracking-wide dark:text-red-600">
                   {item.food_category}
@@ -66,12 +75,12 @@ export const ContentMenu = () => {
                 <ul className="list-disc list-inside space-y-1">
                   {item.name_ingredient.split( ',' ).map( ( ingredient, idx ) => (
                     <li key={idx} className="text-gray-800 dark:text-white text-base md:text-lg font-medium pl-2">
-                      {ingredient.trim()}
+                      {ingredient.charAt( 0 ).toUpperCase() + ingredient.slice( 1 ).trim()}
                     </li>
-                  ))}
+                  ) )}
                 </ul>
               </div>
-            ))
+            ) )
           }
         </div>
       </div>
