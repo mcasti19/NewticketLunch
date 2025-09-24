@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, {useMemo} from 'react';
 import {useAuthStore} from '../store/authStore';
-
+import Select from 'react-select'; // Importa React Select
 
 export const AutorizarSelector = ( {
     // Props para ContentMiTicket (vista individual)
@@ -13,9 +13,10 @@ export const AutorizarSelector = ( {
     handleAutorizadoChange,
     paraLlevar,
     isSelectedBySomeoneElse,
-    employeeList
+    employeeList, // Se usa en ambos contextos
 } ) => {
     const {user} = useAuthStore();
+
     // Lógica para el selector en la tabla (ContentSeleccion)
     if ( row && handleAutorizadoChange && employeeList ) {
         const uniqueId = `autorizar-select-${ row.original.cedula }`;
@@ -26,30 +27,67 @@ export const AutorizarSelector = ( {
             return employeeList.filter( emp => emp.id_gerencia === user?.id_gerencia && emp.cedula !== row.original.cedula );
         }, [ employeeList, user, row ] );
 
+        const options = useMemo( () => {
+            return employeesForSelector.map( emp => {
+                const isUnavailable = employeeList.some( otherEmp => otherEmp.id_autorizado === emp.cedula && otherEmp.cedula !== row.original.cedula );
+                const hasAuthorizedSomeone = emp.id_autorizado;
+                return {
+                    value: emp.cedula,
+                    label: emp.fullName,
+                    isDisabled: isUnavailable || hasAuthorizedSomeone, // La prop `isDisabled` se pasa a la opción
+                    ...emp
+                };
+            } );
+        }, [ employeesForSelector, employeeList, row ] );
+
+        const selectedOption = options.find( option => option.value === selectedId ) || null;
+
+        // Estilos personalizados para React Select en la tabla
+        const customStyles = {
+            control: ( provided, state ) => ( {
+                ...provided,
+                fontSize: '0.875rem', // text-sm
+                padding: '0.25rem', // px-2
+                borderRadius: '0.375rem', // rounded-md
+                borderColor: state.isDisabled ? '#E5E7EB' : '#D1D5DB', // border-gray-300
+                backgroundColor: state.isDisabled ? '#F3F4F6' : '#FFFFFF', // bg-gray-100 o bg-white
+                cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                boxShadow: 'none',
+                '&:hover': {
+                    borderColor: '#D1D5DB',
+                },
+            } ),
+            singleValue: ( provided ) => ( {
+                ...provided,
+                color: 'currentColor',
+            } ),
+            option: ( provided, state ) => ( {
+                ...provided,
+                backgroundColor: state.isFocused ? '#E5E7EB' : 'white',
+                color: 'black',
+            } ),
+            placeholder: ( provided ) => ( {
+                ...provided,
+                color: '#6B7280',
+            } ),
+            indicatorSeparator: () => ( {display: 'none'} ), // Oculta el separador
+            dropdownIndicator: ( provided, state ) => ( {
+                ...provided,
+                color: state.isDisabled ? '#9CA3AF' : '#6B7280',
+            } )
+        };
+
         return (
-            <select
+            <Select
                 id={uniqueId}
-                value={selectedId || ''}
-                onChange={e => handleAutorizadoChange( row.original, e.target.value || null )}
-                disabled={!paraLlevar || isSelectedBySomeoneElse}
-                className={`px-2 py-1 text-sm rounded-md border focus:outline-none focus:ring-2
-                    ${ !paraLlevar || isSelectedBySomeoneElse ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600' }`}
-            >
-                <option value="">Seleccione...</option>
-                {employeesForSelector.map( emp => {
-                    const isUnavailable = employeeList.some( otherEmp => otherEmp.id_autorizado === emp.cedula && otherEmp.cedula !== row.original.cedula );
-                    const hasAuthorizedSomeone = emp.id_autorizado;
-                    return (
-                        <option
-                            key={emp.cedula}
-                            value={emp.cedula}
-                            disabled={isUnavailable || hasAuthorizedSomeone}
-                        >
-                            {emp.first_name}
-                        </option>
-                    );
-                } )}
-            </select>
+                value={selectedOption}
+                onChange={selected => handleAutorizadoChange( row.original, selected ? selected.value : null )}
+                options={options}
+                isDisabled={!paraLlevar || isSelectedBySomeoneElse}
+                placeholder="Seleccione..."
+                styles={customStyles}
+                isSearchable={true}
+            />
         );
     }
 
@@ -63,34 +101,47 @@ export const AutorizarSelector = ( {
         );
     }, [ employeeList, loading, user ] );
 
+    const options = useMemo( () => {
+        return filteredEmployees.map( emp => ( {
+            value: emp.cedula,
+            label: emp.fullName,
+            ...emp
+        } ) );
+    }, [ filteredEmployees ] );
+
+    const handleChange = ( selectedOption ) => {
+        onSelect( selectedOption );
+    };
+
     return (
-        <div className="bg-gray-700 p-4 rounded-lg flex flex-col shadow-md">
-            <select
-                id="autorizar-select"
-                value={selectedAutorizado?.cedula || ''}
-                onChange={( e ) => {
-                    const selectedId = e.target.value;
-                    const selectedEmp = selectedId
-                        ? filteredEmployees.find( emp => emp.cedula === selectedId )
-                        : null;
-                    onSelect( selectedEmp );
-                }}
-                className="w-full px-3 py-2 text-white bg-gray-800 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                disabled={loading}
-            >
-                <option value="">
-                    {loading ? 'Cargando empleados...' : 'Seleccione...'}
-                </option>
-                {filteredEmployees.map( emp => (
-                    <option key={emp.cedula} value={emp.cedula}>
-                        {emp.first_name} {emp.last_name}
-                    </option>
-                ) )}
-            </select>
+        <div className="bg-gray-500 p-0 rounded-lg flex flex-col border-2 w-full">
+            <Select
+                options={options}
+                value={selectedAutorizado ? {value: selectedAutorizado.cedula, label: selectedAutorizado.fullname} : null}
+                onChange={handleChange}
+                isSearchable={true}
+                placeholder={loading ? 'Cargando empleados...' : 'Seleccione o busque...'}
+                isDisabled={loading}
+                className="text-white"
+                classNamePrefix="react-select"
+                // Aquí se pueden añadir estilos personalizados con `styles` si es necesario
+                theme={( theme ) => ( {
+                    ...theme,
+                    colors: {
+                        ...theme.colors,
+                        primary: '#3B82F6', // Color de focus/selección
+                        primary25: '#3B82F6', // Color al pasar el mouse por las opciones
+                        neutral80: 'white',
+                        neutral0: '#1F2937', // Color de fondo del control
+                    },
+                } )}
+            />
             {selectedAutorizado && (
-                <p className="text-sm text-gray-400 mt-2">
-                    Autorizado: **{selectedAutorizado.first_name} {selectedAutorizado.last_name}**
-                </p>
+                <div>
+                    <p className="text-sm text-gray-100 mt-1 text-center">
+                        Autorizado:<br></br> {selectedAutorizado.fullName}
+                    </p>
+                </div>
             )}
         </div>
     );

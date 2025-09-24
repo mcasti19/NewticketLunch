@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import {useState, useEffect, useMemo, useCallback} from 'react';
 import ModalAgregarInvitado from './ModalAgregarInvitado';
 import {useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel} from '@tanstack/react-table';
 import {useAuthStore} from '../store/authStore';
@@ -61,13 +61,16 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const setOrderOrigin = useTicketLunchStore( state => state.setOrderOrigin );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
   const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
+  const [ selectedAutorizado, setSelectedAutorizado ] = useState( null );
   const tasaDia = 100;
   const precioLlevar = 15;
   const precioCubierto = 5;
 
 
+
   useEffect( () => {
-    getExtras();
+    // getExtras();
+    console.log( "EMPLEADOSsssss", employees );
   }, [] );
 
   // useEffect( () => {
@@ -208,13 +211,13 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
       if ( emp.id_autorizado ) {
         const autorizado = cedulaToEmpleado[ emp.id_autorizado ];
         if ( autorizado ) {
-          autoriza_a = `${ autorizado.first_name || autorizado.nombre || '' } ${ autorizado.last_name || autorizado.apellido || '' }`.trim();
+          autoriza_a = `${ autorizado.fullName || '' }`.trim();
         }
       }
       let autorizado_por = '';
       const quienAutoriza = employeeList.find( e => ( e.id_autorizado === emp.cedula ) );
       if ( quienAutoriza ) {
-        autorizado_por = `${ quienAutoriza.first_name || quienAutoriza.nombre || '' } ${ quienAutoriza.last_name || quienAutoriza.apellido || '' }`.trim();
+        autorizado_por = `${ quienAutoriza.fullName || '' }`.trim();
       }
 
       let orderSumary = {
@@ -271,9 +274,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
     },
     {
       header: 'Empleado',
-      accessorKey: 'first_name',
+      accessorKey: 'fullName',
       cell: ( {row} ) => <span className="text-gray-900 dark:text-gray-100 hover group-hover:text-white">
-        {row.original.first_name}
+        {row.original.fullName}
       </span>,
     },
     {
