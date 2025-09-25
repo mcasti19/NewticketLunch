@@ -57,24 +57,26 @@ export const ContentMenu = () => {
         <h2 className="text-xl md:text-2xl font-semibold text-gray-700 dark:text-amber-50">Tasa del día: <span className="text-amber-500  rounded-2xl px-2 py-1 ml-1 font-bold shadow">Bs 119,67</span></h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 md:gap-2 items-center border-0 border-amber-300 lg:w-full lg:justify-between">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 md:gap-2 items-center border-0 border-amber-300 lg:w-full lg:justify-between"> */}
+      <div className="flex flex-col lg:flex-row md:gap-2 items-center border-0 border-amber-300 lg:w-full lg:justify-between">
+
         <div className="flex flex-col gap-2 items-center justify-center grow border-0">
           <picture className="w-full border-0 flex justify-center items-center">
             <source srcSet="/comedor3.jpg" media="(min-width: 768px)" />
-            <img src="/comedor2.jpg" alt="Descripción de la imagen" className="rounded-3xl md:w-[25vw] shadow-lg border-0 border-blue-800 object-contain" />
+            <img src="/comedor2.jpg" alt="Descripción de la imagen" className="rounded-3xl md:w-[35vw] shadow-lg border-0 border-blue-800 object-contain" />
           </picture>
         </div>
 
-        <div className="grid md:col-span-2 grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+        <div className="flex flex-wrap justify-center w-full gap-6 border-0">
           {
             menuDia.slice( 0, maxMenu ).map( ( item ) => (
-              <div key={item.id_menu} className="flex flex-col bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 hover:shadow-xl transition-all dark:bg-slate-900">
-                <h1 className="text-xl font-bold text-blue-600 mb-2 tracking-wide dark:text-red-600">
+              <div key={item.id_menu} className="flex flex-col w-full sm:w-2/5 md:min-h-48 bg-white/90 rounded-sm shadow-md border-0 border-blue-100 p-4 hover:shadow-xl transition-all dark:bg-slate-900">
+                <h1 className="text-[clamp(1rem,2.5vw,2rem)] font-bold text-blue-600 mb-2 tracking-wide dark:text-red-600">
                   {item.food_category}
                 </h1>
                 <ul className="list-disc list-inside space-y-1">
                   {item.name_ingredient.split( ',' ).map( ( ingredient, idx ) => (
-                    <li key={idx} className="text-gray-800 dark:text-white text-base md:text-lg font-medium pl-2">
+                    <li key={idx} className="text-gray-800 dark:text-white text-[clamp(0.9rem,2vw,1.5rem)] font-medium pl-2">
                       {ingredient.charAt( 0 ).toUpperCase() + ingredient.slice( 1 ).trim()}
                     </li>
                   ) )}
