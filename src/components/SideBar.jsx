@@ -19,6 +19,7 @@ import {HeaderLogo} from './HeaderLogo';
 import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica específica, sino integrar aquí
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
 import {ContentMiTicket} from './ContentMiTicket';
+import {Profile} from './Profile';
 
 export const SideBar = ( {initialTab} ) => {
     // Store flags para habilitar/deshabilitar tabs
@@ -30,6 +31,7 @@ export const SideBar = ( {initialTab} ) => {
     const tabRoutes = [
         '/menu',
         '/mi-ticket',
+        '/profile',
         '/seleccion',
         '/resumen-pago',
         '/generar-ticket',
@@ -47,9 +49,22 @@ export const SideBar = ( {initialTab} ) => {
             content: (
                 <ContentMiTicket goToResumeTab={() => {
                     setResumenEnabled( true );
-                    setActiveTab( 3 ); // Correct tab index for 'Resumen y Pago'
-                    navigate( tabRoutes[ 3 ] ); // Navigate to '/resumen-pago'
+                    setActiveTab( 4 ); // Correct tab index for 'Resumen y Pago'
+                    navigate( tabRoutes[ 4 ] ); // Navigate to '/resumen-pago'
                 }} />
+            ),
+            enabled: true,
+        },
+        {
+            label: 'Perfil',
+            icon: <FaUser className="w-5 h-5" />,
+            content: (
+                <>
+                    <Profile goToResumeTab={() => {
+                        setResumenEnabled( true );
+                        setActiveTab( 3 );
+                    }} />
+                </>
             ),
             enabled: true,
         },
@@ -60,7 +75,7 @@ export const SideBar = ( {initialTab} ) => {
                 <>
                     <ContentSeleccion goToResumeTab={() => {
                         setResumenEnabled( true );
-                        setActiveTab( 3 );
+                        setActiveTab( 4 );
                     }} />
                 </>
             ),
@@ -72,11 +87,11 @@ export const SideBar = ( {initialTab} ) => {
             content: <ContentResume
                 goToTicketTab={() => {
                     setTicketEnabled( true );
-                    setActiveTab( 4 );
-                    navigate( tabRoutes[ 4 ] );
+                    setActiveTab( 5 );
+                    navigate( tabRoutes[ 5 ] );
                 }}
                 goBackSeleccionTab={() => {
-                    setActiveTab( 2 );
+                    setActiveTab( 3 );
                     navigate( tabRoutes[ 2 ] );
                 }}
                 goBackMiTicketTab={() => {
@@ -98,9 +113,10 @@ export const SideBar = ( {initialTab} ) => {
         switch ( initialTab ) {
             case 'menu': return 0;
             case 'mi-ticket': return 1;
-            case 'seleccion': return 2;
-            case 'resumen-pago': return 3;
-            case 'generar-ticket': return 4;
+            case 'profile': return 2;
+            case 'seleccion': return 3;
+            case 'resumen-pago': return 4;
+            case 'generar-ticket': return 5;
             default: return 0;
         }
     };
