@@ -11,7 +11,6 @@ export const Profile = () => {
             <div className="w-full md:w-1/3 border-r border-gray-200 pr-5 flex flex-col justify-center items-center">
                 <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Mi Ticket Almuerzo</h3>
                 <div className="flex flex-col items-center space-y-4">
-                    {/* Avatar (simulado) */}
                     <div className="relative w-52 h-52 rounded-xs overflow-hidden bg-gray-200 ring-4 ring-white shadow-md">
                         {/* Reemplaza con una imagen real si es necesario */}
                         <img
