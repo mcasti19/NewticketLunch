@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
 import {OrderDetails} from './OrderDetails';
@@ -8,8 +8,8 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
   const setReferenceNumber = useTicketLunchStore( state => state.setReferenceNumber );
-  const setTicketEnabled = useTicketLunchStore(state => state.setTicketEnabled);
-  const orderOrigin = useTicketLunchStore(state => state.orderOrigin);
+  const setTicketEnabled = useTicketLunchStore( state => state.setTicketEnabled );
+  const orderOrigin = useTicketLunchStore( state => state.orderOrigin );
 
   const openModal = option => {
     setSelectedPaymentOption( option );
@@ -23,20 +23,25 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
   const handleGenerarTickets = ( referenceNumber ) => {
     setReferenceNumber( referenceNumber ); // Si quieres guardar en el store
     setModalIsOpen( false );
-    setTicketEnabled(true); // Habilita la tab de ticket
+    setTicketEnabled( true ); // Habilita la tab de ticket
     if ( goToTicketTab ) goToTicketTab();
   };
 
   const handleModifyOrder = () => {
-    if (orderOrigin === 'mi-ticket' && goBackMiTicketTab) {
-        goBackMiTicketTab();
-    } else if (orderOrigin === 'seleccion' && goBackSeleccionTab) {
-        goBackSeleccionTab();
+    if ( orderOrigin === 'mi-ticket' && goBackMiTicketTab ) {
+      goBackMiTicketTab();
+    } else if ( orderOrigin === 'seleccion' && goBackSeleccionTab ) {
+      goBackSeleccionTab();
     } else {
-        // Comportamiento por defecto si el origen no está claro
-        if (goBackSeleccionTab) goBackSeleccionTab();
+      // Comportamiento por defecto si el origen no está claro
+      if ( goBackSeleccionTab ) goBackSeleccionTab();
     }
   }
+
+  // useEffect( () => {
+  //   console.log( {orderOrigin} );
+  // }, [] )
+
 
   return (
     <>
@@ -46,7 +51,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
 
         <div className="flex flex-col gap-4 w-full max-w-3xl border-0">
           <h3 className="text-xl md:text-2xl font-bold text-center text-blue-700 mb-2">Opciones de Pago</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <div
               className="flex flex-col items-center cursor-pointer rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 shadow-md hover:shadow-xl border border-blue-200 p-3 transition-all hover:scale-105"
               onClick={() => openModal( 'Pago Móvil' )}
@@ -61,7 +66,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
               <span className="font-bold text-blue-700 mb-1">Transferencia</span>
               <img src="cuáles-son-los-bancos-de-venezuela.jpg" alt="transferencia" className="w-24 md:w-32 rounded" />
             </div>
-            <div
+            {/* <div
               className="flex flex-col items-center cursor-pointer rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 shadow-md hover:shadow-xl border border-blue-200 p-3 transition-all hover:scale-105"
               onClick={() => openModal( 'Débito' )}
             >
@@ -74,7 +79,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
             >
               <span className="font-bold text-blue-700 mb-1">Efectivo</span>
               <img src="./efectivo.png" alt="Bolivares_efectivo" className="w-24 md:w-32" />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -83,6 +88,7 @@ export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicke
         onRequestClose={closeModal}
         paymentOption={selectedPaymentOption}
         onGenerarTickets={handleGenerarTickets}
+        orderOrigin={orderOrigin}
       />
 
       <div className="flex justify-center w-full mt-4">

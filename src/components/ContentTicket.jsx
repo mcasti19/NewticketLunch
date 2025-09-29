@@ -17,7 +17,7 @@ export const ContentTicket = () => {
       setOrdenes( [] );
       console.log( 'No hay ordenes generadas en localStorage' );
     }
-  }, [ordenes] );
+  }, [] );
 
   return (
     <div className='w-full max-h-screen overflow-y-auto '>

@@ -63,7 +63,7 @@ export const createOrder = async ( {
     const idToEmpleado = {};
     empleados.forEach( emp => {
         // Puede ser IdEmpleado o id_empleado según backend
-        const id = emp.id_employee || '';
+        const id = emp.cedula || '';
         idToEmpleado[ id ] = emp;
     } );
 
@@ -97,7 +97,7 @@ export const createOrder = async ( {
                 id_payment_method,
                 reference: referenceNumber,
                 total_amount: total_pagar, // total individual
-                id_employee: emp.id_employee,
+                cedula: emp.cedula,
                 id_order_status: 1,
                 id_orders_consumption: 2,
                 date_order,
@@ -120,78 +120,6 @@ export const createOrder = async ( {
     return orders;
 };
 
-export const getManagements = async ( page = 1, pageSize = 5 ) => {
-    const {data} = await api.get( '/gerencias', {
-        params: {
-            page,
-            pageSize,
-        },
-    } );
-    // console.log( 'GetManagements :', data );
-    return data
-}
-
-export const getEmployees = async ( id_gerencia ) => {
-    // Se valida que exista el ID de la gerencia antes de hacer el get
-    if ( !id_gerencia ) {
-        console.error( "ID de gerencia no proporcionado." );
-        return [];
-    }
-
-    try {
-        const response = await api.get( `/empleados`, {
-            params: {gerencias: id_gerencia}, // Se usa el params como buena practica
-        } );
-
-        // Se desestructura para un código más limpio.
-        const {employees = []} = response.data;
-
-        // console.log( "Empleados desde FUNCIÓN:", employees );
-        return employees;
-
-    } catch ( error ) {
-        console.error( "Error al obtener empleados:", error.message );
-        throw error;
-    }
-};
-
-
-export const getMenu = async () => {
-    try {
-        // console.log( "CONSULTANDO MENU" );
-        const {data} = await api.get( '/menus' );
-        // console.log( "RESPONSE", data );
-        // Si el backend responde con un mensaje indicando que no hay registros
-        if ( data && data.message ) {
-            // Puedes lanzar un error personalizado o devolver el mensaje
-            throw new Error( data.message );
-        }
-        const menu = data.menus || [];
-        // console.log( "MENU:", menu );
-        return menu;
-    } catch ( error ) {
-        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
-        throw new Error( error.message || "API Connection Failed" );
-    }
-}
-export const getExtras = async () => {
-    try {
-        // console.log( "CONSULTANDO Extas" );
-        const {data} = await api.get( '/extras' );
-        // console.log( "RESPONSE Extras", data );
-        // Si el backend responde con un mensaje indicando que no hay registros
-        if ( data && data.message ) {
-            // Puedes lanzar un error personalizado o devolver el mensaje
-            throw new Error( data.message );
-        }
-        const extras = data.extras || [];
-        // console.log( "Extras:", extras );
-        return extras;
-    } catch ( error ) {
-        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
-        throw new Error( error.message || "API Connection Failed" );
-    }
-}
 
 export const startLogin = async ( {email, password} ) => {
     const {login} = useAuthStore.getState();
@@ -251,4 +179,199 @@ export const startLogin = async ( {email, password} ) => {
             } );
         }
     }
+};
+
+
+export const getManagements = async ( page = 1, pageSize = 5 ) => {
+    const {data} = await api.get( '/gerencias', {
+        params: {
+            page,
+            pageSize,
+        },
+    } );
+    // console.log( 'GetManagements :', data );
+    return data
+}
+
+export const getEmployees = async ( id_gerencia ) => {
+    // Se valida que exista el ID de la gerencia antes de hacer el get
+    if ( !id_gerencia ) {
+        // console.error( "ID de gerencia no proporcionado." );
+        return [];
+    }
+
+    try {
+        const response = await api.get( `/empleados`, {
+            params: {gerencias: id_gerencia}, // Se usa el params como buena practica
+        } );
+
+        // Se desestructura para un código más limpio.
+        const {employees = []} = response.data;
+
+        // console.log( "Empleados desde FUNCIÓN:", employees );
+        return employees;
+
+    } catch ( error ) {
+        console.error( "Error al obtener empleados:", error.message );
+        throw error;
+    }
+};
+
+
+export const getMenu = async () => {
+    try {
+        // console.log( "CONSULTANDO MENU" );
+        const {data} = await api.get( '/menus' );
+        // console.log( "RESPONSE", data );
+        // Si el backend responde con un mensaje indicando que no hay registros
+        if ( data && data.message ) {
+            // Puedes lanzar un error personalizado o devolver el mensaje
+            throw new Error( data.message );
+        }
+        const menu = data.menus || [];
+        // console.log( "MENU:", menu );
+        return menu;
+    } catch ( error ) {
+        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
+        throw new Error( error.message || "API Connection Failed" );
+    }
+}
+export const getExtras = async () => {
+    try {
+        // console.log( "CONSULTANDO Extas" );
+        const {data} = await api.get( '/extras' );
+        // console.log( "RESPONSE Extras", data );
+        // Si el backend responde con un mensaje indicando que no hay registros
+        if ( data && data.message ) {
+            // Puedes lanzar un error personalizado o devolver el mensaje
+            throw new Error( data.message );
+        }
+        const extras = data.extras || [];
+        // console.log( "Extras:", extras );
+        return extras;
+    } catch ( error ) {
+        // Si el error es por "No hay registros", lo puedes manejar aquí o dejar que lo capture el hook
+        throw new Error( error.message || "API Connection Failed" );
+    }
+    ;
+}
+
+
+
+
+
+
+
+// Necesitarás este mapeo o importarlo
+// const paymentMethodMap = {
+//     'pago_movil': 3,
+//     'tarjeta_debito': 4,
+//     // ... otros mapeos
+// };
+
+/**
+ * Guarda una orden en el backend, enviando el voucher como archivo si es un objeto File.
+ * * @param {object} params
+ * @param {object} params.empleado - Objeto con datos del empleado (id, total_pagar, etc.).
+ * @param {string} params.paymentOption - Opción de pago (ej: 'pago_movil').
+ * @param {string} params.referenceNumber - Número de referencia del pago.
+ * @param {object} params.payer - Datos del pagador ({nombre, apellido, cedula, gerencia, telefono}).
+ * @param {File|string} params.voucher - El objeto File de la imagen o el string Base64.
+ * @param {Array<string>} params.extras - Array de IDs extra.
+ */
+export const saveOrder = async ( {
+    empleado,
+    paymentOption,
+    referenceNumber,
+    payer,
+    voucher,
+    extras = [], // Establecer valor por defecto
+} ) => {
+    // Mapear método de pago
+    const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+
+    // 1. **Determinar el tipo de contenido y el Payload**
+    let dataToSend;
+    let headers = {};
+
+    // 2. Construir los datos anidados que se convertirán a JSON string
+    const orderData = {
+        special_event: empleado.evento_especial ? 'si' : 'no',
+        authorized: empleado.id_autorizado ? 'si' : 'no',
+        authorized_person: empleado.id_autorizado || 'no',
+        id_payment_method: id_payment_method ? String( id_payment_method ) : '',
+        reference: referenceNumber,
+        total_amount: String( empleado.total_pagar || '' ),
+        cedula: String( empleado.cedula || '' ),
+        id_employee: 2,
+        id_order_status: '1',
+        id_orders_consumption: '1',
+        // payment_support se manejará en el paso 3
+    };
+
+    console.log( "OORRRDERDATAAA:", orderData );
+
+
+    const employeePaymentData = {
+        cedula_employee: empleado.cedula || '184745874',
+        name_employee: empleado.fullName || 'Moises Castillo',
+        phone_employee: payer.telefono || '041254785474',
+        management: empleado.id_management || empleado.id_gerencia || '22',
+    };
+
+    // 3. **Manejar la imagen/voucher**
+
+    // Si voucher es un objeto File, usamos FormData (MÉTODO RECOMENDADO)
+    if ( voucher instanceof File ) {
+        console.log( 'Enviando con FormData...' );
+        dataToSend = new FormData();
+
+        // Agregar campos planos de order
+        Object.entries( orderData ).forEach( ( [ key, value ] ) => {
+            dataToSend.append( `order[${ key }]`, value );
+        } );
+        // Agregar campos planos de employeePayment
+        Object.entries( employeePaymentData ).forEach( ( [ key, value ] ) => {
+            dataToSend.append( `employeePayment[${ key }]`, value );
+        } );
+        // Agregar extras (array)
+        ( extras || [] ).forEach( e => dataToSend.append( 'extras[]', e ) );
+        // Agregar el archivo de imagen
+        dataToSend.append( 'order[payment_support]', voucher );
+
+        // LOG DETALLADO DE FORM DATA
+        console.log( '--- FormData a enviar ---' );
+        for ( let pair of dataToSend.entries() ) {
+            if ( pair[ 1 ] instanceof File ) {
+                console.log( pair[ 0 ], '[File]', pair[ 1 ].name, pair[ 1 ].type, pair[ 1 ].size + ' bytes' );
+            } else {
+                console.log( pair[ 0 ], JSON.stringify( pair[ 1 ] ) );
+            }
+        }
+        console.log( '-------------------------' );
+
+        headers[ 'Content-Type' ] = 'multipart/form-data';
+    }
+    // Si NO es un File (asumimos que es un Base64 string o nulo)
+    else {
+        console.log( 'Enviando con JSON/Base64...' );
+
+        // El Base64 (o null) se incluye directamente en la estructura 'order'
+        orderData.payment_support = voucher;
+
+        // Reconstruir el payload JSON original
+        dataToSend = {
+            order: orderData,
+            extras: extras,
+            employeePayment: employeePaymentData,
+        };
+        // Para JSON, el header por defecto de Axios es 'application/json'
+
+        // Ojo: Si Laravel SÓLO acepta el archivo vía FormData, este caso fallará.
+        // Lo mejor es siempre enviar archivos como File + FormData.
+    }
+
+    // 4. Hacer POST con los datos y headers determinados
+    const response = await api.post( '/pedidos', dataToSend, {headers} );
+    return response.data;
 };

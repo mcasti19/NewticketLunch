@@ -14,8 +14,6 @@ export const ContentMenu = () => {
   const day = today.getDate();
   const month = today.toLocaleString( 'es-ES', {month: 'long'} ); // Ejemplo: "septiembre"
 
-
-
   const maxMenu = 5;
 
   useEffect( () => {

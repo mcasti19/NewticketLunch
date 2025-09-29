@@ -4,6 +4,7 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {AutorizarSelector} from './AutorizarSelector';
 import {useGetEmployees} from '../hooks/useGetEmployees';
 import {Spinner} from './Spinner';
+import {buildSelectedEmployees, buildResumen} from '../utils/orderUtils';
 
 export const ContentMiTicket = ( {goToResumeTab} ) => {
     const {user} = useAuthStore();
@@ -22,6 +23,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
 
     // Cargar estado desde localStorage o inicializar
     useEffect( () => {
+        console.log( {user} );
         if ( !user || !employees || employees.length === 0 ) return;
 
         const storedTicket = localStorage.getItem( 'miTicketSeleccion' );
@@ -32,12 +34,13 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
             if ( ticketToSet.id_autorizado ) {
                 const autorizado = employees.find( emp => emp.cedula === ticketToSet.id_autorizado );
                 if ( autorizado ) {
+                    console.log( {selectedAutorizado} );
                     setSelectedAutorizado( autorizado );
                 }
             }
         } else {
             ticketToSet = {
-                id: user.cedula,
+                id: user.employees.cedula,
                 almuerzo: false,
                 para_llevar: false,
                 cubiertos: false,
@@ -45,6 +48,9 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
                 autorizado_por: null,
             };
         }
+
+        console.log( "ticketToSet", ticketToSet );
+
         setMyTicket( ticketToSet );
         setLoading( false );
     }, [ user, employees ] );
@@ -57,6 +63,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
     }, [ myTicket, loading ] );
 
     const handleToggleOption = ( option ) => {
+        console.log( "ERRROR" );
         setMyTicket( prev => ( {...prev, [ option ]: !prev[ option ]} ) );
     };
 
@@ -67,46 +74,22 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
 
     const handleSave = () => {
         if ( !myTicket || !user ) return;
-
+        // Calcula el total individual
         const total_pagar = calculateCost();
-
-        const selectedEmployee = {
-            nombre: user.first_name || '',
-            apellido: user.last_name || '',
-            cedula: user.cedula,
-            id_employee: user.id_employee || user.id || '',
-            almuerzo: myTicket.almuerzo,
-            para_llevar: myTicket.para_llevar,
-            cubiertos: myTicket.cubiertos,
-            id_autorizado: myTicket.id_autorizado,
-            evento_especial: false,
-            extras: [
-                ...( myTicket.para_llevar ? [ 1 ] : [] ),
-                ...( myTicket.cubiertos ? [ 2 ] : [] )
-            ],
-            total_pagar: total_pagar,
-            autoriza_a: selectedAutorizado ? `${ selectedAutorizado.first_name } ${ selectedAutorizado.last_name }`.trim() : '',
-            autorizado_por: '',
-        };
-
-        const newSummary = {
-            countAlmuerzos: myTicket.almuerzo ? 1 : 0,
-            countAlmuerzosAutorizados: myTicket.id_autorizado ? 1 : 0,
-            countParaLlevar: myTicket.para_llevar ? 1 : 0,
-            countCubiertos: myTicket.cubiertos ? 1 : 0,
-            totalPagar: total_pagar,
-        };
-
-        setSelectedEmpleadosSummary( [ selectedEmployee ] );
-        setSummary( newSummary );
-
-        setOrderOrigin( 'mi-ticket' ); // Etiquetar el origen
-
+        // Construye el array estandarizado
+        const employees = buildSelectedEmployees( {
+            user,
+            ticket: {...myTicket, total_pagar},
+            autorizado: selectedAutorizado,
+            tipo: 'mi-ticket'
+        } );
+        // Calcula el resumen estandarizado
+        const resumen = buildResumen( employees, tasaDia, precioLlevar, precioCubierto );
+        setSelectedEmpleadosSummary( employees );
+        setSummary( resumen );
+        setOrderOrigin( 'mi-ticket' );
         localStorage.removeItem( 'miTicketSeleccion' );
-
-        if ( goToResumeTab ) {
-            goToResumeTab();
-        }
+        if ( goToResumeTab ) goToResumeTab();
     };
 
     const calculateCost = () => {
@@ -124,20 +107,20 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
         return cost;
     };
 
-    if ( loading ) {
-        return (
-            <div className="flex items-center justify-center h-full text-white">
-                <Spinner />
-            </div>
-        );
-    }
+    // if ( loading ) {
+    //     return (
+    //         <div className="flex items-center justify-center h-full text-white">
+    //             <Spinner />
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="p-4 rounded-lg shadow-xl text-white w-[95vw] md:w-[70dvw] mx-auto my-4 border-0 border-gray-700">
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
             <div className="flex flex-col items-center mb-6">
-                <h2 className="text-xl md:text-2xl font-semibold">{user?.first_name} {user?.last_name}</h2>
-                <p className="text-sm text-gray-400">{user?.name}</p>
+                <h2 className="text-xl md:text-2xl font-semibold">{user?.employees.first_name}</h2>
+                {/* <p className="text-sm text-gray-400">{user?.name}</p> */}
             </div>
             <div className="flex flex-col md:flex-row w-full gap-4 justify-center items-center border-0 m-auto">
                 <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">

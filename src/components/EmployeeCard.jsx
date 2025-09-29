@@ -15,7 +15,7 @@ export function EmployeeCard({ emp, handleFieldToggle, handleAuthorizedChange, t
             style={{ willChange: 'opacity, transform' }}
         >
             <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-lg font-bold text-blue-700">{emp.first_name || emp.nombre || ''} {emp.last_name || emp.apellido || ''}</h3>
+                <h3 className="text-lg font-bold text-blue-700">{emp.fullName}</h3>
                 {emp.invitado && (
                     <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
                 )}
@@ -71,7 +71,7 @@ export function EmployeeCard({ emp, handleFieldToggle, handleAuthorizedChange, t
                     >
                         <option value="">Seleccione...</option>
                         {getOtherEmployees.map(other => (
-                            <option key={other.cedula} value={other.cedula}>{other.first_name || other.nombre || ''} {other.last_name || other.apellido || ''}</option>
+                            <option key={other.cedula} value={other.cedula}>{other.fullName}</option>
                         ))}
                     </select>
                 </div>
