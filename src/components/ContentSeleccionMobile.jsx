@@ -31,11 +31,18 @@ export const ContentSeleccionMobile = ({ goToResumeTab }) => {
     });
   }, []);
 
+  const [search, setSearch] = useState("");
   const filteredEmpleados = useMemo(() => {
-    return userGerencia
+    let base = userGerencia
       ? empleados.filter(emp => emp.gerencia === userGerencia || emp.invitado)
       : empleados.filter(emp => emp.invitado);
-  }, [empleados, userGerencia]);
+    if (!search.trim()) return base;
+    const s = search.trim().toLowerCase();
+    return base.filter(emp =>
+      (emp.fullName && emp.fullName.toLowerCase().includes(s)) ||
+      (emp.cedula && emp.cedula.includes(s))
+    );
+  }, [empleados, userGerencia, search]);
 
   const toggleEmpleadoField = useCallback((empleadoOriginal, field) => {
     setEmpleados(prevEmpleados => {
@@ -76,11 +83,18 @@ export const ContentSeleccionMobile = ({ goToResumeTab }) => {
         onRequestClose={() => setModalInvitadoOpen(false)}
         onAddInvitado={handleAddInvitado}
       />
+      <input
+        type="text"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        placeholder="Buscar por nombre o cédula..."
+        className="mb-2 w-full border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder:text-gray-500 dark:placeholder:text-gray-400 dark:text-amber-300"
+      />
       <div className="grid grid-cols-1 gap-4 pb-24">
         {filteredEmpleados.map((empleado, idx) => (
           <div key={idx} className="bg-white/90 rounded-2xl shadow-md border border-blue-100 p-4 flex flex-col gap-2 relative">
             <div className="flex items-center gap-2 mb-1">
-              <h3 className="text-lg font-bold text-blue-700">{empleado.nombre} {empleado.apellido}</h3>
+              <h3 className="text-lg font-bold text-blue-700">{empleado.fullName}</h3>
               {empleado.invitado && (
                 <span className="ml-2 px-2 py-1 text-xs bg-yellow-300 text-yellow-900 rounded font-bold">INVITADO</span>
               )}

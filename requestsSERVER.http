@@ -3,40 +3,40 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 ### EXTRAS
 GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 *******************************POSTS******************************
 
@@ -82,20 +82,40 @@ content-type: application/json
 #### PEDIDO
 POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 {
-    "numeroPedido": 1,
-    "metodoPagoId" : 1,
-    "referencia": 4521,
-    "montoTotal": 115,
-    "idMenu": 1,
-    "idEmpleado": 1
+
+  "order": {
+    "order_id": "1",
+    "special_event": "no",
+    "authorized" : "no",
+    "authorized_person": "no",
+    "id_payment_method": "3",
+    "reference": "1231231332",
+    "total_amount": "100",
+    "cedula": "1",
+    "id_order_status": "1",
+    "id_orders_consumption": "1",
+    "payment_support": "/9j/4AAQSkZJRgABAQAAAQABAAD... (base64 string aquí)"
+  },
+  "extras": [
+    "1",
+    "2"
+  ],
+  "employeePayment": {
+    "cedula_employee": "18467449",
+    "name_employee": "Moises",
+    "phone_employee": "0414224547412",
+    "management": "22"
+  }
 }
+
 
 #### EMPLEADOS
 POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 {
     "nombre" : "Carlos",
@@ -107,11 +127,18 @@ Authorization: Bearer 37|ir37H4WFaQ0uXhZFJw7rfi0fof11apKnTTDIVGat920cd616
     "cargo" : "Analista de Proyectos"
 }
 
-# {
-#     "nombreCompleto" : "Moises Castillo",
-#     "cedula" : "18467441",
-#     "idGerencia": 22,
-#     "estado" : "Sede Central",
-#     "tipoEmpleado": "Fijo",
-#     "cargo" : "Programador I"
-# }
+#### CANTIDAD DE ORDENES POR DIA
+GET http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
+
+###
+POST http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
+content-type: application/json
+Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
+
+{
+
+    "numberOrdersDay" : 100
+
+}

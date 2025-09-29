@@ -1,31 +1,29 @@
 // El componente debe estar definido como una función
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Modal from 'react-modal';
 import {toast} from 'react-toastify';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {useAuthStore} from '../store/authStore';
-import {createOrder} from '../services/actions';
+// Importamos la función ajustada, asumiendo que se llama 'saveOrder'
+// y que la ruta de importación es correcta.
+import {saveOrder} from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
-const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} ) => {
-  // const [ paymentDetails, setPaymentDetails ] = useState( {
-  //   phoneNumber: '',
-  //   bank: '',
-  //   idNumber: '',
-  //   accountNumber: '',
-  //   accountType: '',
-  // } );
+const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, orderOrigin} ) => {
   const [ referenceNumber, setReferenceNumber ] = useState( '' );
-  const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: ''} );
+  const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} ); // Agregué 'telefono'
   const [ voucher, setVoucher ] = useState( null );
-  const empleados = useTicketLunchStore( state => state.selectedEmpleadosSummary );
+  const [ isLoading, setIsLoading ] = useState( false ); // Nuevo estado para deshabilitar el botón
+
+  const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
   const user = useAuthStore( state => state.user );
   const summary = useTicketLunchStore( state => state.summary );
+  const extras = useTicketLunchStore( state => state.extras ); // Asumo que tienes un estado para los extras
+  const extrasArray = Array.isArray( extras ) ? extras : [];
 
-  // const handleInputChange = ( field ) => ( e ) => {
-  //   setPaymentDetails( ( prev ) => ( {...prev, [ field ]: e.target.value} ) );
-  // };
 
+
+  // ... (handleCopy se mantiene igual)
   const handleCopy = async ( text ) => {
     try {
       await navigator.clipboard.writeText( text );
@@ -39,47 +37,71 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
   const isPagoMovil = paymentOption === 'Pago Móvil';
   const isTransferencia = paymentOption === 'Transferencia';
 
-  // Validación y notificación
+  // Función PRINCIPAL para enviar los datos a la API
   const handleGenerarTickets = async ( e ) => {
     e.preventDefault();
+
+    // --- (Validaciones existentes) ---
     if ( !referenceNumber || referenceNumber.trim() === '' ) {
-      setTimeout( () => {
-        toast.error( 'Debe ingresar el número de referencia antes de continuar.' );
-      }, 100 );
+      setTimeout( () => {toast.error( 'Debe ingresar el número de referencia antes de continuar.' );}, 100 );
       return;
     }
-    if ( ( isPagoMovil || isTransferencia ) && ( !payer.nombre || !payer.apellido || !payer.cedula || !payer.gerencia ) ) {
-      toast.error( 'Debe completar los datos de quien realiza el pago.' );
+    if ( ( isPagoMovil || isTransferencia ) && ( orderOrigin === "seleccion" ) && ( !payer.nombre || !payer.apellido || !payer.cedula || !payer.gerencia || !payer.telefono ) ) {
+      toast.error( 'Debe completar todos los datos de quien realiza el pago, incluyendo teléfono.' );
       return;
     }
     if ( ( isPagoMovil || isTransferencia ) && !voucher ) {
       toast.error( 'Debe adjuntar el voucher del pago.' );
       return;
     }
-    // Construir y loguear la orden (listo para backend)
-    console.log( "EMPLEADOS A ENVIAR A LA ORDEN:", empleados );
-    const ordenes = await createOrder( {
-      empleados,
-      paymentOption,
-      referenceNumber,
-      payer,
-      voucher,
-      totalPagar: summary.totalPagar,
-      user,
-    } );
-    // Guardar en localStorage para que esté disponible en ContentTicket
-    localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenes ) );
-    if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
-    setReferenceNumber( '' );
-    setPayer( {nombre: '', apellido: '', cedula: '', gerencia: ''} );
-    setVoucher( null );
+    // --- (Fin Validaciones) ---
+
+    setIsLoading( true ); // Bloquear el botón
+    const ordenesGeneradas = [];
+
+    try {
+      // Itera sobre cada empleado para crear una ORDEN ÚNICA por empleado
+      for ( const employee of employees ) {
+        console.log( `Creando orden para empleado: ${ employee.fullName }`, "Extras:", extras );
+
+        // Llama a la función saveOrder con los datos de un único empleado
+        // La función saveOrder manejará el envío de la imagen (voucher) vía FormData
+        const response = await saveOrder( {
+          empleado: employee, // Datos del empleado actual (incluye id, cedula, total_pagar, etc.)
+          paymentOption,
+          referenceNumber,
+          payer, // Datos del pagador
+          voucher, // El objeto File
+          extras: extrasArray.map( e => String( e.id ) ),
+        } );
+
+        ordenesGeneradas.push( response );
+      }
+
+      toast.success( '¡Órdenes generadas y enviadas con éxito!' );
+
+      // Guardar la data en localStorage (como ya lo tenías)
+      localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenesGeneradas ) );
+
+      // Ejecutar la callback (ej. para cerrar el modal o mostrar el ticket)
+      if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
+
+      // Limpiar estados
+      setReferenceNumber( '' );
+      setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
+      setVoucher( null );
+
+    } catch ( error ) {
+      console.error( "Error al generar las órdenes:", error );
+      toast.error( `Error al procesar la orden: ${ error.message || 'Error desconocido' }` );
+    } finally {
+      setIsLoading( false ); // Habilitar el botón
+    }
   };
-
-
-
 
   return (
     <Modal
+      // ... (Props y estilos del Modal se mantienen igual)
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={{
@@ -109,6 +131,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
 
       <form onSubmit={handleGenerarTickets} className="flex flex-col gap-4">
 
+        {/* --- (Pago Móvil / Transferencia info se mantiene igual) --- */}
         {isPagoMovil && (
           <div className="flex flex-col gap-2">
             <div className="flex justify-between font-bold text-blue-700">
@@ -135,8 +158,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
           </div>
         )}
 
-        {/* TRANSFERENCIA BANCARIA */}
-
         {isTransferencia && (
           <div className="flex flex-col gap-2">
             <div className="flex justify-between font-bold text-blue-700">
@@ -153,57 +174,59 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
                 <PiCopyThin onClick={() => handleCopy( '0108' )} style={{cursor: 'pointer', userSelect: 'none'}} />
               </div>
             </div>
-            {/* <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Cédula:</label>
-              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
-                <label htmlFor="">V-19.254.775</label>
-                <PiCopyThin onClick={() => handleCopy( '19.254.775' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div> */}
           </div>
         )}
 
-        {/* DATOS DE QUIEN REALIZA EL PAGO */}
-
+        {/* --- (DATOS DE QUIEN REALIZA EL PAGO) --- */}
         {( isPagoMovil || isTransferencia ) && (
           <>
-            <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
-              <div className="font-bold text-blue-700 mb-1 text-center">Quien realiza el pago</div>
-              <input
-                type="text"
-                placeholder="Nombre"
-                className="p-2 border border-blue-200 rounded mb-1"
-                value={payer.nombre}
-                onChange={e => setPayer( p => ( {...p, nombre: e.target.value} ) )}
-              />
-              <input
-                type="text"
-                placeholder="Apellido"
-                className="p-2 border border-blue-200 rounded mb-1"
-                value={payer.apellido}
-                onChange={e => setPayer( p => ( {...p, apellido: e.target.value} ) )}
-              />
-              <input
-                type="text"
-                placeholder="Cédula"
-                className="p-2 border border-blue-200 rounded mb-1"
-                value={payer.cedula}
-                onChange={e => setPayer( p => ( {...p, cedula: e.target.value} ) )}
-              />
-              <input
-                type="text"
-                placeholder="Gerencia"
-                className="p-2 border border-blue-200 rounded mb-1"
-                value={payer.gerencia}
-                onChange={e => setPayer( p => ( {...p, gerencia: e.target.value} ) )}
-              />
-            </div>
+            {( orderOrigin === "seleccion" ) && (
+              <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
+                <div className="font-bold text-blue-700 mb-1 text-center">Quien realiza el pago</div>
+                <input
+                  type="text"
+                  placeholder="Nombre"
+                  className="p-2 border border-blue-200 rounded mb-1"
+                  value={payer.nombre}
+                  onChange={e => setPayer( p => ( {...p, nombre: e.target.value} ) )}
+                />
+                <input
+                  type="text"
+                  placeholder="Apellido"
+                  className="p-2 border border-blue-200 rounded mb-1"
+                  value={payer.apellido}
+                  onChange={e => setPayer( p => ( {...p, apellido: e.target.value} ) )}
+                />
+                <input
+                  type="text"
+                  placeholder="Cédula"
+                  className="p-2 border border-blue-200 rounded mb-1"
+                  value={payer.cedula}
+                  onChange={e => setPayer( p => ( {...p, cedula: e.target.value} ) )}
+                />
+                <input
+                  type="text"
+                  placeholder="Gerencia"
+                  className="p-2 border border-blue-200 rounded mb-1"
+                  value={payer.gerencia}
+                  onChange={e => setPayer( p => ( {...p, gerencia: e.target.value} ) )}
+                />
+                <input
+                  type="text"
+                  placeholder="Teléfono" // Agregué el campo teléfono aquí
+                  className="p-2 border border-blue-200 rounded mb-1"
+                  value={payer.telefono}
+                  onChange={e => setPayer( p => ( {...p, telefono: e.target.value} ) )}
+                />
+              </div>
+            )}
+
             <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
               <label className="font-bold text-blue-700 mb-1 text-center">Adjuntar Captura de pago</label>
               <input
                 type="file"
-                accept="image/*"
-                onChange={e => setVoucher( e.target.files[ 0 ] )}
+                accept="image/jpeg,image/png,image/jpg" // Definir los tipos de archivo
+                onChange={e => setVoucher( e.target.files[ 0 ] )} // Guarda el objeto File
                 className="p-2 border border-blue-200 rounded"
               />
               {voucher && (
@@ -232,14 +255,16 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets} 
             type="button"
             onClick={onRequestClose}
             className="flex-1 bg-gray-400 hover:bg-gray-500 text-white py-2 rounded-lg font-semibold transition-colors"
+            disabled={isLoading}
           >
             Cerrar
           </button>
           <button
             type="submit"
             className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition-colors"
+            disabled={isLoading} // Deshabilitar durante la carga
           >
-            Generar Tickets
+            {isLoading ? 'Enviando...' : 'Generar Tickets'}
           </button>
         </div>
       </form>

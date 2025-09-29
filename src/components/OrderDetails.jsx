@@ -1,4 +1,4 @@
-// import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 
 
@@ -7,11 +7,11 @@ export const OrderDetails = () => {
     const selectedEmpleadosSummary = useTicketLunchStore( state => state.selectedEmpleadosSummary );
 
 
-    // useEffect( () => {
-    //     // console.log( {cedulaToNombre} );
+    useEffect( () => {
+        console.log( {summary   } );
 
-    //     console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
-    // }, [] )
+        console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
+    }, [] )
 
     return (
         <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl">
@@ -39,7 +39,7 @@ export const OrderDetails = () => {
                                 key={idx}
                                 className={`${ idx % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900' } hover:bg-blue-50 dark:hover:bg-blue-900/30 dark:text-amber-50 transition-colors`}
                             >
-                                <td className="px-2 py-2 text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100">{emp.nombre}</td>
+                                <td className="px-2 py-2 text-xs md:text-sm font-semibold text-gray-900 dark:text-gray-100">{emp.fullName}</td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.almuerzo ? 'Sí' : 'No'}</td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.para_llevar ? 'Sí' : 'No'}</td>
                                 <td className="px-2 py-2 text-xs md:text-sm ">{emp.cubiertos ? 'Sí' : 'No'}</td>

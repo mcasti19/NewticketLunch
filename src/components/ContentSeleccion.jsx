@@ -10,6 +10,7 @@ import {EmployeesCards} from './EmployeesCards';
 import {getExtras} from '../services/actions';
 import {AutorizarSelector} from "./AutorizarSelector";
 import {Spinner} from './Spinner';
+import { buildSelectedEmployees, buildResumen } from '../utils/orderUtils';
 
 // Utilidad para calcular resumen
 function getSummary( employees, tasaDia ) {
@@ -40,17 +41,16 @@ function filterEmployees( employees, search ) {
   if ( !search.trim() ) return employees;
   const s = search.trim().toLowerCase();
   return employees.filter( emp =>
-    ( emp.first_name && emp.first_name.toLowerCase().includes( s ) ) ||
-    ( emp.last_name && emp.last_name.toLowerCase().includes( s ) ) ||
-    ( emp.cedula.includes( s ) )
+    ( emp.fullName && emp.fullName.toLowerCase().includes( s ) ) ||
+    ( emp.cedula && emp.cedula.includes( s ) )
   );
 }
 
 export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
-  const userGerencia = user?.management?.management_name || null;
+  const userGerencia = user?.employees?.gerencias.management_name || null;
   // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  const idGerencia = user?.id_management || null;
+  const idGerencia = user?.employees.gerencias.id_management || null;
   const {employees, loading} = useGetEmployees( idGerencia );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
@@ -71,6 +71,7 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   useEffect( () => {
     // getExtras();
     console.log( "EMPLEADOSsssss", employees );
+    console.log( "USUAAAAARRRIIIIOOOO:", user );
   }, [] );
 
   // useEffect( () => {
@@ -182,70 +183,21 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   }, [ employees ] );
 
   const handleGoNext = () => {
-    console.log( "GO NEXT" );
-
-    const selectedEmployees = employeeList.filter( emp =>
+    const selectedEmployees = employeeList.filter(emp =>
       emp.almuerzo || emp.para_llevar || emp.cubiertos || emp.id_autorizado
     );
-
-    setResumenEnabled( selectedEmployees.length > 0 );
-    if ( selectedEmployees.length === 0 ) return;
-
-    const cedulaToEmpleado = {};
-    employeeList.forEach( emp => {
-      cedulaToEmpleado[ emp.cedula ] = emp;
-    } );
-
-    const resumenEmpleados = selectedEmployees.map( emp => {
-      const extras = [];
-      if ( emp.para_llevar ) extras.push( 1 );
-      if ( emp.cubiertos ) extras.push( 2 );
-
-      const almuerzoCount = emp.almuerzo ? 1 : 0;
-      const paraLlevarCount = emp.para_llevar ? 1 : 0;
-      const cubiertosCount = emp.cubiertos ? 1 : 0;
-      const almuerzoAutorizadoCount = emp.id_autorizado ? 1 : 0;
-      const total_pagar = ( almuerzoCount * tasaDia ) + ( almuerzoAutorizadoCount * tasaDia ) + ( paraLlevarCount * precioLlevar ) + ( cubiertosCount * precioCubierto );
-
-      let autoriza_a = '';
-      if ( emp.id_autorizado ) {
-        const autorizado = cedulaToEmpleado[ emp.id_autorizado ];
-        if ( autorizado ) {
-          autoriza_a = `${ autorizado.fullName || '' }`.trim();
-        }
-      }
-      let autorizado_por = '';
-      const quienAutoriza = employeeList.find( e => ( e.id_autorizado === emp.cedula ) );
-      if ( quienAutoriza ) {
-        autorizado_por = `${ quienAutoriza.fullName || '' }`.trim();
-      }
-
-      let orderSumary = {
-        nombre: emp.first_name || emp.nombre || '',
-        apellido: emp.last_name || emp.apellido || '',
-        cedula: emp.cedula,
-        id_employee: emp.id_employee || emp.IdEmpleado || emp.id || '',
-        almuerzo: emp.almuerzo || false,
-        para_llevar: emp.para_llevar || false,
-        cubiertos: emp.cubiertos || false,
-        id_autorizado: emp.id_autorizado || null,
-        evento_especial: emp.evento_especial || false,
-        extras,
-        total_pagar,
-        autoriza_a,
-        autorizado_por,
-      };
-
-      // console.log( "orderSumary", orderSumary );
-
-      return orderSumary
-    } );
-
-    setSelectedEmpleadosSummary( resumenEmpleados );
-    setOrderOrigin( 'seleccion' ); // Etiquetar el origen
-    localStorage.setItem( 'empleadosSeleccionados', JSON.stringify( employeeList ) );
-    localStorage.setItem( 'resumenEmpleados', JSON.stringify( resumenEmpleados ) );
-    if ( goToResumeTab ) goToResumeTab();
+    setResumenEnabled(selectedEmployees.length > 0);
+    if (selectedEmployees.length === 0) return;
+    // Construye el array estandarizado
+    const empleados = buildSelectedEmployees({ empleados: selectedEmployees, tipo: 'seleccion' });
+    // Calcula el resumen estandarizado
+    const resumen = buildResumen(empleados, tasaDia, precioLlevar, precioCubierto);
+    setSelectedEmpleadosSummary(empleados);
+    setSummary(resumen);
+    setOrderOrigin('seleccion');
+    localStorage.setItem('empleadosSeleccionados', JSON.stringify(employeeList));
+    localStorage.setItem('resumenEmpleados', JSON.stringify(empleados));
+    if (goToResumeTab) goToResumeTab();
   };
 
   const columns = useMemo( () => [
