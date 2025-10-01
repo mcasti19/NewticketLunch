@@ -3,40 +3,40 @@
 ###  USUARIOS
 GET http://127.0.0.1:8000/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 
 ### MENU
 GET http://127.0.0.1:8000/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 ### GERENCIAS TODAS
 GET http://127.0.0.1:8000/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 ###  GERENCIA x ID
 GET http://127.0.0.1:8000/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 
 ###  PEDIDOS
 GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 
 ###  EMPLEADOS
 GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 ###  EMPLEADOS por Gerencias
-GET http://127.0.0.1:8000/api/p1/empleados?gerencias=22 HTTP/1.1
+GET http://127.0.0.1:8000/api/p1/empleados?management=22 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 *******************************POSTS******************************
 
@@ -95,7 +95,7 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
 
 {
     "nombreCompleto" : "Carlos2 Ramírez",
@@ -104,4 +104,13 @@ Authorization: Bearer 4|ZAdTwuLTOu0ZLCX9K84AbVdeA754xqTh1xhCL9GR3189d6b4
     "estado" : "Miranda",
     "tipoEmpleado" : "fijo",
     "cargo" : "Analista de Proyectos"
+}
+
+###
+POST http://127.0.0.1:8000/api/p1/ordersDay HTTP/1.1
+content-type: application/json
+Authorization: Bearer 2|IFa77Fa6REazarfJlvwWjszXYQ8c15gezGHZNgyDb27180e5
+
+{
+    "numberOrdersDay" : 5
 }

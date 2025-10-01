@@ -1,6 +1,7 @@
 // useGetEmployees.js
 import {useState, useEffect} from 'react';
 import {getEmployees} from '../services/actions';
+import {formatFullName} from '../utils/employeeUtils';
 
 export function useGetEmployees( idGerencia ) {
   const [ employees, setEmployees ] = useState( [] );
@@ -13,26 +14,10 @@ export function useGetEmployees( idGerencia ) {
     getEmployees( idGerencia )
       .then( data => {
         if ( isMounted ) {
-          const formattedEmployees = data.map( emp => {
-            // Validamos que first_name y last_name existan y sean strings antes de usarlos.
-            const rawFirstName = emp.first_name || '';
-            const rawLastName = emp.last_name || '';
-
-            // Dividimos y obtenemos el primer nombre y apellido.
-            const firstName = rawFirstName.trim().split( ' ' )[ 0 ];
-            const lastName = rawLastName.trim().split( ' ' )[ 0 ];
-
-            // Unificamos el nombre completo.
-            const fullName = `${ firstName } ${ lastName }`.trim();
-
-            return {
-              ...emp,
-              fullName,
-            };
-          } );
-          
+          // Aplica el formateo de fullName usando la función utilitaria
+          const formattedEmployees = formatFullName(data);
           setEmployees( formattedEmployees );
-          console.log( "EMPLOYESS", employees );
+          console.log( "EMPLOYESS", formattedEmployees );
         }
       } )
       .catch( () => {

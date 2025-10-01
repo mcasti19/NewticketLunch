@@ -1,12 +1,15 @@
 // El componente debe estar definido como una función
-import React, {useEffect, useState} from 'react';
+import {
+  // useEffect,
+  useState
+} from 'react';
 import Modal from 'react-modal';
 import {toast} from 'react-toastify';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-import {useAuthStore} from '../store/authStore';
+// import {useAuthStore} from '../store/authStore';
 // Importamos la función ajustada, asumiendo que se llama 'saveOrder'
 // y que la ruta de importación es correcta.
-import {saveOrder} from '../services/actions';
+import {createOrderBatch, saveOrder} from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
 const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, orderOrigin} ) => {
@@ -16,10 +19,10 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
   const [ isLoading, setIsLoading ] = useState( false ); // Nuevo estado para deshabilitar el botón
 
   const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
-  const user = useAuthStore( state => state.user );
+  // const user = useAuthStore( state => state.user );
   const summary = useTicketLunchStore( state => state.summary );
-  const extras = useTicketLunchStore( state => state.extras ); // Asumo que tienes un estado para los extras
-  const extrasArray = Array.isArray( extras ) ? extras : [];
+  // const extras = useTicketLunchStore( state => state.extras ); // Asumo que tienes un estado para los extras
+  // const extrasArray = Array.isArray( extras ) ? extras : [];
 
 
 
@@ -57,45 +60,51 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
     // --- (Fin Validaciones) ---
 
     setIsLoading( true ); // Bloquear el botón
-    const ordenesGeneradas = [];
 
     try {
-      // Itera sobre cada empleado para crear una ORDEN ÚNICA por empleado
-      for ( const employee of employees ) {
-        console.log( `Creando orden para empleado: ${ employee.fullName }`, "Extras:", extras );
-
-        // Llama a la función saveOrder con los datos de un único empleado
-        // La función saveOrder manejará el envío de la imagen (voucher) vía FormData
-        const response = await saveOrder( {
-          empleado: employee, // Datos del empleado actual (incluye id, cedula, total_pagar, etc.)
+      // Use batch processing only for multi-employee selections
+      if (orderOrigin === 'seleccion' && employees.length > 1) {
+        console.log(`Creando lote de ${employees.length} orden(es).`);
+        const response = await createOrderBatch({
+          employees,
           paymentOption,
           referenceNumber,
-          payer, // Datos del pagador
-          voucher, // El objeto File
-          extras: extrasArray.map( e => String( e.id ) ),
-        } );
-
-        ordenesGeneradas.push( response );
+          payer,
+          voucher,
+        });
+        toast.success('¡Lote de órdenes enviado con éxito!');
+        localStorage.setItem('ordenesGeneradas', JSON.stringify(response));
+      } else {
+        // For "Mi Ticket" or a single employee selection, process one by one
+        const ordenesGeneradas = [];
+        for (const employee of employees) {
+          console.log(`Creando orden para empleado: ${employee.management}`);
+          const response = await saveOrder({
+            employee,
+            paymentOption,
+            referenceNumber,
+            payer,
+            voucher,
+            extras: employee.extras,
+          });
+          ordenesGeneradas.push(response);
+        }
+        toast.success('¡Órdenes generadas y enviadas con éxito!');
+        localStorage.setItem('ordenesGeneradas', JSON.stringify(ordenesGeneradas));
       }
 
-      toast.success( '¡Órdenes generadas y enviadas con éxito!' );
-
-      // Guardar la data en localStorage (como ya lo tenías)
-      localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenesGeneradas ) );
-
-      // Ejecutar la callback (ej. para cerrar el modal o mostrar el ticket)
-      if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
+      if (onGenerarTickets) onGenerarTickets(referenceNumber, payer, voucher);
 
       // Limpiar estados
-      setReferenceNumber( '' );
-      setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
-      setVoucher( null );
+      setReferenceNumber('');
+      setPayer({ nombre: '', apellido: '', cedula: '', gerencia: '', telefono: '' });
+      setVoucher(null);
 
-    } catch ( error ) {
-      console.error( "Error al generar las órdenes:", error );
-      toast.error( `Error al procesar la orden: ${ error.message || 'Error desconocido' }` );
+    } catch (error) {
+      console.error("Error al generar las órdenes:", error);
+      toast.error(`Error al procesar la orden: ${error.message || 'Error desconocido'}`);
     } finally {
-      setIsLoading( false ); // Habilitar el botón
+      setIsLoading(false); // Habilitar el botón
     }
   };
 

@@ -4,13 +4,7 @@ import users from "../data/mockDataUsers.json";
 
 import Swal from 'sweetalert2';
 
-// Mapeo de métodos de pago
-const paymentMethodMap = {
-    'Pago Móvil': 1,
-    'Transferencia': 2,
-    'Débito': 3,
-    'Efectivo': 4,
-};
+
 
 // Función para convertir archivo a base64
 export const fileToBase64 = ( file ) => {
@@ -22,102 +16,75 @@ export const fileToBase64 = ( file ) => {
     } );
 };
 
-// Construye y (futuro) envía la orden al backend
-export const createOrder = async ( {
-    empleados, // array de empleados seleccionados
-    paymentOption, // string
-    referenceNumber, // string
-    payer, // {nombre, apellido, cedula, gerencia}
-    voucher, // File o base64
-    // totalPagar, // number
+// Mapeo de métodos de pago
+const paymentMethodMap = {
+    'Pago Móvil': 1,
+    'Transferencia': 2,
+    'Débito': 3,
+    'Efectivo': 4,
+};
+
+export const createOrderBatch = async ( {
+    employees,
+    paymentOption,
+    referenceNumber,
+    payer,
+    voucher,
 } ) => {
-
-    // console.log( "EMPLEADOS EN LA ORDEN:", empleados );
-
-    // Si hay voucher archivo, conviértelo a base64
-    let voucherBase64 = null;
-    if ( voucher && typeof voucher !== 'string' ) {
-        voucherBase64 = await fileToBase64( voucher );
-    } else if ( typeof voucher === 'string' ) {
-        voucherBase64 = voucher;
-    }
-
-    // Obtener extras del backend (o local)
-    let extrasList = [];
-    try {
-        extrasList = await getExtras();
-    } catch ( e ) {
-        console.warn( 'No se pudieron obtener los extras, se usará demo:', e );
-        // Demo fallback
-        extrasList = [
-            {id_extra: 1, name_extra: 'Envase'},
-            {id_extra: 2, name_extra: 'Cubiertos'},
-        ];
-    }
-
-    // Por cada empleado, crea una orden
-    const date_order = new Date().toISOString().slice( 0, 10 );
     const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+    const dataToSend = new FormData();
 
-    // Construir mapa para buscar autorizaciones cruzadas
-    const idToEmpleado = {};
-    empleados.forEach( emp => {
-        // Puede ser IdEmpleado o id_empleado según backend
-        const id = emp.cedula || '';
-        idToEmpleado[ id ] = emp;
-    } );
+    // Append top-level payment info
+    dataToSend.append( 'reference', referenceNumber );
+    if ( id_payment_method ) {
+        dataToSend.append( 'id_payment_method', String( id_payment_method ) );
+    }
+    if ( voucher instanceof File ) {
+        dataToSend.append( 'payment_support', voucher );
+    }
 
-    const orders = empleados.map( emp => {
-        // console.log("CADA EMPLEADO:", emp);
+    // Append payer info
+    if ( payer && payer.cedula ) {
+        dataToSend.append( 'payer[cedula]', payer.cedula );
+        dataToSend.append( 'payer[nombre]', payer.nombre );
+        dataToSend.append( 'payer[apellido]', payer.apellido );
+        dataToSend.append( 'payer[telefono]', payer.telefono );
+        dataToSend.append( 'payer[gerencia]', payer.gerencia );
+    }
 
+    const extrasList = await getExtras();
 
-        // Determinar extras seleccionados para este empleado
-        const extras = [];
-        if ( emp.para_llevar ) {
+    employees.forEach( ( employee, index ) => {
+        const orderPrefix = `orders[${ index }]`;
+
+        dataToSend.append( `${ orderPrefix }[cedula]`, String( employee.cedula || '' ) );
+        dataToSend.append( `${ orderPrefix }[total_amount]`, String( employee.total_pagar || '0' ) );
+        dataToSend.append( `${ orderPrefix }[special_event]`, employee.evento_especial ? 'si' : 'no' );
+        dataToSend.append( `${ orderPrefix }[authorized]`, employee.id_autorizado ? 'si' : 'no' );
+        dataToSend.append( `${ orderPrefix }[authorized_person]`, employee.id_autorizado || 'no' );
+        dataToSend.append( `${ orderPrefix }[id_order_status]`, '1' );
+        dataToSend.append( `${ orderPrefix }[id_orders_consumption]`, '1' );
+
+        const extrasForEmployee = [];
+        if ( employee.para_llevar ) {
             const envase = extrasList.find( e => e.name_extra.toLowerCase().includes( 'envase' ) );
-            if ( envase ) extras.push( envase.id_extra.toString() );
+            if ( envase ) extrasForEmployee.push( envase.id_extra.toString() );
         }
-        if ( emp.cubiertos ) {
+        if ( employee.cubiertos ) {
             const cubiertos = extrasList.find( e => e.name_extra.toLowerCase().includes( 'cubierto' ) );
-            if ( cubiertos ) extras.push( cubiertos.id_extra.toString() );
+            if ( cubiertos ) extrasForEmployee.push( cubiertos.id_extra.toString() );
         }
 
-        // Datos completos del empleado
-
-        const management = ( emp.gerencias && emp.gerencias.management_name ) ? emp.gerencias.management_name : ( payer.gerencia || '' );
-
-        // Total individual
-        const total_pagar = emp.total_pagar || 0;
-        return {
-            order: {
-                special_event: emp.evento_especial ? 'Si' : 'No',
-                authorized_person: emp.id_autorizado || '',
-                autoriza_a: emp.autoriza_a, // Nombre de a quién autoriza
-                autorizado_por: emp.autorizado_por,   // Nombre de quien lo autoriza
-                id_payment_method,
-                reference: referenceNumber,
-                total_amount: total_pagar, // total individual
-                cedula: emp.cedula,
-                id_order_status: 1,
-                id_orders_consumption: 2,
-                date_order,
-                voucher: voucherBase64,
-                extras,
-            },
-            employeePayment: {
-                management,
-                payer_nombre: payer.nombre,
-                payer_apellido: payer.apellido,
-                payer_cedula: payer.cedula,
-            },
-        };
+        extrasForEmployee.forEach( extraId => {
+            dataToSend.append( `${ orderPrefix }[extras][]`, extraId );
+        } );
     } );
 
-    // Aquí harías el POST al backend (por ahora solo log)
-    // console.log( 'ORDENES A ENVIAR:', orders );
-    // Ejemplo de POST:
-    // await api.post('/ordenes', orders);
-    return orders;
+    // NOTE TO USER: The backend needs to have a '/pedidos/batch' endpoint to handle this request.
+    const response = await api.post( '/pedidos/batch', dataToSend, {
+        headers: {'Content-Type': 'multipart/form-data'}
+    } );
+    return response.data;
 };
 
 
@@ -181,6 +148,13 @@ export const startLogin = async ( {email, password} ) => {
     }
 };
 
+export const getUsers = async () => {
+    const {data} = await api.get( '/users' );
+    console.log( 'GetUsers :', data.data );
+
+    return data;
+}
+
 
 export const getManagements = async ( page = 1, pageSize = 5 ) => {
     const {data} = await api.get( '/gerencias', {
@@ -196,13 +170,13 @@ export const getManagements = async ( page = 1, pageSize = 5 ) => {
 export const getEmployees = async ( id_gerencia ) => {
     // Se valida que exista el ID de la gerencia antes de hacer el get
     if ( !id_gerencia ) {
-        // console.error( "ID de gerencia no proporcionado." );
+        console.error( "ID de gerencia no proporcionado." );
         return [];
     }
 
     try {
         const response = await api.get( `/empleados`, {
-            params: {gerencias: id_gerencia}, // Se usa el params como buena practica
+            params: {management: id_gerencia}, // Se usa el params como buena practica
         } );
 
         // Se desestructura para un código más limpio.
@@ -258,17 +232,6 @@ export const getExtras = async () => {
 
 
 
-
-
-
-
-// Necesitarás este mapeo o importarlo
-// const paymentMethodMap = {
-//     'pago_movil': 3,
-//     'tarjeta_debito': 4,
-//     // ... otros mapeos
-// };
-
 /**
  * Guarda una orden en el backend, enviando el voucher como archivo si es un objeto File.
  * * @param {object} params
@@ -280,7 +243,7 @@ export const getExtras = async () => {
  * @param {Array<string>} params.extras - Array de IDs extra.
  */
 export const saveOrder = async ( {
-    empleado,
+    employee,
     paymentOption,
     referenceNumber,
     payer,
@@ -288,6 +251,8 @@ export const saveOrder = async ( {
     extras = [], // Establecer valor por defecto
 } ) => {
     // Mapear método de pago
+    console.log( {employee} );
+
     const id_payment_method = paymentMethodMap[ paymentOption ] || null;
 
     // 1. **Determinar el tipo de contenido y el Payload**
@@ -296,16 +261,16 @@ export const saveOrder = async ( {
 
     // 2. Construir los datos anidados que se convertirán a JSON string
     const orderData = {
-        special_event: empleado.evento_especial ? 'si' : 'no',
-        authorized: empleado.id_autorizado ? 'si' : 'no',
-        authorized_person: empleado.id_autorizado || 'no',
+        special_event: employee.evento_especial ? 'si' : 'no',
+        authorized: employee.id_autorizado ? 'si' : 'no',
+        authorized_person: employee.id_autorizado || 'no',
         id_payment_method: id_payment_method ? String( id_payment_method ) : '',
         reference: referenceNumber,
-        total_amount: String( empleado.total_pagar || '' ),
-        cedula: String( empleado.cedula || '' ),
-        id_employee: 2,
+        total_amount: String( employee.total_pagar || '' ),
+        cedula: String( employee.cedula || '' ),
         id_order_status: '1',
         id_orders_consumption: '1',
+        management: employee.id_management || employee.id_gerencia || '',
         // payment_support se manejará en el paso 3
     };
 
@@ -313,10 +278,11 @@ export const saveOrder = async ( {
 
 
     const employeePaymentData = {
-        cedula_employee: empleado.cedula || '184745874',
-        name_employee: empleado.fullName || 'Moises Castillo',
-        phone_employee: payer.telefono || '041254785474',
-        management: empleado.id_management || empleado.id_gerencia || '22',
+        cedula_employee: employee.cedula || '',
+        name_employee: employee.fullName || '',
+        phone_employee: employee.phone || payer.telefono || '',
+        // management: employee.id_management || employee.id_gerencia || '',
+        management: 22,
     };
 
     // 3. **Manejar la imagen/voucher**
@@ -334,8 +300,13 @@ export const saveOrder = async ( {
         Object.entries( employeePaymentData ).forEach( ( [ key, value ] ) => {
             dataToSend.append( `employeePayment[${ key }]`, value );
         } );
-        // Agregar extras (array)
-        ( extras || [] ).forEach( e => dataToSend.append( 'extras[]', e ) );
+        // Agregar extras (array, siempre enviar el campo)
+        if (Array.isArray(extras) && extras.length > 0) {
+            extras.forEach(e => dataToSend.append('extras[]', e));
+        } else {
+            // Si no hay extras seleccionados, enviar '1' (No Aplica)
+            dataToSend.append('extras[]', '1');
+        }
         // Agregar el archivo de imagen
         dataToSend.append( 'order[payment_support]', voucher );
 
@@ -362,7 +333,7 @@ export const saveOrder = async ( {
         // Reconstruir el payload JSON original
         dataToSend = {
             order: orderData,
-            extras: extras,
+            extras: Array.isArray(extras) ? extras : [],
             employeePayment: employeePaymentData,
         };
         // Para JSON, el header por defecto de Axios es 'application/json'
