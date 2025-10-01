@@ -85,9 +85,8 @@ content-type: application/json
 Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
 
 {
-
   "order": {
-    "order_id": "1",
+    "number_order": "1",
     "special_event": "no",
     "authorized" : "no",
     "authorized_person": "no",
@@ -97,7 +96,7 @@ Authorization: Bearer 3|aPpdNZqEZgKmLil2umHd58wEX0B4nVaRsf4GXxrG317e2556
     "cedula": "1",
     "id_order_status": "1",
     "id_orders_consumption": "1",
-    "payment_support": "/9j/4AAQSkZJRgABAQAAAQABAAD... (base64 string aquí)"
+    "payment_support": ""
   },
   "extras": [
     "1",

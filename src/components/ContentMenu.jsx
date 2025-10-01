@@ -1,5 +1,5 @@
-import {useEffect, useState} from 'react';
-import {getMenu} from "../services/actions";
+import {use, useEffect, useState} from 'react';
+import {getMenu, getUsers} from "../services/actions";
 import {NoMenu} from './NoMenu';
 import {Spinner} from './Spinner';
 
@@ -15,6 +15,11 @@ export const ContentMenu = () => {
   const month = today.toLocaleString( 'es-ES', {month: 'long'} ); // Ejemplo: "septiembre"
 
   const maxMenu = 5;
+
+  useEffect( () => {
+    getUsers()
+
+  }, [] )
 
   useEffect( () => {
     const fetchMenu = async () => {

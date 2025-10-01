@@ -1,25 +1,31 @@
 // Funciones utilitarias para estandarizar la construcción de empleados seleccionados y resumen
 
-export function buildSelectedEmployees( {user, ticket, autorizado, empleados, tipo} ) {
+export function buildSelectedEmployees( {employee, ticket, autorizado, empleados, tipo} ) {
     // Si es MiTicket (user+ticket)
-    console.log("UUUUUUUUUUUUUUUUUUUUUUUUSEEEERRRRRRR", user );
+    console.log("UUUUUUUUUUUUUUUUUUUUUUUUSEEEERRRRRRR", employee, tipo );
 
-    if ( user && ticket ) {
+    if ( employee && ticket ) {
+        // Construir el array de extras según selección
+        let extras = [];
+        if (ticket.para_llevar) extras.push(2);
+        if (ticket.cubiertos) extras.push(3);
+        // Si no selecciona nada, enviar 'No Aplica' (id=1)
+        if (extras.length === 0) extras = [1];
         return [ {
-            fullName: user.employees.first_name,
-            cedula: user.cedula || '',
+            fullName: employee.fullName,
+            cedula: employee.cedula || '',
             almuerzo: ticket.almuerzo,
             para_llevar: ticket.para_llevar,
             cubiertos: ticket.cubiertos,
             id_autorizado: ticket.id_autorizado,
             evento_especial: ticket.evento_especial || false,
-            extras: [
-                ...( ticket.para_llevar ? [ 1 ] : [] ),
-                ...( ticket.cubiertos ? [ 2 ] : [] )
-            ],
+            extras,
             total_pagar: ticket.total_pagar || 0,
             autoriza_a: autorizado ? ( autorizado.fullName || autorizado.name || '' ) : '',
             autorizado_por: '',
+            // phone: employee.employees.phone || '',
+            phone: '041432208888',
+            id_management: employee.id_management || '',
         } ];
     }
     // Si es Seleccion (array de empleados)
@@ -31,10 +37,10 @@ export function buildSelectedEmployees( {user, ticket, autorizado, empleados, ti
             // Buscar nombre completo
             const fullName = emp.fullName;
             // Calcular extras
-            const extras = [
-                ...( emp.para_llevar ? [ 1 ] : [] ),
-                ...( emp.cubiertos ? [ 2 ] : [] )
-            ];
+            let extras = [];
+            if (emp.para_llevar) extras.push(2);
+            if (emp.cubiertos) extras.push(3);
+            if (extras.length === 0) extras = [1];
             // Calcular total_pagar si no viene
             let total_pagar = emp.total_pagar;
             if ( typeof total_pagar === 'undefined' ) {

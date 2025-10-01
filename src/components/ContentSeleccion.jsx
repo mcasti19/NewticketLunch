@@ -7,7 +7,7 @@ import {useGetEmployees} from '../hooks/useGetEmployees';
 import {EmployeesTable} from "./EmployeesTable";
 import Swal from 'sweetalert2';
 import {EmployeesCards} from './EmployeesCards';
-import {getExtras} from '../services/actions';
+// import {getExtras} from '../services/actions';
 import {AutorizarSelector} from "./AutorizarSelector";
 import {Spinner} from './Spinner';
 import { buildSelectedEmployees, buildResumen } from '../utils/orderUtils';
@@ -48,9 +48,9 @@ function filterEmployees( employees, search ) {
 
 export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
-  const userGerencia = user?.employees?.gerencias.management_name || null;
+  const userGerencia = user?.employees?.management.management_name || null;
   // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  const idGerencia = user?.employees.gerencias.id_management || null;
+  const idGerencia = user?.employees.management.id_management || null;
   const {employees, loading} = useGetEmployees( idGerencia );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
@@ -61,18 +61,18 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const setOrderOrigin = useTicketLunchStore( state => state.setOrderOrigin );
   const setSelectedEmpleadosSummary = useTicketLunchStore( state => state.setSelectedEmpleadosSummary );
   const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
-  const [ selectedAutorizado, setSelectedAutorizado ] = useState( null );
+  // const [ selectedAutorizado, setSelectedAutorizado ] = useState( null );
   const tasaDia = 100;
   const precioLlevar = 15;
   const precioCubierto = 5;
 
 
 
-  useEffect( () => {
-    // getExtras();
-    console.log( "EMPLEADOSsssss", employees );
-    console.log( "USUAAAAARRRIIIIOOOO:", user );
-  }, [] );
+  // useEffect( () => {
+  //   // getExtras();
+  //   console.log( "EMPLEADOSsssss", employees );
+  //   console.log( "USUAAAAARRRIIIIOOOO:", user );
+  // }, [] );
 
   // useEffect( () => {
   //   if ( !loading ) {

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 import ModalResume from './ModalResume';
 import {OrderDetails} from './OrderDetails';
