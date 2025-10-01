@@ -91,6 +91,7 @@ export const ContentMenu = () => {
       </div>
       <div className="mt-8">
         <h1 className="text-center text-3xl md:text-4xl text-red-700 font-extrabold py-3">¡Buen Provecho!</h1>
+        
       </div>
     </>
   );
