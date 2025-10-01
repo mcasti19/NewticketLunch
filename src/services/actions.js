@@ -344,5 +344,8 @@ export const saveOrder = async ( {
 
     // 4. Hacer POST con los datos y headers determinados
     const response = await api.post( '/pedidos', dataToSend, {headers} );
+    console.log("RESPONSE",response.data.order);
+    
     return response.data;
+
 };

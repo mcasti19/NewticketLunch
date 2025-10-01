@@ -58,53 +58,62 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
       return;
     }
     // --- (Fin Validaciones) ---
-
     setIsLoading( true ); // Bloquear el botón
 
     try {
       // Use batch processing only for multi-employee selections
-      if (orderOrigin === 'seleccion' && employees.length > 1) {
-        console.log(`Creando lote de ${employees.length} orden(es).`);
-        const response = await createOrderBatch({
-          employees,
-          paymentOption,
-          referenceNumber,
-          payer,
-          voucher,
-        });
-        toast.success('¡Lote de órdenes enviado con éxito!');
-        localStorage.setItem('ordenesGeneradas', JSON.stringify(response));
+      if ( orderOrigin === 'seleccion' && employees.length > 1 ) {
+        console.log( `Creando lote de ${ employees.length } orden(es).` );
+        // const response = await createOrderBatch({
+        //   employees,
+        //   paymentOption,
+        //   referenceNumber,
+            const ordenesGeneradas = [];
+            // Acceso a la función de Zustand para guardar el order
+            const setOrderData = useTicketLunchStore.getState().setOrderData;
+        //   voucher,
+        // });
+        toast.success( '¡Lote de órdenes enviado con éxito!' );
+        // localStorage.setItem('ordenesGeneradas', JSON.stringify(response));
       } else {
         // For "Mi Ticket" or a single employee selection, process one by one
         const ordenesGeneradas = [];
-        for (const employee of employees) {
-          console.log(`Creando orden para empleado: ${employee.management}`);
-          const response = await saveOrder({
+        const setOrderData = useTicketLunchStore.getState().setOrderData;
+
+        for ( const employee of employees ) {
+          console.log( `Creando orden para empleado: ${ employee.management }` );
+              // Guardar la orden en el store global para mostrar el QR
+              if (response && response.order) {
+                setOrderData(response.order);
+              }
+          const response = await saveOrder( {
             employee,
             paymentOption,
             referenceNumber,
             payer,
             voucher,
             extras: employee.extras,
-          });
-          ordenesGeneradas.push(response);
+          } );
+          
+          
+          ordenesGeneradas.push( response );
         }
-        toast.success('¡Órdenes generadas y enviadas con éxito!');
-        localStorage.setItem('ordenesGeneradas', JSON.stringify(ordenesGeneradas));
+        toast.success( '¡Órdenes generadas y enviadas con éxito!' );
+        localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenesGeneradas ) );
       }
 
-      if (onGenerarTickets) onGenerarTickets(referenceNumber, payer, voucher);
+      if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
 
       // Limpiar estados
-      setReferenceNumber('');
-      setPayer({ nombre: '', apellido: '', cedula: '', gerencia: '', telefono: '' });
-      setVoucher(null);
+      setReferenceNumber( '' );
+      setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
+      setVoucher( null );
 
-    } catch (error) {
-      console.error("Error al generar las órdenes:", error);
-      toast.error(`Error al procesar la orden: ${error.message || 'Error desconocido'}`);
+    } catch ( error ) {
+      console.error( "Error al generar las órdenes:", error );
+      toast.error( `Error al procesar la orden: ${ error.message || 'Error desconocido' }` );
     } finally {
-      setIsLoading(false); // Habilitar el botón
+      setIsLoading( false ); // Habilitar el botón
     }
   };
 
