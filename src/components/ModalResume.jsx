@@ -9,7 +9,10 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 // import {useAuthStore} from '../store/authStore';
 // Importamos la función ajustada, asumiendo que se llama 'saveOrder'
 // y que la ruta de importación es correcta.
-import {createOrderBatch, saveOrder} from '../services/actions';
+import {
+  // createOrderBatch,
+  saveOrder
+} from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
 const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, orderOrigin} ) => {
@@ -68,9 +71,9 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
         //   employees,
         //   paymentOption,
         //   referenceNumber,
-            const ordenesGeneradas = [];
-            // Acceso a la función de Zustand para guardar el order
-            const setOrderData = useTicketLunchStore.getState().setOrderData;
+        // const ordenesGeneradas = [];
+        // Acceso a la función de Zustand para guardar el order
+        // const setOrderData = useTicketLunchStore.getState().setOrderData;
         //   voucher,
         // });
         toast.success( '¡Lote de órdenes enviado con éxito!' );
@@ -79,24 +82,43 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
         // For "Mi Ticket" or a single employee selection, process one by one
         const ordenesGeneradas = [];
         const setOrderData = useTicketLunchStore.getState().setOrderData;
+        console.log( {setOrderData} );
 
-        for ( const employee of employees ) {
-          console.log( `Creando orden para empleado: ${ employee.management }` );
-              // Guardar la orden en el store global para mostrar el QR
-              if (response && response.order) {
-                setOrderData(response.order);
-              }
-          const response = await saveOrder( {
+
+        for (const employee of employees) {
+          console.log(`Creando orden para empleado: ${employee.fullName}`);
+          const response = await saveOrder({
             employee,
             paymentOption,
             referenceNumber,
             payer,
             voucher,
             extras: employee.extras,
-          } );
-          
-          
-          ordenesGeneradas.push( response );
+          });
+
+          console.log("ORDER EN SAVEORDER:", response);
+          if (response && response.order) {
+            setOrderData(response.order);
+            // Construir el objeto qrData completo para el QR
+            const setQrData = useTicketLunchStore.getState().setQrData;
+            const qrData = {
+              OrderID: response.order|| '',
+              Empleado: employees.map(emp => ({
+                cedula: emp.cedula,
+                fullName: emp.fullName,
+                extras: emp.extras,
+                total_pagar: emp.total_pagar,
+                id_autorizado: emp.id_autorizado,
+              })),
+              total: summary.totalPagar,
+              autorizado: employee.id_autorizado ? employee.id_autorizado : null,
+              referencia: referenceNumber,
+            };
+            setQrData(qrData);
+            console.log("QR DATA GUARDADO EN STORE:", qrData);
+          }
+
+          ordenesGeneradas.push(response);
         }
         toast.success( '¡Órdenes generadas y enviadas con éxito!' );
         localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenesGeneradas ) );

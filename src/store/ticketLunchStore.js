@@ -1,8 +1,8 @@
 import {create} from "zustand";
 
-export const useTicketLunchStore = create( ( set ) => ( {
+export const useTicketLunchStore = create((set) => ({
   empleados: [],
-  setEmpleados: ( empleados ) => set( {empleados} ),
+  setEmpleados: (empleados) => set({ empleados }),
 
   summary: {
     countAlmuerzos: 0,
@@ -12,13 +12,13 @@ export const useTicketLunchStore = create( ( set ) => ( {
     totalPagar: 0,
   },
 
-  setSummary: ( summary ) => set( {summary} ),
+  setSummary: (summary) => set({ summary }),
 
   referenceNumber: '',
-  setReferenceNumber: ( referenceNumber ) => set( {referenceNumber} ),
+  setReferenceNumber: (referenceNumber) => set({ referenceNumber }),
 
   selectedEmpleadosSummary: [],
-  setSelectedEmpleadosSummary: ( selectedEmpleadosSummary ) => set( {selectedEmpleadosSummary} ),
+  setSelectedEmpleadosSummary: (selectedEmpleadosSummary) => set({ selectedEmpleadosSummary }),
 
   // Flags para habilitar tabs
   isResumenEnabled: false,
@@ -29,7 +29,12 @@ export const useTicketLunchStore = create( ( set ) => ( {
   // Nuevo estado para rastrear el origen del pedido
   orderOrigin: null, // Puede ser 'mi-ticket' o 'seleccion'
   setOrderOrigin: (origin) => set({ orderOrigin: origin }),
-    // Estado para guardar el objeto de la orden recibida del backend
-    orderData: null,
-    setOrderData: (orderData) => set({ orderData }),
-} ) );
+
+  // Estado para guardar el objeto de la orden recibida del backend
+  orderData: null,
+  setOrderData: (orderData) => set({ orderData }),
+
+  // Estado para guardar el objeto qrData para el QR
+  qrData: null,
+  setQrData: (qrData) => set({ qrData }),
+}));

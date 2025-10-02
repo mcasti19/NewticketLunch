@@ -323,28 +323,10 @@ export const saveOrder = async ( {
 
         headers[ 'Content-Type' ] = 'multipart/form-data';
     }
-    // Si NO es un File (asumimos que es un Base64 string o nulo)
-    else {
-        console.log( 'Enviando con JSON/Base64...' );
-
-        // El Base64 (o null) se incluye directamente en la estructura 'order'
-        orderData.payment_support = voucher;
-
-        // Reconstruir el payload JSON original
-        dataToSend = {
-            order: orderData,
-            extras: Array.isArray(extras) ? extras : [],
-            employeePayment: employeePaymentData,
-        };
-        // Para JSON, el header por defecto de Axios es 'application/json'
-
-        // Ojo: Si Laravel SÓLO acepta el archivo vía FormData, este caso fallará.
-        // Lo mejor es siempre enviar archivos como File + FormData.
-    }
-
+   
     // 4. Hacer POST con los datos y headers determinados
     const response = await api.post( '/pedidos', dataToSend, {headers} );
-    console.log("RESPONSE",response.data.order);
+    // console.log("RESPONSE", response.data.order);
     
     return response.data;
 
