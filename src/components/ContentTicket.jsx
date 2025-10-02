@@ -3,15 +3,14 @@ import {MyQRCodeComponent} from './MyQRCodeComponent'
 import {useTicketLunchStore} from '../store/ticketLunchStore'
 
 export const ContentTicket = () => {
-  // Leer el estado global de la orden generada
-  const orderData = useTicketLunchStore( state => state.orderData );
+  // Leer el estado global de la orden generada y el objeto qrData
+  const orderData = useTicketLunchStore((state) => state.orderData);
+  const qrData = useTicketLunchStore((state) => state.qrData);
   const [loading, setLoading] = useState(true);
 
-  useEffect( () => {
-    
+  useEffect(() => {
     // Cuando orderData cambia, actualizar loading
     if (orderData) {
-      console.log({orderData});
       setLoading(false);
     } else {
       setLoading(true);
@@ -19,7 +18,7 @@ export const ContentTicket = () => {
   }, [orderData]);
 
   return (
-    <div className='w-full max-h-screen overflow-y-auto '>
+    <div className="w-full max-h-screen overflow-y-auto ">
       <h2 className="text-2xl md:text-3xl font-extrabold text-blue-700 text-center mb-2 tracking-tight drop-shadow">Generar Ticket QR</h2>
       <div className="w-full">
         {loading ? (
@@ -29,11 +28,11 @@ export const ContentTicket = () => {
           </div>
         ) : (
           <>
-            <MyQRCodeComponent />
+            <MyQRCodeComponent qrData={qrData} />
             <p className="text-center text-gray-700 text-base md:text-lg mt-2">Escanea el código QR para ver tu ticket de almuerzo.</p>
           </>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
