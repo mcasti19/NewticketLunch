@@ -1,21 +1,21 @@
 import {useEffect, useState} from 'react'
 import {MyQRCodeComponent} from './MyQRCodeComponent'
 import {useTicketLunchStore} from '../store/ticketLunchStore'
+import {useBuildDataToQR} from '../hooks/useBuildDataToQR';
 
 export const ContentTicket = () => {
   // Leer el estado global de la orden generada y el objeto qrData
-  const orderData = useTicketLunchStore((state) => state.orderData);
-  const qrData = useTicketLunchStore((state) => state.qrData);
-  const [loading, setLoading] = useState(true);
+  // const orderData = useTicketLunchStore((state) => state.orderData);
+  const qrData = useTicketLunchStore( ( state ) => state.qrData );
+  const [ loading, setLoading ] = useState( true );
+  const {builderDataQR} = useBuildDataToQR();
+  useEffect( () => {
+    builderDataQR()
+  }, [])
 
-  useEffect(() => {
-    // Cuando orderData cambia, actualizar loading
-    if (orderData) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [orderData]);
+
+
+
 
   return (
     <div className="w-full max-h-screen overflow-y-auto ">
