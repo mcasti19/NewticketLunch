@@ -53,6 +53,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
         }
         setMyTicket( ticketToSet );
         setLoading( false );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ employees ] );
 
     // Guardar estado en localStorage cuando cambie

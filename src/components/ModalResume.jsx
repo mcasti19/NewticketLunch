@@ -96,26 +96,26 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
             extras: employee.extras,
           });
 
-          console.log("ORDER EN SAVEORDER:", response);
+          // console.log("ORDER EN SAVEORDER:", response);
           if (response && response.order) {
             setOrderData(response.order);
-            // Construir el objeto qrData completo para el QR
-            const setQrData = useTicketLunchStore.getState().setQrData;
-            const qrData = {
-              OrderID: response.order|| '',
-              Empleado: employees.map(emp => ({
-                cedula: emp.cedula,
-                fullName: emp.fullName,
-                extras: emp.extras,
-                total_pagar: emp.total_pagar,
-                id_autorizado: emp.id_autorizado,
-              })),
-              total: summary.totalPagar,
-              autorizado: employee.id_autorizado ? employee.id_autorizado : null,
-              referencia: referenceNumber,
-            };
-            setQrData(qrData);
-            console.log("QR DATA GUARDADO EN STORE:", qrData);
+            // // Construir el objeto qrData completo para el QR
+            // const setQrData = useTicketLunchStore.getState().setQrData;
+            // const qrData = {
+            //   OrderID: response.order|| '',
+            //   Empleado: employees.map(emp => ({
+            //     cedula: emp.cedula,
+            //     fullName: emp.fullName,
+            //     extras: emp.extras,
+            //     total_pagar: emp.total_pagar,
+            //     id_autorizado: emp.id_autorizado,
+            //   })),
+            //   total: summary.totalPagar,
+            //   autorizado: employee.id_autorizado ? employee.id_autorizado : null,
+            //   referencia: referenceNumber,
+            // };
+            // setQrData(qrData);
+            // console.log("QR DATA GUARDADO EN STORE:", qrData);
           }
 
           ordenesGeneradas.push(response);
