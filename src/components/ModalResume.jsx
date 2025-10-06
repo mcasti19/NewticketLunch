@@ -77,7 +77,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
         setQrBatchData( batchQR );
         setQrData( null );
       } else {
-
+        
         // FLUJO INDIVIDUAL
         const emp = employees[ 0 ];
         response = await saveOrder( {
@@ -88,7 +88,10 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
           voucher,
           extras: emp.extras || [],
         } );
+        console.log("RESPONSE");
         setOrderId( response );
+
+        
         const orderID = response || '';
         const qrDataFinal = {
           orderID,
