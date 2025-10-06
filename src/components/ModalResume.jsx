@@ -10,22 +10,23 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 // Importamos la función ajustada, asumiendo que se llama 'saveOrder'
 // y que la ruta de importación es correcta.
 import {
-  // createOrderBatch,
+  createOrderBatch,
   saveOrder
 } from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
 const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, orderOrigin} ) => {
-  const [ referenceNumber, setReferenceNumber ] = useState( '' );
+  const [ referenceNumber, setLocalReferenceNumber ] = useState( '' );
   const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} ); // Agregué 'telefono'
   const [ voucher, setVoucher ] = useState( null );
   const [ isLoading, setIsLoading ] = useState( false ); // Nuevo estado para deshabilitar el botón
 
   const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
-  // const user = useAuthStore( state => state.user );
   const summary = useTicketLunchStore( state => state.summary );
-  // const extras = useTicketLunchStore( state => state.extras ); // Asumo que tienes un estado para los extras
-  // const extrasArray = Array.isArray( extras ) ? extras : [];
+  const setOrderId = useTicketLunchStore( state => state.setOrderId );
+  const setQrData = useTicketLunchStore( state => state.setQrData );
+  const setQrBatchData = useTicketLunchStore( state => state.setQrBatchData );
+  const setReferenceNumberStore = useTicketLunchStore( state => state.setReferenceNumber );
 
 
 
@@ -46,96 +47,73 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
   // Función PRINCIPAL para enviar los datos a la API
   const handleGenerarTickets = async ( e ) => {
     e.preventDefault();
-
-    // --- (Validaciones existentes) ---
-    if ( !referenceNumber || referenceNumber.trim() === '' ) {
-      setTimeout( () => {toast.error( 'Debe ingresar el número de referencia antes de continuar.' );}, 100 );
-      return;
-    }
-    if ( ( isPagoMovil || isTransferencia ) && ( orderOrigin === "seleccion" ) && ( !payer.nombre || !payer.apellido || !payer.cedula || !payer.gerencia || !payer.telefono ) ) {
-      toast.error( 'Debe completar todos los datos de quien realiza el pago, incluyendo teléfono.' );
-      return;
-    }
-    if ( ( isPagoMovil || isTransferencia ) && !voucher ) {
-      toast.error( 'Debe adjuntar el voucher del pago.' );
-      return;
-    }
-    // --- (Fin Validaciones) ---
-    setIsLoading( true ); // Bloquear el botón
-
+    setIsLoading( true );
     try {
-      // Use batch processing only for multi-employee selections
-      if ( orderOrigin === 'seleccion' && employees.length > 1 ) {
-        console.log( `Creando lote de ${ employees.length } orden(es).` );
-        // const response = await createOrderBatch({
-        //   employees,
-        //   paymentOption,
-        //   referenceNumber,
-        // const ordenesGeneradas = [];
-        // Acceso a la función de Zustand para guardar el order
-        // const setOrderData = useTicketLunchStore.getState().setOrderData;
-        //   voucher,
-        // });
-        toast.success( '¡Lote de órdenes enviado con éxito!' );
-        // localStorage.setItem('ordenesGeneradas', JSON.stringify(response));
+      let response;
+      if ( orderOrigin === 'seleccion' && Array.isArray( employees ) && employees.length > 1 ) {
+        // FLUJO POR LOTE
+        response = await createOrderBatch( {
+          employees,
+          paymentOption,
+          referenceNumber,
+          payer,
+          voucher,
+        } );
+        setOrderId( response );
+        // Construir los QR individuales para cada empleado usando el id de la orden
+        const orderID = response || '';
+        const batchQR = employees.map( emp => ( {
+          orderID,
+          empleados: [ {
+            cedula: emp.cedula,
+            fullName: emp.fullName,
+            extras: emp.extras,
+            total_pagar: emp.total_pagar,
+            autorizado: emp.id_autorizado || null,
+          } ],
+          total: emp.total_pagar,
+          referencia: referenceNumber,
+        } ) );
+        setQrBatchData( batchQR );
+        setQrData( null );
       } else {
-        // For "Mi Ticket" or a single employee selection, process one by one
-        const ordenesGeneradas = [];
-        const setOrderData = useTicketLunchStore.getState().setOrderData;
-        console.log( {setOrderData} );
 
-
-        for (const employee of employees) {
-          console.log(`Creando orden para empleado: ${employee.fullName}`);
-          const response = await saveOrder({
-            employee,
-            paymentOption,
-            referenceNumber,
-            payer,
-            voucher,
-            extras: employee.extras,
-          });
-
-          // console.log("ORDER EN SAVEORDER:", response);
-          if (response && response.order) {
-            setOrderData(response.order);
-            // // Construir el objeto qrData completo para el QR
-            // const setQrData = useTicketLunchStore.getState().setQrData;
-            // const qrData = {
-            //   OrderID: response.order|| '',
-            //   Empleado: employees.map(emp => ({
-            //     cedula: emp.cedula,
-            //     fullName: emp.fullName,
-            //     extras: emp.extras,
-            //     total_pagar: emp.total_pagar,
-            //     id_autorizado: emp.id_autorizado,
-            //   })),
-            //   total: summary.totalPagar,
-            //   autorizado: employee.id_autorizado ? employee.id_autorizado : null,
-            //   referencia: referenceNumber,
-            // };
-            // setQrData(qrData);
-            // console.log("QR DATA GUARDADO EN STORE:", qrData);
-          }
-
-          ordenesGeneradas.push(response);
-        }
-        toast.success( '¡Órdenes generadas y enviadas con éxito!' );
-        localStorage.setItem( 'ordenesGeneradas', JSON.stringify( ordenesGeneradas ) );
+        // FLUJO INDIVIDUAL
+        const emp = employees[ 0 ];
+        response = await saveOrder( {
+          employee: emp,
+          paymentOption,
+          referenceNumber,
+          payer,
+          voucher,
+          extras: emp.extras || [],
+        } );
+        setOrderId( response );
+        const orderID = response || '';
+        const qrDataFinal = {
+          orderID,
+          empleados: [ {
+            cedula: emp.cedula,
+            fullName: emp.fullName,
+            extras: emp.extras,
+            total_pagar: emp.total_pagar,
+            autorizado: emp.id_autorizado || null,
+          } ],
+          total: emp.total_pagar,
+          referencia: referenceNumber,
+        };
+        setQrData( qrDataFinal );
+        setQrBatchData( null );
       }
-
-      if ( onGenerarTickets ) onGenerarTickets( referenceNumber, payer, voucher );
-
-      // Limpiar estados
-      setReferenceNumber( '' );
+      setReferenceNumberStore( referenceNumber );
+      setLocalReferenceNumber( '' );
       setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
       setVoucher( null );
-
+      setIsLoading( false );
+      if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
     } catch ( error ) {
-      console.error( "Error al generar las órdenes:", error );
-      toast.error( `Error al procesar la orden: ${ error.message || 'Error desconocido' }` );
-    } finally {
-      setIsLoading( false ); // Habilitar el botón
+      setIsLoading( false );
+      alert( 'Error al generar los tickets: ' + ( error?.message || error ) );
     }
   };
 
@@ -285,7 +263,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
             type="text"
             placeholder="Ingrese número de referencia"
             value={referenceNumber}
-            onChange={e => setReferenceNumber( e.target.value )}
+            onChange={e => setLocalReferenceNumber( e.target.value )}
             className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
           />
         </div>
