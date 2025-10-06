@@ -81,9 +81,13 @@ export const createOrderBatch = async ( {
     } );
 
     // NOTE TO USER: The backend needs to have a '/pedidos/batch' endpoint to handle this request.
-    const response = await api.post( '/pedidos/batch', dataToSend, {
-        headers: {'Content-Type': 'multipart/form-data'}
-    } );
+    // const response = await api.post( '/pedidos/batch', dataToSend, {
+    //     headers: {'Content-Type': 'multipart/form-data'}
+    // } );
+
+    const response = {
+        data: 123
+    }
     return response.data;
 };
 
@@ -301,11 +305,11 @@ export const saveOrder = async ( {
             dataToSend.append( `employeePayment[${ key }]`, value );
         } );
         // Agregar extras (array, siempre enviar el campo)
-        if (Array.isArray(extras) && extras.length > 0) {
-            extras.forEach(e => dataToSend.append('extras[]', e));
+        if ( Array.isArray( extras ) && extras.length > 0 ) {
+            extras.forEach( e => dataToSend.append( 'extras[]', e ) );
         } else {
             // Si no hay extras seleccionados, enviar '1' (No Aplica)
-            dataToSend.append('extras[]', '1');
+            dataToSend.append( 'extras[]', '1' );
         }
         // Agregar el archivo de imagen
         dataToSend.append( 'order[payment_support]', voucher );
@@ -323,11 +327,11 @@ export const saveOrder = async ( {
 
         headers[ 'Content-Type' ] = 'multipart/form-data';
     }
-   
+
     // 4. Hacer POST con los datos y headers determinados
     const response = await api.post( '/pedidos', dataToSend, {headers} );
-    // console.log("RESPONSE", response.data.order);
-    
-    return response.data;
+    console.log("RESPONSE", response.data.order);
+
+    return response.data.order;
 
 };

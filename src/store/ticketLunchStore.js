@@ -1,8 +1,11 @@
 import {create} from "zustand";
+import { persist } from 'zustand/middleware';
 
-export const useTicketLunchStore = create((set) => ({
-  empleados: [],
-  setEmpleados: (empleados) => set({ empleados }),
+export const useTicketLunchStore = create(
+  persist(
+    (set) => ({
+      empleados: [],
+      setEmpleados: (empleados) => set({ empleados }),
 
   summary: {
     countAlmuerzos: 0,
@@ -31,10 +34,19 @@ export const useTicketLunchStore = create((set) => ({
   setOrderOrigin: (origin) => set({ orderOrigin: origin }),
 
   // Estado para guardar el objeto de la orden recibida del backend
-  orderData: null,
-  setOrderData: (orderData) => set({ orderData }),
+  orderId: null,
+  setOrderId: (orderId) => set({ orderId }),
 
-  // Estado para guardar el objeto qrData para el QR
+  // Estado para guardar el objeto qrData para el QR individual
   qrData: null,
   setQrData: (qrData) => set({ qrData }),
-}));
+
+  // Estado para guardar el array de datos de QR por lote
+  qrBatchData: null,
+  setQrBatchData: (qrBatchData) => set({ qrBatchData }),
+    }),
+    {
+      name: 'ticket-lunch-storage', // nombre del item en localStorage
+    }
+  )
+);
