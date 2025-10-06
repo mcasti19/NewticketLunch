@@ -65,6 +65,12 @@ export const createOrderBatch = async ( {
         dataToSend.append( `${ orderPrefix }[id_order_status]`, '1' );
         dataToSend.append( `${ orderPrefix }[id_orders_consumption]`, '1' );
 
+        // **Ajuste clave: Duplicar el voucher para cada pedido**
+        if ( voucher instanceof File ) {
+            // El backend esperará orders[0][payment_support], orders[1][payment_support], etc.
+            dataToSend.append( `${ orderPrefix }[payment_support]`, voucher );
+        }
+
         const extrasForEmployee = [];
         if ( employee.para_llevar ) {
             const envase = extrasList.find( e => e.name_extra.toLowerCase().includes( 'envase' ) );
@@ -80,15 +86,42 @@ export const createOrderBatch = async ( {
         } );
     } );
 
-    // NOTE TO USER: The backend needs to have a '/pedidos/batch' endpoint to handle this request.
-    // const response = await api.post( '/pedidos/batch', dataToSend, {
-    //     headers: {'Content-Type': 'multipart/form-data'}
-    // } );
 
-    const response = {
-        data: 123
+
+    // --- INICIO: LOG DETALLADO PARA VERIFICAR FormData ---
+    console.log( '--- FormData a enviar (Verificación) ---' );
+    let dataCheck = {};
+    for ( let pair of dataToSend.entries() ) {
+        const key = pair[ 0 ];
+        const value = pair[ 1 ];
+
+        if ( value instanceof File ) {
+            console.log( key, '[File]', value.name, value.size + ' bytes' );
+            dataCheck[ key ] = `[File: ${ value.name }]`;
+        } else {
+            console.log( key, String( value ) );
+            dataCheck[ key ] = String( value );
+        }
     }
-    return response.data;
+    // Opcional: imprimir el objeto plano
+    console.log( 'Estructura de datos planos:', dataCheck );
+    console.log( '-----------------------------------------' );
+    // --- FIN: LOG DETALLADO ---
+
+    try {
+        const response = await api.post( '/pedidos/bluk', dataToSend, {
+            headers: {'Content-Type': 'multipart/form-data'}
+        } );
+        // Solo si la respuesta es exitosa (código 200)
+        if (response.status === 200 && response.data) {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message || 'Error procesando el lote de órdenes');
+        }
+    } catch ( error ) {
+        console.log( "ERROR ENVIAR POR LOTE:", error );
+        throw error;
+    }
 };
 
 
@@ -255,7 +288,7 @@ export const saveOrder = async ( {
     extras = [], // Establecer valor por defecto
 } ) => {
     // Mapear método de pago
-    console.log( {employee} );
+    // console.log( {employee} );
 
     const id_payment_method = paymentMethodMap[ paymentOption ] || null;
 
@@ -329,9 +362,14 @@ export const saveOrder = async ( {
     }
 
     // 4. Hacer POST con los datos y headers determinados
-    const response = await api.post( '/pedidos', dataToSend, {headers} );
-    console.log("RESPONSE", response.data.order);
 
-    return response.data.order;
+    try {
+        const response = await api.post( '/pedidos', dataToSend, {headers} );
+        console.log( "RESPONSE", response.data.order );
+        return response.data.order;
 
+    } catch ( error ) {
+        console.log( "ERRRORRRR:", error );
+
+    }
 };
