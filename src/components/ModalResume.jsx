@@ -57,7 +57,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
           paymentOption,
           referenceNumber,
           payer,
-          voucher,
+          // voucher,
         } );
         setOrderId( response );
         // Construir los QR individuales para cada empleado usando el id de la orden
@@ -78,6 +78,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
         setQrData( null );
       } else {
         
+        console.log( "FLUJO INDIVIDUAL" );
         // FLUJO INDIVIDUAL
         const emp = employees[ 0 ];
         response = await saveOrder( {
@@ -88,10 +89,9 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
           voucher,
           extras: emp.extras || [],
         } );
-        console.log("RESPONSE");
+        console.log( "RESPONSE" );
         setOrderId( response );
 
-        
         const orderID = response || '';
         const qrDataFinal = {
           orderID,
@@ -114,6 +114,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
       setVoucher( null );
       setIsLoading( false );
       if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
+
     } catch ( error ) {
       setIsLoading( false );
       alert( 'Error al generar los tickets: ' + ( error?.message || error ) );

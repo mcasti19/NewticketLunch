@@ -3,40 +3,40 @@
 ###  USUARIOS
 GET http://127.0.0.1:8000/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 
 ### MENU
 GET http://127.0.0.1:8000/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 ### GERENCIAS TODAS
 GET http://127.0.0.1:8000/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 ###  GERENCIA x ID
 GET http://127.0.0.1:8000/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 
 ###  PEDIDOS
 GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 
 ###  EMPLEADOS
 GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 ###  EMPLEADOS por Gerencias
 GET http://127.0.0.1:8000/api/p1/empleados?management=22 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 *******************************POSTS******************************
 
@@ -95,7 +95,7 @@ content-type: application/json
 #### EMPLEADOS
 POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 {
     "nombreCompleto" : "Carlos2 Ramírez",
@@ -109,7 +109,7 @@ Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
 ###
 POST http://127.0.0.1:8000/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
 
 {
     "numberOrdersDay" : 20
@@ -117,4 +117,4 @@ Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
 ###
 GET http://127.0.0.1:8000/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 2|Jp4NJxqNVeaRxDeAczxyxw2WkpezLK3iP58vkMxa1f54579d
+Authorization: Bearer 2|37lhtWw5YPhbsun207oVjYOaFWQiXHVyeeNAhH1D07c0f3ee
