@@ -113,10 +113,10 @@ export const createOrderBatch = async ( {
             headers: {'Content-Type': 'multipart/form-data'}
         } );
         // Solo si la respuesta es exitosa (código 200)
-        if (response.status === 200 && response.data) {
+        if ( response.status === 200 && response.data ) {
             return response.data;
         } else {
-            throw new Error(response.data?.message || 'Error procesando el lote de órdenes');
+            throw new Error( response.data?.message || 'Error procesando el lote de órdenes' );
         }
     } catch ( error ) {
         console.log( "ERROR ENVIAR POR LOTE:", error );
@@ -315,51 +315,53 @@ export const saveOrder = async ( {
 
 
     const employeePaymentData = {
-        cedula_employee: employee.cedula || '',
-        name_employee: employee.fullName || '',
-        phone_employee: employee.phone || payer.telefono || '',
+        cedula_employee: employee.cedula || '18467449',
+        name_employee: employee.fullName || 'Moises',
+        phone_employee: employee.phone || payer.telefono || '0414-2418171',
         // management: employee.id_management || employee.id_gerencia || '',
         management: 22,
     };
 
+    console.log( "employeePaymentData", employeePaymentData );
+
     // 3. **Manejar la imagen/voucher**
 
     // Si voucher es un objeto File, usamos FormData (MÉTODO RECOMENDADO)
-    if ( voucher instanceof File ) {
-        console.log( 'Enviando con FormData...' );
-        dataToSend = new FormData();
+    console.log( 'Enviando con FormData...' );
+    dataToSend = new FormData();
 
-        // Agregar campos planos de order
-        Object.entries( orderData ).forEach( ( [ key, value ] ) => {
-            dataToSend.append( `order[${ key }]`, value );
-        } );
-        // Agregar campos planos de employeePayment
-        Object.entries( employeePaymentData ).forEach( ( [ key, value ] ) => {
-            dataToSend.append( `employeePayment[${ key }]`, value );
-        } );
-        // Agregar extras (array, siempre enviar el campo)
-        if ( Array.isArray( extras ) && extras.length > 0 ) {
-            extras.forEach( e => dataToSend.append( 'extras[]', e ) );
-        } else {
-            // Si no hay extras seleccionados, enviar '1' (No Aplica)
-            dataToSend.append( 'extras[]', '1' );
-        }
+    // Agregar campos planos de order
+    Object.entries( orderData ).forEach( ( [ key, value ] ) => {
+        dataToSend.append( `order[${ key }]`, value );
+    } );
+    // Agregar campos planos de employeePayment
+    Object.entries( employeePaymentData ).forEach( ( [ key, value ] ) => {
+        dataToSend.append( `employeePayment[${ key }]`, value );
+    } );
+    // Agregar extras (array, siempre enviar el campo)
+    if ( Array.isArray( extras ) && extras.length > 0 ) {
+        extras.forEach( e => dataToSend.append( 'extras[]', e ) );
+    } else {
+        // Si no hay extras seleccionados, enviar '1' (No Aplica)
+        dataToSend.append( 'extras[]', '1' );
+    }
+    if ( voucher instanceof File ) {
         // Agregar el archivo de imagen
         dataToSend.append( 'order[payment_support]', voucher );
-
-        // LOG DETALLADO DE FORM DATA
-        console.log( '--- FormData a enviar ---' );
-        for ( let pair of dataToSend.entries() ) {
-            if ( pair[ 1 ] instanceof File ) {
-                console.log( pair[ 0 ], '[File]', pair[ 1 ].name, pair[ 1 ].type, pair[ 1 ].size + ' bytes' );
-            } else {
-                console.log( pair[ 0 ], JSON.stringify( pair[ 1 ] ) );
-            }
-        }
-        console.log( '-------------------------' );
-
-        headers[ 'Content-Type' ] = 'multipart/form-data';
     }
+
+    // LOG DETALLADO DE FORM DATA
+    console.log( '--- FormData a enviar ---' );
+    for ( let pair of dataToSend.entries() ) {
+        if ( pair[ 1 ] instanceof File ) {
+            console.log( pair[ 0 ], '[File]', pair[ 1 ].name, pair[ 1 ].type, pair[ 1 ].size + ' bytes' );
+        } else {
+            console.log( pair[ 0 ], JSON.stringify( pair[ 1 ] ) );
+        }
+    }
+    console.log( '-------------------------' );
+
+    headers[ 'Content-Type' ] = 'multipart/form-data';
 
     // 4. Hacer POST con los datos y headers determinados
 
