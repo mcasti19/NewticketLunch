@@ -1,8 +1,8 @@
-// import React, {useEffect} from 'react';
 import {QRCode} from 'react-qrcode-logo';
 import JSZip from 'jszip';
 import QRCodeGen from 'qrcode';
 import {saveAs} from 'file-saver';
+
 export function MyQRCodeComponent( {qrData} ) {
   const logoUrl = "/MercalMarker.png";
 
@@ -114,19 +114,6 @@ export function MyQRCodeComponent( {qrData} ) {
     return new Promise( ( resolve ) => canvas.toBlob( resolve, 'image/png' ) );
   };
 
-  // Exportar el QR como PNG en un ZIP (solo el order del backend)
-  // const handleExportZip = async () => {
-  //   const zip = new JSZip();
-  //   if ( qrData ) {
-  //     const blob = await generateQRImage( qrData );
-  //     const empleados = Array.isArray( qrData.empleados ) ? qrData.empleados : [];
-  //     const nombresArchivo = empleados.map( e => e.fullName ).join( '_' ) || 'ticket';
-  //     zip.file( `${ nombresArchivo }_QR.png`, blob );
-  //   }
-  //   const content = await zip.generateAsync( {type: 'blob'} );
-  //   saveAs( content, 'QR_Ticket.zip' );
-  // };
-
   // Descargar el QR generado como imagen (solo el order del backend)
   const handleDownloadQR = async () => {
     if ( qrData ) {
@@ -152,12 +139,6 @@ export function MyQRCodeComponent( {qrData} ) {
   return (
     <div className="overflow-y-auto w-full">
       <div className="w-full flex justify-end mb-4">
-        {/* <button
-          className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm shadow"
-          onClick={handleExportZip}
-        >
-          Exportar QR en ZIP
-        </button> */}
       </div>
       <div className="flex flex-col items-center justify-center p-6 rounded-lg shadow-xl max-w-2xl mx-auto my-8 border-0">
         <div><b>Orden: {qrData.orderID}</b></div>
@@ -179,7 +160,7 @@ export function MyQRCodeComponent( {qrData} ) {
           logoOpacity={1}
           logoPadding={0}
           logoPaddingStyle="square"
-          />
+        />
         <div className="mt-2 text-center text-xs text-gray-700">
           <div><b>Referencia: {qrData.referencia}</b></div>
           <div>Total Pagado: <b>Bs. {Number( qrData.total || 0 ).toFixed( 2 )}</b></div>
@@ -189,7 +170,7 @@ export function MyQRCodeComponent( {qrData} ) {
             </div>
           )}
         </div>
-          <h1>Fecha: {new Date().toLocaleDateString()}</h1>
+        <h1>Fecha: {new Date().toLocaleDateString()}</h1>
         <button
           className="mt-4 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs shadow"
           onClick={handleDownloadQR}

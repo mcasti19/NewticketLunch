@@ -18,8 +18,9 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
     const [ loading, setLoading ] = useState( true );
     const [ selectedAutorizado, setSelectedAutorizado ] = useState( null );
 
-    const idGerencia = employee?.management.id_management || null;
-    const {employees} = useGetEmployees( idGerencia );
+    // const idGerencia = employee?.management.id_management || null;
+    // const {employees} = useGetEmployees( idGerencia );
+    const {employees} = useGetEmployees(  );
 
     const tasaDia = 100;
     const precioLlevar = 15;

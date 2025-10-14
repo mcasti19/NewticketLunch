@@ -204,16 +204,16 @@ export const getManagements = async ( page = 1, pageSize = 5 ) => {
     return data
 }
 
-export const getEmployees = async ( id_gerencia ) => {
+export const getEmployees = async () => {
     // Se valida que exista el ID de la gerencia antes de hacer el get
-    if ( !id_gerencia ) {
-        console.error( "ID de gerencia no proporcionado." );
-        return [];
-    }
+    // if ( !id_gerencia ) {
+    //     console.error( "ID de gerencia no proporcionado." );
+    //     return [];
+    // }
 
     try {
         const response = await api.get( `/empleados`, {
-            params: {management: id_gerencia}, // Se usa el params como buena practica
+            // params: {management: id_gerencia}, // Se usa el params como buena practica
         } );
 
         // Se desestructura para un código más limpio.
@@ -227,6 +227,21 @@ export const getEmployees = async ( id_gerencia ) => {
         throw error;
     }
 };
+
+
+export const getOrderByid = async () => {
+
+    try {
+        const response = await api.get( `/pedidos/9` );
+        console.log( "RESPONSE DATA: ", response.data );
+
+        return response.data;
+
+    } catch ( error ) {
+        console.error( "Error al obtener empleados:", error.message );
+        throw error;
+    }
+}
 
 
 export const getMenu = async () => {
