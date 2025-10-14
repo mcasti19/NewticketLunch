@@ -3,7 +3,8 @@ import {useState, useEffect} from 'react';
 import {getEmployees} from '../services/actions';
 import {formatFullName} from '../utils/employeeUtils';
 
-export function useGetEmployees( idGerencia ) {
+// export function useGetEmployees( idGerencia ) {
+export function useGetEmployees() {
   const [ employees, setEmployees ] = useState( [] );
   const [ loading, setLoading ] = useState( true );
 
@@ -11,11 +12,11 @@ export function useGetEmployees( idGerencia ) {
     let isMounted = true;
     setLoading( true );
 
-    getEmployees( idGerencia )
+    getEmployees()
       .then( data => {
         if ( isMounted ) {
           // Aplica el formateo de fullName usando la función utilitaria
-          const formattedEmployees = formatFullName(data);
+          const formattedEmployees = formatFullName( data );
           setEmployees( formattedEmployees );
           console.log( "EMPLOYESS", formattedEmployees );
         }
@@ -32,7 +33,8 @@ export function useGetEmployees( idGerencia ) {
       } );
 
     return () => {isMounted = false;};
-  }, [ idGerencia ] );
+    // }, [ idGerencia ] );
+  }, [] );
 
   return {employees, loading};
 }

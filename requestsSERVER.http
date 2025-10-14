@@ -3,40 +3,45 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 ### EXTRAS
 GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
+
+###  PEDIDOS POR ID
+GET http://comedor.mercal.gob.ve/api/p1/pedidos/9 HTTP/1.1
+content-type: application/json
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 *******************************POSTS******************************
 
@@ -78,7 +83,7 @@ content-type: application/json
 #### PEDIDO
 POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 {
   "order": {
@@ -110,7 +115,7 @@ Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
 #### EMPLEADOS
 POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 {
     "nombre" : "Carlos",
@@ -125,12 +130,12 @@ Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
 #### CANTIDAD DE ORDENES POR DIA
 GET http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 ###
 POST http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 18|0Az408xc0ZAXM8ROBEHIil17fzASz09LgETp2Fge2d869972
+Authorization: Bearer 6|cibnzkdf6r0sfRyYxZPm8PDRvebZpK1d8SrJXV1w0706acf7
 
 {
 

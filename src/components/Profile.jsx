@@ -1,9 +1,27 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useAuthStore} from '../store/authStore';
+import {getOrderByid} from '../services/actions';
 
 // Componente principal de la página de Perfil
 export const Profile = () => {
     const {user} = useAuthStore();
+
+    useEffect( () => {
+
+        getOrderByid();
+
+    }, [] )
+
+
+
+
+
+
+
+
+
+
+
 
     return (
         <div className="flex flex-col md:flex-row gap-10 border-0 shadow-xl p-8 m-auto">
@@ -62,7 +80,7 @@ const InputField = ( {label, defaultValue, type = 'text', helperText, placeholde
                     defaultValue={defaultValue}
                     placeholder={placeholder}
                     readOnly={readOnly}
-                    className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 ${readOnly ? 'bg-gray-100 dark:bg-slate-800' : 'bg-white dark:bg-slate-900'}`}
+                    className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 ${ readOnly ? 'bg-gray-100 dark:bg-slate-800' : 'bg-white dark:bg-slate-900' }`}
                 />
             </div>
             {helperText && <p className="mt-2 text-sm text-gray-500">{helperText}</p>}

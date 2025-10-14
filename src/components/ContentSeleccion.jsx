@@ -50,8 +50,9 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
   const userGerencia = user?.employees?.management.management_name || null;
   // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  const idGerencia = user?.employees.management.id_management || null;
-  const {employees, loading} = useGetEmployees( idGerencia );
+  // const idGerencia = user?.employees.management.id_management || null;
+  // const {employees, loading} = useGetEmployees( idGerencia );
+  const {employees, loading} = useGetEmployees( );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
   const [ search, setSearch ] = useState( "" );
