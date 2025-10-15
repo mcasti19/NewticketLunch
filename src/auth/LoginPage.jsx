@@ -3,9 +3,15 @@ import {useAuthStore} from '../store/authStore';
 import {useNavigate} from 'react-router';
 import {startLogin} from "../services/actions";
 
+import {FaEye} from "react-icons/fa";
+import {LuEyeClosed} from "react-icons/lu";
+
+
+
 const LoginPage = () => {
   const [ email, setEmail ] = useState( '' );
   const [ password, setPassword ] = useState( '' );
+  const [ isShowpass, setIsShowPass ] = useState( false );
   // const login = useAuthStore( ( state ) => state.login );
   const isAuthenticated = useAuthStore( ( state ) => state.isAuthenticated );
   const navigate = useNavigate();
@@ -21,6 +27,12 @@ const LoginPage = () => {
       navigate( '/home' );
     }
   }, [ isAuthenticated, navigate ] );
+
+
+  const handleShowPass = () => {
+    console.log( "Mostrando pass" );
+    setIsShowPass( !isShowpass );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-blue-200 flex justify-center items-center px-2 py-4">
@@ -46,13 +58,19 @@ const LoginPage = () => {
             <div className="relative">
               <img src="/pass.svg" alt="password icon" className="w-5 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none opacity-70" />
               <input
-                type="password"
+                // type="password"
+                type={isShowpass ? "text" : "password"}
                 value={password}
                 onChange={e => setPassword( e.target.value )}
                 placeholder="Contraseña"
                 required
                 className="pl-10 pr-3 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 w-full bg-white text-gray-800 placeholder-gray-500 shadow-sm"
               />
+              <div className='absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer'
+                onClick={handleShowPass} >
+                {isShowpass ? <LuEyeClosed /> : <FaEye />}
+              </div>
+
             </div>
             <button
               type="submit"
@@ -72,8 +90,8 @@ const LoginPage = () => {
           <p className="text-base md:text-lg text-white text-center mb-1 md:mb-2">Bienvenido a nuestra aplicación.</p>
           <p className="text-sm md:text-base text-blue-100 text-center">Inicia sesión para continuar.</p>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 export default LoginPage;

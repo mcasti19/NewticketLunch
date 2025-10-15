@@ -1,14 +1,18 @@
-import React, {useState, useEffect} from 'react';
-import {useTicketLunchStore} from '../store/ticketLunchStore';
+import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router';
-import {FaTachometerAlt, FaUser, FaCog, FaFileAlt, FaTicketAlt} from 'react-icons/fa';
+import {FaUser, FaCog, FaTicketAlt} from 'react-icons/fa';
 import {IoFastFood} from "react-icons/io5";
-import {FiLogOut} from 'react-icons/fi'; // Nuevo icono para salir
-// import {IoMenu} from "react-icons/io"; // Usando IoMenu para hamburguesa
 import {IoMenuOutline} from "react-icons/io5";
 import {IoMdClose} from "react-icons/io";
-import {RiSunLine, RiMoonLine} from 'react-icons/ri'; // Iconos para modo claro/oscuro
-import {MdOutlineArrowBackIosNew, MdOutlineArrowForwardIos} from 'react-icons/md'; // Iconos para colapsar
+import {RiSunLine, RiMoonLine} from 'react-icons/ri';
+import {FaUsers} from "react-icons/fa6";
+import {MdOutlineArrowBackIosNew, MdOutlineArrowForwardIos} from 'react-icons/md';
+import {useTicketLunchStore} from '../store/ticketLunchStore';
+import {ImQrcode} from "react-icons/im";
+import {MdOutlineEventAvailable} from "react-icons/md";
+
+
+
 
 import {ContentMenu} from './ContentMenu';
 import {ContentSeleccion} from './ContentSeleccion';
@@ -20,6 +24,7 @@ import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
 import {ContentMiTicket} from './ContentMiTicket';
 import {Profile} from './Profile';
+import {SpecialEvent} from './SpecialEvent';
 
 export const SideBar = ( {initialTab} ) => {
     // Store flags para habilitar/deshabilitar tabs
@@ -35,6 +40,7 @@ export const SideBar = ( {initialTab} ) => {
         '/seleccion',
         '/resumen-pago',
         '/generar-ticket',
+        '/special-event',
     ];
     const tabs = [
         {
@@ -45,7 +51,7 @@ export const SideBar = ( {initialTab} ) => {
         },
         {
             label: 'Mi Ticket',
-            icon: <FaUser className="w-5 h-5" />,
+            icon: <ImQrcode className="w-5 h-5" />,
             content: (
                 <ContentMiTicket goToResumeTab={() => {
                     setResumenEnabled( true );
@@ -70,7 +76,7 @@ export const SideBar = ( {initialTab} ) => {
         },
         {
             label: 'Selección',
-            icon: <FaUser className="w-5 h-5" />,
+            icon: <FaUsers className="w-5 h-5" />,
             content: (
                 <>
                     <ContentSeleccion goToResumeTab={() => {
@@ -107,6 +113,12 @@ export const SideBar = ( {initialTab} ) => {
             content: <ContentTicket />,
             enabled: isTicketEnabled,
         },
+        {
+            label: 'Eventos Especiales',
+            icon: <MdOutlineEventAvailable className="w-5 h-5" />,
+            content: <SpecialEvent />,
+            enabled: true,
+        },
     ];
 
     const getInitialTabIndex = () => {
@@ -117,6 +129,7 @@ export const SideBar = ( {initialTab} ) => {
             case 'seleccion': return 3;
             case 'resumen-pago': return 4;
             case 'generar-ticket': return 5;
+            case 'special-event': return 6;
             default: return 0;
         }
     };
@@ -171,16 +184,17 @@ export const SideBar = ( {initialTab} ) => {
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900 w-full">
             {/* Sidebar Navigation - Left Column */}
-            <aside className={`hidden md:flex flex-col bg-gradient-to-t from-blue-950 to-blue-700 text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
-                <div className={`border-b border-blue-900 ${ isCollapsed ? 'flex justify-center' : '' }`}>
+            <aside className={`hidden md:flex flex-col bg-gradient-to-t from-blue-950 from-80% to-white text-white shadow-lg transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-16' : 'w-64' }`}>
+                <div className={`border-0 border-red-500 ${ isCollapsed ? 'flex justify-center' : '' }`}>
                     {isCollapsed ? (
-                        <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                            <span className="text-blue-900 font-bold text-sm">M</span>
+                        <div className="rounded-full flex items-center justify-center">
+                            <img src="./MercalMarker.png" alt="Logo Mercal Collapsed" />
                         </div>
                     ) : (
                         // <HeaderLogo className="text-white" />
                         <div className='p-4 text-center'>
-                            <h1>TICKET LUNCH</h1>
+                            {/* <h1>TICKET LUNCH</h1> */}
+                            <img src="./TicketLunchLogo-removebg-preview.png" alt="Logo Mercal Collapsed" />
                         </div>
                     )}
                 </div>
@@ -300,8 +314,9 @@ export const SideBar = ( {initialTab} ) => {
                         ) )}
                     </ul>
                 </nav>
+                <hr />
 
-                <div className="absolute bottom-4 left-4 right-4 flex flex-col space-y-2">
+                <div className="absolute bottom-4 left-4 right-4 flex flex-col space-y-2 border-2">
                     <button
                         onClick={toggleDarkMode}
                         className="w-full flex justify-center items-center p-3 rounded-lg hover:bg-blue-800 transition-colors"

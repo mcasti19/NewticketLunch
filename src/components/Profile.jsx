@@ -7,27 +7,14 @@ export const Profile = () => {
     const {user} = useAuthStore();
 
     useEffect( () => {
-
         getOrderByid();
-
     }, [] )
 
-
-
-
-
-
-
-
-
-
-
-
     return (
-        <div className="flex flex-col md:flex-row gap-10 border-0 shadow-xl p-8 m-auto">
+        <div className="flex flex-col md:flex-row gap-10 border-0 shadow-2xl p-8 m-auto bg-gradient-to-t from-blue-950 from-50% to-red-600 rounded-2xl">
             {/* Sección Izquierda: Imagen de Perfil */}
             <div className="w-full md:w-1/3 border-r border-gray-200 pr-5 flex flex-col justify-center items-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Mi Ticket Almuerzo</h3>
+                <h3 className="text-lg font-semibold text-white mb-6 text-center bbh-sans-hegarty-regular">Mi Ticket Almuerzo</h3>
                 <div className="flex flex-col items-center space-y-4">
                     <div className="relative w-52 h-52 rounded-xs overflow-hidden bg-gray-200 ring-4 ring-white shadow-md">
                         {/* Reemplaza con una imagen real si es necesario */}
@@ -43,11 +30,11 @@ export const Profile = () => {
 
             {/* Sección Derecha: Editar Detalles de la Cuenta */}
             <div className="w-full md:w-2/3">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Mi Información</h3>
+                {/* <h3 className="text-lg font-semibold text-gray-900 mb-6">Mi Información</h3> */}
                 <form className="space-y-6">
                     <InputField label="Nombre" defaultValue="JWT User" readOnly />
 
-                    <label htmlFor="Correo" className="block text-sm font-medium text-gray-700">Correo</label>
+                    
                     <InputField label="Correo" defaultValue="name@example.com" type="email" readOnly />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -69,7 +56,7 @@ export const Profile = () => {
 const InputField = ( {label, defaultValue, type = 'text', helperText, placeholder, readOnly} ) => {
     return (
         <div>
-            <label htmlFor={label.replace( /\s/g, '' ).toLowerCase()} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={label.replace( /\s/g, '' ).toLowerCase()} className="block text-sm font-medium text-white playfair-display-uniquifier">
                 {label}
             </label>
             <div className="mt-1">
