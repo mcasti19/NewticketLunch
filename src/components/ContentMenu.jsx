@@ -45,7 +45,9 @@ export const ContentMenu = () => {
 
   if ( menuDia.length === 0 ) {
     return (
-      <div className="flex flex-col items-center justify-center w-full text-center h-full border-0">
+      <div className="flex flex-col items-center justify-center w-full text-center h-full border-0
+      
+      ">
         <h1 className="text-3xl md:text-4xl font-extrabold dark:text-red-700 text-blue-700 mb-4 tracking-tight drop-shadow">Menú de hoy: <span className="text-gray-800 dark:text-amber-50">{day} de {month}</span></h1>
         <NoMenu />
       </div>

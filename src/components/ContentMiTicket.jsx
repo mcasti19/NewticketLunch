@@ -13,14 +13,12 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
 
     // Centralizamos el usuario logueado como empleado
     const employee = getLoggedEmployee( user );
-    
+
     const [ myTicket, setMyTicket ] = useState( null );
     const [ loading, setLoading ] = useState( true );
     const [ selectedAutorizado, setSelectedAutorizado ] = useState( null );
 
-    // const idGerencia = employee?.management.id_management || null;
-    // const {employees} = useGetEmployees( idGerencia );
-    const {employees} = useGetEmployees(  );
+    const {employees} = useGetEmployees();
 
     const tasaDia = 100;
     const precioLlevar = 15;
@@ -54,7 +52,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
         }
         setMyTicket( ticketToSet );
         setLoading( false );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ employees ] );
 
     // Guardar estado en localStorage cuando cambie
@@ -132,11 +130,13 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
         <div className="p-4 rounded-lg shadow-xl text-white w-[95vw] md:w-[70dvw] mx-auto my-4 border-0 border-gray-700">
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
             <div className="flex flex-col items-center mb-6">
-                <h2 className="text-xl md:text-2xl font-semibold">{employee?.fullName}</h2>
+                <h2 className="text-xl md:text-2xl font-semibold text-black dark:text-white mb-2">
+                    {employee?.fullName}
+                </h2>
             </div>
             <div className="flex flex-col md:flex-row w-full gap-4 justify-center items-center border-0 m-auto">
-                <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
-                    <span className="font-medium text-lg text-black dark:text-white">Almuerzo para hoy</span>
+                <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg hover:">
+                    <span className="font-medium text-lg text-black dark:text-white">Almuerzo</span>
                     <picture>
                         <source srcSet="/Pabellon-Criollo.png" media="(min-width: 600px)" />
                         <source srcSet="/Pabellon-Criollo.png" type="image/jpeg" />
@@ -153,7 +153,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
                 {myTicket?.almuerzo && (
                     <>
                         <div className="w-72  p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
-                            <span className="font-medium text-lg text-black dark:text-white">Para llevar</span>
+                            <span className="font-medium text-lg text-black dark:text-white">Envase</span>
                             <picture>
                                 <source srcSet="/envase.png" media="(min-width: 1000px)" type="image/avif" />
                                 <source srcSet="/envase.png" media="(min-width: 600px)" />
@@ -167,9 +167,8 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
                                 className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
                             />
                         </div>
-
                         <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
-                            <span className="font-medium text-lg text-black dark:text-white">Desea cubiertos</span>
+                            <span className="font-medium text-lg text-black dark:text-white">Cubiertos</span>
                             <picture>
                                 <source srcSet="/cubiertos2.png" media="(min-width: 1000px)" type="image/avif" />
                                 <source srcSet="/cubiertos2.png" media="(min-width: 600px)" />
@@ -185,7 +184,6 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
                         </div>
                     </>
                 )}
-
             </div>
 
 
