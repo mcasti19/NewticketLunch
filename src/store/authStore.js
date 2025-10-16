@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { formatFullName } from '../utils/employeeUtils';
 
 const TOKEN_KEY = "token";
 const TOKEN_EXPIRATION_KEY = "tokenExpiration";
@@ -28,6 +29,7 @@ function isTokenValid() {
 function saveSession(token, expiration, user) {
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(TOKEN_EXPIRATION_KEY, expiration.toString());
+  // Guardamos en localStorage sólo el user normalizado
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
@@ -37,28 +39,45 @@ function clearSession() {
   localStorage.removeItem(USER_KEY);
 }
 
-export const useAuthStore = create((set) => {
+export const useAuthStore = create((set, get) => {
   const tokenExpiration = getTokenExpiration();
   const user = isTokenValid() ? getUser() : null;
   const isAuthenticated = isTokenValid();
   const status = isAuthenticated ? 'authenticated' : 'unauthenticated';
 
+  // Keep a small, explicit cedula field to avoid parsing user everywhere
+  const cedula = user?.cedula || null;
+
   const login = (user, token, expiration) => {
-    saveSession(token, expiration, user);
-    set({ user, isAuthenticated: true, status: 'authenticated', tokenExpiration: expiration });
+    // user here is the raw backend payload; normalizamos antes de guardar
+    const emp = user?.employees || {};
+    const formattedEmp = formatFullName(emp) || {};
+    const normalized = {
+      email: user?.email || '',
+      cedula: emp?.cedula || '',
+      fullName: formattedEmp.fullName || `${emp?.first_name || ''} ${emp?.last_name || ''}`.trim(),
+      management: emp?.management || '',
+      phone: emp?.phone || '',
+      position: emp?.position || '',
+      state: emp?.state || '',
+      type_employee: emp?.type_employee || '',
+    };
+    saveSession(token, expiration, normalized);
+    const c = normalized.cedula || null;
+    set({ user: normalized, isAuthenticated: true, status: 'authenticated', tokenExpiration: expiration, cedula: c });
   };
 
   const logout = () => {
-    // console.log("VALIDANDO SESION ANTES DE LOGOUT");
     clearSession();
-    set({ user: null, isAuthenticated: false, status: 'unauthenticated', tokenExpiration: null });
+    set({ user: null, isAuthenticated: false, status: 'unauthenticated', tokenExpiration: null, cedula: null });
   };
 
+  const setUser = (u) => set({ user: u });
+  const setCedula = (c) => set({ cedula: c });
+  const getCedula = () => get().cedula || null;
+
   const checkSession = () => {
-    if (!isTokenValid()) {
-      // console.log("VALIDANDO SESION");
-      logout();
-    }
+    if (!isTokenValid()) logout();
   };
 
   // Check session on store initialization
@@ -69,6 +88,10 @@ export const useAuthStore = create((set) => {
     isAuthenticated,
     status,
     tokenExpiration,
+    cedula,
+    setCedula,
+    getCedula,
+    setUser,
     login,
     logout,
     checkSession,

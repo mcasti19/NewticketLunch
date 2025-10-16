@@ -5,14 +5,20 @@ import {AutorizarSelector} from './AutorizarSelector';
 import {useGetEmployees} from '../hooks/useGetEmployees';
 import {Spinner} from './Spinner';
 import {buildSelectedEmployees, buildResumen} from '../utils/orderUtils';
-import {getLoggedEmployee} from '../utils/employeeUtils';
+// Nota: `user` en el store ahora está normalizado (email, cedula, fullName, management, phone, position, state, type_employee)
 
 export const ContentMiTicket = ( {goToResumeTab} ) => {
     const {user} = useAuthStore();
     const {setSelectedEmpleadosSummary, setSummary, setOrderOrigin} = useTicketLunchStore();
 
-    // Centralizamos el usuario logueado como empleado
-    const employee = getLoggedEmployee( user );
+    // Construir un objeto empleado mínimo a partir del user normalizado en el store
+    const employee = user ? {
+        fullName: user.fullName || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        cedula: user.cedula || '',
+        phone: user.phone || '',
+        management: user.management || '',
+        id_management: user.management || '',
+    } : null;
 
     const [ myTicket, setMyTicket ] = useState( null );
     const [ loading, setLoading ] = useState( true );
@@ -26,8 +32,9 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
 
     // Cargar estado desde localStorage o inicializar
     useEffect( () => {
-        console.log( "Employee", employee );
-        if ( !employee || !Array.isArray( employees ) || employees.length === 0 ) return;
+        console.log( "USER:", user );
+        // console.log( "Employee", employee );
+        if ( !user || !Array.isArray( employees ) || employees.length === 0 ) return;
 
         const storedTicket = localStorage.getItem( 'miTicketSeleccion' );
         let ticketToSet;
@@ -42,7 +49,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
             }
         } else {
             ticketToSet = {
-                cedula: employee.cedula,
+                cedula: user?.cedula || '',
                 almuerzo: false,
                 para_llevar: false,
                 cubiertos: false,
@@ -75,12 +82,12 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
     };
 
     const handleSave = () => {
-        if ( !myTicket || !employee ) return;
+        if ( !myTicket || !user ) return;
         // Calcula el total individual
         const total_pagar = calculateCost();
         // Construye el array estandarizado
         const empleadosArr = buildSelectedEmployees( {
-            employee: {...employee},
+            employee: employee,
             ticket: {...myTicket, total_pagar},
             autorizado: selectedAutorizado,
             tipo: 'mi-ticket'
@@ -131,7 +138,7 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
             <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
             <div className="flex flex-col items-center mb-6">
                 <h2 className="text-xl md:text-2xl font-semibold text-black dark:text-white mb-2">
-                    {employee?.fullName}
+                    {user?.fullName}
                 </h2>
             </div>
             <div className="flex flex-col md:flex-row w-full gap-4 justify-center items-center border-0 m-auto">
