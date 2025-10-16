@@ -229,16 +229,18 @@ export const getEmployees = async () => {
 };
 
 
-export const getOrderByid = async () => {
-
+export const getOrderByid = async ( cedula ) => {
     try {
-        const response = await api.get( `/pedidos/9` );
-        console.log( "RESPONSE DATA: ", response.data );
-
+        // Si no se proporciona cedula, lanzamos para evitar llamadas erróneas
+        if (!cedula) {
+            throw new Error('Cedula no proporcionada');
+        }
+        // Ajusta la ruta según cómo tu backend espere la cedula (query param o path)
+        const response = await api.get(`/pedidos`, { params: { cedula } });
         return response.data;
 
     } catch ( error ) {
-        console.error( "Error al obtener empleados:", error.message );
+        console.error( "Error al obtener pedido por cédula:", error.message );
         throw error;
     }
 }

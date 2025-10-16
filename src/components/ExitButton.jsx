@@ -11,7 +11,7 @@ export const ExitButton = ( {isCollapsed} ) => {
         localStorage.clear();
         logout();
         navigate( '/auth/login' );
-        console.log( "ME LLEVO AL LOGIN y limpio localStorage" );
+        // console.log( "ME LLEVO AL LOGIN y limpio localStorage" );
     }
 
     return (
