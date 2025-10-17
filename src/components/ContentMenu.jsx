@@ -1,4 +1,4 @@
-import {use, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {getMenu, getUsers} from "../services/actions";
 import {NoMenu} from './NoMenu';
 import {Spinner} from './Spinner';

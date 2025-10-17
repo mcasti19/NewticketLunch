@@ -232,11 +232,11 @@ export const getEmployees = async () => {
 export const getOrderByid = async ( cedula ) => {
     try {
         // Si no se proporciona cedula, lanzamos para evitar llamadas erróneas
-        if (!cedula) {
-            throw new Error('Cedula no proporcionada');
+        if ( !cedula ) {
+            throw new Error( 'Cedula no proporcionada' );
         }
         // Ajusta la ruta según cómo tu backend espere la cedula (query param o path)
-        const response = await api.get(`/pedidos`, { params: { cedula } });
+        const response = await api.get( `/pedidos`, {params: {cedula}} );
         return response.data;
 
     } catch ( error ) {
@@ -324,7 +324,7 @@ export const saveOrder = async ( {
         cedula: String( employee.cedula || '' ),
         id_order_status: '1',
         id_orders_consumption: '1',
-        management: employee.id_management || employee.id_gerencia || '',
+        management: employee.management || '',
         // payment_support se manejará en el paso 3
     };
 
@@ -335,8 +335,7 @@ export const saveOrder = async ( {
         cedula_employee: employee.cedula || '18467449',
         name_employee: employee.fullName || 'Moises',
         phone_employee: employee.phone || payer.telefono || '0414-2418171',
-        // management: employee.id_management || employee.id_gerencia || '',
-        management: 22,
+        management: employee.management || '',
     };
 
     console.log( "employeePaymentData", employeePaymentData );

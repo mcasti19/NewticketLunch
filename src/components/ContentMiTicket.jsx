@@ -17,7 +17,6 @@ export const ContentMiTicket = ( {goToResumeTab} ) => {
         cedula: user.cedula || '',
         phone: user.phone || '',
         management: user.management || '',
-        id_management: user.management || '',
     } : null;
 
     const [ myTicket, setMyTicket ] = useState( null );

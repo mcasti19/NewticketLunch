@@ -49,9 +49,6 @@ function filterEmployees( employees, search ) {
 export const ContentSeleccion = ( {goToResumeTab} ) => {
   const {user} = useAuthStore();
   const userGerencia = user?.employees?.management.management_name || null;
-  // const idGerencia = user?.id_gerencia || user?.gerencia?.id_gerencia || null;
-  // const idGerencia = user?.employees.management.id_management || null;
-  // const {employees, loading} = useGetEmployees( idGerencia );
   const {employees, loading} = useGetEmployees( );
   const [ employeeList, setEmployeeList ] = useState( [] );
   const [ modalInvitadoOpen, setModalInvitadoOpen ] = useState( false );
@@ -66,22 +63,6 @@ export const ContentSeleccion = ( {goToResumeTab} ) => {
   const tasaDia = 100;
   const precioLlevar = 15;
   const precioCubierto = 5;
-
-
-
-  // useEffect( () => {
-  //   // getExtras();
-  //   console.log( "EMPLEADOSsssss", employees );
-  //   console.log( "USUAAAAARRRIIIIOOOO:", user );
-  // }, [] );
-
-  // useEffect( () => {
-  //   if ( !loading ) {
-  //     // console.log( "EMPLEADOSsssss", employees );
-  //     console.log( "USER", user );
-  //     console.log( "ID GERENCIA", idGerencia );
-  //   }
-  // }, [ idGerencia, loading, user ] );
 
   useEffect( () => {
     if ( !loading && employees && employees.length > 0 ) {

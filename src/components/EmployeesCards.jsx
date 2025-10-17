@@ -3,7 +3,6 @@ import React from 'react';
 import { useEmployeesCardsLogic } from '../hooks/useEmployeesCardsLogic';
 
 export const EmployeesCards = ({
-    userGerencia,
     employeeList,
     tasaDia,
     precioLlevar,
@@ -31,7 +30,7 @@ export const EmployeesCards = ({
     // Mantener la lógica de getOtherEmployees aquí, ya que depende de employeesToDisplay
     const getOtherEmployees = React.useMemo(() => {
         return employeeList.filter(other =>
-            (other.id_management || other.id_gerencia) === (employeeList[0]?.id_management || employeeList[0]?.id_gerencia) &&
+            (other.management) === (employeeList[0]?.management ) &&
             other.cedula !== employeesToDisplay.cedula
         );
     }, [employeeList, employeesToDisplay]);
