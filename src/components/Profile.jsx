@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {useAuthStore} from '../store/authStore';
-import {getOrderByid} from '../services/actions';
-import {useGetDataOrder} from '../hooks/useGetDataOrder';
+import React, {useEffect} from 'react';
+// import {useAuthStore} from '../store/authStore';
+// import {getOrderByid} from '../services/actions';
+// import {useGetDataOrder} from '../hooks/useGetDataOrder';
 import {Spinner} from './Spinner';
-import {getLoggedEmployee} from '../utils/employeeUtils';
-import {useTicketLunchStore} from '../store/ticketLunchStore';
+// import {getLoggedEmployee} from '../utils/employeeUtils';
+// import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {QRCode} from 'react-qrcode-logo';
 import {useGenerateMyQR} from '../hooks/useGenerateMyQR';
 
@@ -27,7 +27,7 @@ export const Profile = () => {
             // console.log( "ORDER DATA: ", order, "USER:", user );
             console.log( "FORMATTED EMPLOYEE: ", employee );
         }
-    }, [ isLoading ] )
+    }, [ isLoading, employee, error ] )
 
 
     if ( isLoading ) {
@@ -61,7 +61,6 @@ export const Profile = () => {
                                     />
                                 </div>
                             ) : (
-                                // Espacio vacío respetando el tamaño de la imagen
                                 <div className="w-full h-full" aria-hidden="true"></div>
                             )}
                         </div>

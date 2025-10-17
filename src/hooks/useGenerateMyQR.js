@@ -1,28 +1,40 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
 import {useGetDataOrder} from './useGetDataOrder';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-import { useAuthStore } from '../store/authStore';
+import {useAuthStore} from '../store/authStore';
 
 export const useGenerateMyQR = () => {
     const {user} = useAuthStore();
+    const [ employee, setEmployee ] = useState( '' )
     // Build a minimal employee object from the normalized user stored in authStore
-    const employee = user ? {
-        fullName: user.fullName || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
-        cedula: user.cedula || '',
-        phone: user.phone || '',
-        management: user.management || '',
-    } : null;
+
 
     const {order, isLoading, error} = useGetDataOrder();
     const showTicketImage = useTicketLunchStore( state => state.showTicketImage );
     const setShowTicketImage = useTicketLunchStore( state => state.setShowTicketImage );
 
+
+    useEffect( () => {
+        console.log( "USER:", user );
+
+    }, [ user ] )
+
+
+
     // Mapear los datos de la orden para el QR del empleado logueado
     const qrDataForLogged = React.useMemo( () => {
-        if ( !order || !employee ) return null;
 
-        console.log("");
-        
+        const employee = user ? {
+            fullName: user.fullName || `${ user.first_name || '' } ${ user.last_name || '' }`.trim(),
+            cedula: user.cedula || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            management: user.management || '',
+        } : null;
+
+        setEmployee( employee );
+
+        if ( !order || !employee ) return null;
 
         const orderID = order.id || order.order?.id || order.orderID || order.id_order || '';
         const referencia = order.reference || order.referencia || order.order?.reference || '';
@@ -44,15 +56,13 @@ export const useGenerateMyQR = () => {
             total,
             referencia,
         };
-    }, [ order, employee ] );
+    }, [ order, user ] );
 
     const formatQRText = ( qr ) => {
         if ( !qr ) return '';
         const emp = Array.isArray( qr.empleados ) ? qr.empleados[ 0 ] : {};
         return `Orden: ${ qr.orderID }\nReferencia: ${ qr.referencia }\nEmpleado: ${ emp.fullName || '' } (C.I: ${ emp.cedula || '' })\nTotal: Bs. ${ Number( qr.total || 0 ).toFixed( 2 ) }`;
     };
-
-
 
     return {
         order,
@@ -63,7 +73,7 @@ export const useGenerateMyQR = () => {
         user,
         employee,
 
-    setShowTicketImage,
+        setShowTicketImage,
         formatQRText
-}
+    }
 }

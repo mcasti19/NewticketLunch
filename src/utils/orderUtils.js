@@ -25,7 +25,7 @@ export function buildSelectedEmployees( {employee, ticket, autorizado, empleados
             autorizado_por: '',
             // phone: employee.employees.phone || '',
             phone: '041432208888',
-            id_management: employee.id_management || '',
+            management: employee.management || '',
         } ];
     }
     // Si es Seleccion (array de empleados)
