@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
-import {MyQRCodeComponent} from './MyQRCodeComponent'
+import {MyQRCodeComponent} from '../components/MyQRCodeComponent'
 import {useTicketLunchStore} from '../store/ticketLunchStore'
 import {useBuildDataToQR} from '../hooks/useBuildDataToQR';
 
-export const ContentTicket = () => {
+export const Tickets = () => {
   const qrData = useTicketLunchStore((state) => state.qrData);
   const qrBatchData = useTicketLunchStore((state) => state.qrBatchData);
   const { builderDataQR } = useBuildDataToQR();

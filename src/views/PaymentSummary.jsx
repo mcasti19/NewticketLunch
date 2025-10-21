@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-import ModalResume from './ModalResume';
-import {OrderDetails} from './OrderDetails';
+import ModalResume from '../components/ModalResume';
+import {OrderDetails} from '../components/OrderDetails';
 
 
-export const ContentResume = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicketTab} ) => {
+export const PaymentSummary = ( {goToTicketTab, goBackSeleccionTab, goBackMiTicketTab} ) => {
   const [ modalIsOpen, setModalIsOpen ] = useState( false );
   const [ selectedPaymentOption, setSelectedPaymentOption ] = useState( null );
   const setReferenceNumber = useTicketLunchStore( state => state.setReferenceNumber );

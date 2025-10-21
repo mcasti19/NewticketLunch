@@ -1,46 +1,27 @@
-import React, {useEffect} from 'react';
-// import {useAuthStore} from '../store/authStore';
-// import {getOrderByid} from '../services/actions';
-// import {useGetDataOrder} from '../hooks/useGetDataOrder';
-import {Spinner} from './Spinner';
-// import {getLoggedEmployee} from '../utils/employeeUtils';
-// import {useTicketLunchStore} from '../store/ticketLunchStore';
-import {QRCode} from 'react-qrcode-logo';
-import {useGenerateMyQR} from '../hooks/useGenerateMyQR';
+import { useState } from 'react';
+import { Spinner } from './Spinner';
+import { QRCode } from 'react-qrcode-logo';
+import { useTicketQR } from '../hooks/useTicketQR';
 
 // Componente principal de la página de Perfil
 export const Profile = () => {
     const {
         employee,
-        order,
+        qrData,
         isLoading,
         error,
-        showTicketImage,
-        qrDataForLogged,
+        generateTicket,
+        formatQRText,
+    } = useTicketQR();
+    const [showTicket, setShowTicket] = useState(false);
 
-        setShowTicketImage,
-        formatQRText
-    } = useGenerateMyQR();
-
-    useEffect( () => {
-        if ( !isLoading && !error ) {
-            // console.log( "ORDER DATA: ", order, "USER:", user );
-            console.log( "FORMATTED EMPLOYEE: ", employee );
+    const handleShowTicketClick = () => {
+        if (!showTicket) {
+            generateTicket();
         }
-    }, [ isLoading, employee, error ] )
+        setShowTicket(!showTicket);
+    };
 
-
-    if ( isLoading ) {
-        return <Spinner text='Cargando información del usuario...' />;
-    }
-
-    if ( error ) {
-        return <p style={{color: 'red'}}>Error: {error}</p>;
-    }
-
-    if ( !order ) {
-        return <p>No se encontraron datos del pedido.</p>;
-    }
     return (
         <div className='border-0 w-full md:h-full'>
             <div className="flex flex-col md:flex-row h-full gap-10 shadow-2xl p-8 m-auto bg-gradient-to-t from-blue-950 from-50% to-red-600 rounded-2xl border-0">
@@ -49,26 +30,35 @@ export const Profile = () => {
                     <h3 className="text-lg font-semibold text-white mb-6 text-center bbh-sans-hegarty-regular">Mi Ticket Almuerzo</h3>
                     <div className="flex flex-col items-center space-y-4">
                         <div className="w-52 h-52 rounded-xs overflow-hidden bg-gray-600 ring-4 ring-white shadow-md flex items-center justify-center">
-                            {/* Contenedor reservado: mostrar el QR del empleado logueado cuando esté disponible */}
-                            {showTicketImage && qrDataForLogged ? (
+                            {isLoading ? (
+                                <Spinner text="Generando..." />
+                            ) : showTicket && qrData ? (
                                 <div className="w-full h-full flex items-center justify-center">
                                     <QRCode
-                                        value={formatQRText( qrDataForLogged )}
+                                        value={formatQRText(qrData)}
                                         size={150}
                                         ecLevel="M"
                                         qrStyle="dots"
-                                        style={{width: '100%', height: '100%'}}
+                                        style={{ width: '100%', height: '100%' }}
                                     />
                                 </div>
                             ) : (
-                                <div className="w-full h-full" aria-hidden="true"></div>
+                                <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center text-gray-400 bg-gray-700/50" aria-hidden="true">
+                                    <span className="text-6xl mb-2" role="img" aria-label="Código QR Oculto">
+                                        🎟️
+                                    </span>
+                                    <p className="text-sm font-medium text-white">
+                                        {error ? `Error: ${error}` : 'Ticket de almuerzo oculto'}
+                                    </p>
+                                </div>
                             )}
                         </div>
                         <button
                             className='cursor-pointer p-2 bg-green-700 rounded-md'
-                            onClick={() => setShowTicketImage( true )}
+                            onClick={handleShowTicketClick}
+                            disabled={isLoading}
                         >
-                            Ticket de hoy
+                            {isLoading ? 'Cargando...' : showTicket ? 'Ocultar Ticket' : 'Mostrar Ticket'}
                         </button>
                     </div>
                 </div>

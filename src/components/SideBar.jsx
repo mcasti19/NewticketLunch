@@ -11,20 +11,17 @@ import {useTicketLunchStore} from '../store/ticketLunchStore';
 import {ImQrcode} from "react-icons/im";
 import {MdOutlineEventAvailable} from "react-icons/md";
 
-
-
-
-import {ContentMenu} from './ContentMenu';
-import {ContentSeleccion} from './ContentSeleccion';
-import {ContentResume} from './ContentResumePago';
-import {ContentTicket} from './ContentTicket';
-import {ContentSeleccionMobile} from './ContentSeleccionMobile';
+import {Menu} from '../views/Menu';
+import {Selection} from '../views/Selection';
+import {PaymentSummary} from '../views/PaymentSummary';
+import {Tickets} from '../views/Tickets';
+import {SelectionMobile} from '../views/SelectionMobile';
 import {HeaderLogo} from './HeaderLogo';
 import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica específica, sino integrar aquí
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
-import {ContentMiTicket} from './ContentMiTicket';
+import {MyTicket} from '../views/MiTicket';
 import {Profile} from './Profile';
-import {SpecialEvent} from './SpecialEvent';
+import {SpecialEvent} from '../views/SpecialEvent';
 
 export const SideBar = ( {initialTab} ) => {
     // Store flags para habilitar/deshabilitar tabs
@@ -35,10 +32,10 @@ export const SideBar = ( {initialTab} ) => {
     const navigate = useNavigate();
     const tabRoutes = [
         '/menu',
-        '/mi-ticket',
+        '/my-ticket',
         '/profile',
-        '/seleccion',
-        '/resumen-pago',
+        '/selection',
+        '/payment-summary',
         '/generar-ticket',
         '/special-event',
     ];
@@ -46,17 +43,17 @@ export const SideBar = ( {initialTab} ) => {
         {
             label: 'Menú',
             icon: <IoFastFood className="w-5 h-5" />,
-            content: <ContentMenu />,
+            content: <Menu />,
             enabled: true,
         },
         {
             label: 'Mi Ticket',
             icon: <ImQrcode className="w-5 h-5" />,
             content: (
-                <ContentMiTicket goToResumeTab={() => {
+                <MyTicket goToResumeTab={() => {
                     setResumenEnabled( true );
                     setActiveTab( 4 ); // Correct tab index for 'Resumen y Pago'
-                    navigate( tabRoutes[ 4 ] ); // Navigate to '/resumen-pago'
+                    navigate( tabRoutes[ 4 ] ); // Navigate to '/payment-summary'
                 }} />
             ),
             enabled: true,
@@ -79,7 +76,7 @@ export const SideBar = ( {initialTab} ) => {
             icon: <FaUsers className="w-5 h-5" />,
             content: (
                 <>
-                    <ContentSeleccion goToResumeTab={() => {
+                    <Selection goToResumeTab={() => {
                         setResumenEnabled( true );
                         setActiveTab( 4 );
                     }} />
@@ -90,13 +87,13 @@ export const SideBar = ( {initialTab} ) => {
         {
             label: 'Resumen y Pago',
             icon: <FaCog className="w-5 h-5" />,
-            content: <ContentResume
+            content: <PaymentSummary
                 goToTicketTab={() => {
                     setTicketEnabled( true );
                     setActiveTab( 5 );
                     navigate( tabRoutes[ 5 ] );
                 }}
-                goBackSeleccionTab={() => {
+                goBackSelectionTab={() => {
                     setActiveTab( 3 );
                     navigate( tabRoutes[ 2 ] );
                 }}
@@ -110,7 +107,7 @@ export const SideBar = ( {initialTab} ) => {
         {
             label: 'Generar Ticket',
             icon: <FaTicketAlt className="w-5 h-5" />,
-            content: <ContentTicket />,
+            content: <Tickets />,
             enabled: isTicketEnabled,
         },
         {
@@ -124,10 +121,10 @@ export const SideBar = ( {initialTab} ) => {
     const getInitialTabIndex = () => {
         switch ( initialTab ) {
             case 'menu': return 0;
-            case 'mi-ticket': return 1;
+            case 'my-ticket': return 1;
             case 'profile': return 2;
-            case 'seleccion': return 3;
-            case 'resumen-pago': return 4;
+            case 'selection': return 3;
+            case 'payment-summary': return 4;
             case 'generar-ticket': return 5;
             case 'special-event': return 6;
             default: return 0;
