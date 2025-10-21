@@ -26,11 +26,11 @@ export const AppRouter = () => {
                         <>
                             <Route path="/" element={<Navigate to="/menu" />} />
                             <Route path="/menu" element={<Home tab="menu" />} />
-                            <Route path="/seleccion" element={<Home tab="seleccion" />} />
-                            <Route path="/mi-ticket" element={<Home tab="mi-ticket" />} />
+                            <Route path="/selection" element={<Home tab="selection" />} />
+                            <Route path="/my-ticket" element={<Home tab="my-ticket" />} />
                             <Route path="/profile" element={<Home tab="profile" />} />
-                            <Route path="/resumen-pago" element={<Home tab="resumen-pago" />} />
-                            <Route path="/generar-ticket" element={<Home tab="generar-ticket" />} />
+                            <Route path="/payment-summary" element={<Home tab="payment-summary" />} />
+                            <Route path="/tickets" element={<Home tab="tickets" />} />
                             <Route path="/special-event" element={<Home tab="special-event" />} />
                             <Route path="*" element={<Navigate to="/menu" />} />
                         </>

@@ -1,51 +1,54 @@
-import React, {useEffect, useState} from 'react'
-import {useGetDataOrder} from './useGetDataOrder';
-import {useTicketLunchStore} from '../store/ticketLunchStore';
+import {useState, useMemo} from 'react';
+import {useQuery} from '@tanstack/react-query';
 import {useAuthStore} from '../store/authStore';
+import {getOrderByid} from '../services/actions';
 
-export const useGenerateMyQR = () => {
+export const useTicketQR = () => {
     const {user} = useAuthStore();
-    const [ employee, setEmployee ] = useState( '' )
-    // Build a minimal employee object from the normalized user stored in authStore
+    const [ enabled, setEnabled ] = useState( false );
+
+    const today = new Date().toISOString().split( 'T' )[ 0 ]; // Formato YYYY-MM-DD
+
+    const {data: order, isLoading, error, refetch} = useQuery( {
+        queryKey: [ 'order', user?.cedula, today ],
+        queryFn: () => getOrderByid( user.cedula ),
+        enabled: enabled && !!user?.cedula, // Solo se activa si `enabled` es true y hay cédula
+        staleTime: 1000 * 60 * 60 * 12, // 12 horas: considera los datos frescos durante todo el día
+        retry: 1, // Reintentar solo 1 vez en caso de error
+    } );
+
+    console.log( "DATAORDER:", order );
 
 
-    const {order, isLoading, error} = useGetDataOrder();
-    const showTicketImage = useTicketLunchStore( state => state.showTicketImage );
-    const setShowTicketImage = useTicketLunchStore( state => state.setShowTicketImage );
+    const generateTicket = () => {
+        if ( !enabled ) {
+            setEnabled( true );
+        } else {
+            refetch();
+        }
+    };
 
-
-    useEffect( () => {
-        console.log( "USER:", user );
-
-    }, [ user ] )
-
-
-
-    // Mapear los datos de la orden para el QR del empleado logueado
-    const qrDataForLogged = React.useMemo( () => {
-
-        const employee = user ? {
+    const employee = useMemo( () => {
+        if ( !user ) return null;
+        return {
             fullName: user.fullName || `${ user.first_name || '' } ${ user.last_name || '' }`.trim(),
             cedula: user.cedula || '',
             email: user.email || '',
             phone: user.phone || '',
             management: user.management || '',
-        } : null;
+        };
+    }, [ user ] );
 
-        setEmployee( employee );
-
+    const qrData = useMemo( () => {
         if ( !order || !employee ) return null;
 
         const orderID = order.id || order.order?.id || order.orderID || order.id_order || '';
         const referencia = order.reference || order.referencia || order.order?.reference || '';
         const total = order.total_amount || order.total || order.order?.total_amount || 0;
 
-        const fullName = employee.fullName || `${ employee.nombre || '' } ${ employee.apellido || '' }`.trim() || employee.name || '';
-        const cedula = employee.cedula || employee.ced || employee.cedula_employee || '';
-
         const empleadoPayload = {
-            fullName,
-            cedula,
+            fullName: employee.fullName,
+            cedula: employee.cedula,
             extras: order.extras || order.order?.extras || [],
             autorizado: order.authorized_person || order.autorizado || null,
         };
@@ -56,7 +59,7 @@ export const useGenerateMyQR = () => {
             total,
             referencia,
         };
-    }, [ order, user ] );
+    }, [ order, employee ] );
 
     const formatQRText = ( qr ) => {
         if ( !qr ) return '';
@@ -65,15 +68,12 @@ export const useGenerateMyQR = () => {
     };
 
     return {
-        order,
-        isLoading,
-        error,
-        showTicketImage,
-        qrDataForLogged,
-        user,
         employee,
-
-        setShowTicketImage,
-        formatQRText
-    }
-}
+        order,
+        qrData,
+        isLoading,
+        error: error ? error.message : null,
+        generateTicket,
+        formatQRText,
+    };
+};

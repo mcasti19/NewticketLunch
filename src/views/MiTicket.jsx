@@ -1,13 +1,13 @@
 import {useState, useEffect} from 'react';
 import {useAuthStore} from '../store/authStore';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-import {AutorizarSelector} from './AutorizarSelector';
+import {AutorizarSelector} from '../components/AutorizarSelector';
 import {useGetEmployees} from '../hooks/useGetEmployees';
-import {Spinner} from './Spinner';
+import {Spinner} from '../components/Spinner';
 import {buildSelectedEmployees, buildResumen} from '../utils/orderUtils';
 // Nota: `user` en el store ahora está normalizado (email, cedula, fullName, management, phone, position, state, type_employee)
 
-export const ContentMiTicket = ( {goToResumeTab} ) => {
+export const MyTicket = ( {goToResumeTab} ) => {
     const {user} = useAuthStore();
     const {setSelectedEmpleadosSummary, setSummary, setOrderOrigin} = useTicketLunchStore();
 

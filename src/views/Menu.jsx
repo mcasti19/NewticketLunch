@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react';
 import {getMenu, getUsers} from "../services/actions";
-import {NoMenu} from './NoMenu';
-import {Spinner} from './Spinner';
+import {NoMenu} from '../components/NoMenu';
+import {Spinner} from '../components/Spinner';
 
-export const ContentMenu = () => {
+export const Menu = () => {
   const [ menuDia, setMenuDia ] = useState( [] );
   const [ isLoading, setIsLoading ] = useState( true );
 
@@ -28,7 +28,7 @@ export const ContentMenu = () => {
         const data = await getMenu();
         setMenuDia( Array.isArray( data ) ? data : [] );
       } catch ( error ) {
-        console.error( "Error al obtener el menú:", error );
+        // console.error( "Error al obtener el menú:", error );
         setMenuDia( [] );
       } finally {
         setIsLoading( false );

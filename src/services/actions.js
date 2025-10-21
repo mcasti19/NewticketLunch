@@ -186,23 +186,26 @@ export const startLogin = async ( {email, password} ) => {
 };
 
 export const getUsers = async () => {
-    const {data} = await api.get( '/users' );
-    console.log( 'GetUsers :', data.data );
-
-    return data;
+    try {
+        const {data} = await api.get( '/users' );
+        // console.log( 'GetUsers :', data.data );
+        return data;
+    } catch ( error ) {
+        throw new Error( error );
+    }
 }
 
 
-export const getManagements = async ( page = 1, pageSize = 5 ) => {
-    const {data} = await api.get( '/gerencias', {
-        params: {
-            page,
-            pageSize,
-        },
-    } );
-    // console.log( 'GetManagements :', data );
-    return data
-}
+// export const getManagements = async ( page = 1, pageSize = 5 ) => {
+//     const {data} = await api.get( '/gerencias', {
+//         params: {
+//             page,
+//             pageSize,
+//         },
+//     } );
+//     // console.log( 'GetManagements :', data );
+//     return data
+// }
 
 export const getEmployees = async () => {
     // Se valida que exista el ID de la gerencia antes de hacer el get

@@ -43,7 +43,9 @@ export const useTicketLunchStore = create(
 
   // Estado para guardar el array de datos de QR por lote
   qrBatchData: null,
-  setQrBatchData: (qrBatchData) => set({ qrBatchData }),
+      setQrBatchData: ( qrBatchData ) => set( {qrBatchData} ),
+  
+      
   // Controla si se muestra la imagen/ticket en Profile
   showTicketImage: false,
   setShowTicketImage: (show) => set({ showTicketImage: show }),

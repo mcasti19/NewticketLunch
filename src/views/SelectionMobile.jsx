@@ -2,9 +2,9 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import empleadosData from "../data/mockDataEmpleados.json";
 import { useAuthStore } from '../store/authStore';
-import ModalAgregarInvitado from './ModalAgregarInvitado';
+import ModalAgregarInvitado from '../components/ModalAgregarInvitado';
 
-export const ContentSeleccionMobile = ({ goToResumeTab }) => {
+export const SelectionMobile = ({ goToResumeTab }) => {
   const [empleados, setEmpleados] = useState(() => {
     const saved = localStorage.getItem('empleadosSeleccionados');
     return saved ? JSON.parse(saved) : empleadosData;
