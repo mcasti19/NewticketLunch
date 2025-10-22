@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import empleadosData from "../data/mockDataEmpleados.json";
+// import empleadosData from "../data/mockDataEmpleados.json";
 import { useAuthStore } from '../store/authStore';
 import ModalAgregarInvitado from '../components/ModalAgregarInvitado';
 

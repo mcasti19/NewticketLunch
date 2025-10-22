@@ -15,7 +15,7 @@ import {Menu} from '../views/Menu';
 import {Selection} from '../views/Selection';
 import {PaymentSummary} from '../views/PaymentSummary';
 import {Tickets} from '../views/Tickets';
-import {SelectionMobile} from '../views/SelectionMobile';
+// import {SelectionMobile} from '../views/SelectionMobile';
 import {HeaderLogo} from './HeaderLogo';
 import {ExitButton} from './ExitButton'; // Mantener si ExitButton tiene lógica específica, sino integrar aquí
 import {initTheme, toggleTheme, getSavedTheme} from '../theme';
@@ -36,7 +36,7 @@ export const SideBar = ( {initialTab} ) => {
         '/profile',
         '/selection',
         '/payment-summary',
-        '/generar-ticket',
+        '/tickets',
         '/special-event',
     ];
     const tabs = [

@@ -1,10 +1,8 @@
 import api from "../api/api";
 import {useAuthStore} from "../store/authStore";
-import users from "../data/mockDataUsers.json";
+// import users from "../data/mockDataUsers.json";
 
 import Swal from 'sweetalert2';
-
-
 
 // Función para convertir archivo a base64
 export const fileToBase64 = ( file ) => {
@@ -145,6 +143,8 @@ export const startLogin = async ( {email, password} ) => {
                 showConfirmButton: false,
                 timer: 1500
             } );
+            console.log( "USUARIO LOGUEADO: ", data );
+
         } else {
             // Este caso es poco probable si la API está bien, pero es una buena práctica manejarlo.
             throw new Error( "Invalid response from API" );
@@ -188,32 +188,14 @@ export const startLogin = async ( {email, password} ) => {
 export const getUsers = async () => {
     try {
         const {data} = await api.get( '/users' );
-        // console.log( 'GetUsers :', data.data );
         return data;
     } catch ( error ) {
-        throw new Error( error );
+        console.error( 'Error al obtener usuarios:', error.message || error );
+        throw error;
     }
-}
-
-
-// export const getManagements = async ( page = 1, pageSize = 5 ) => {
-//     const {data} = await api.get( '/gerencias', {
-//         params: {
-//             page,
-//             pageSize,
-//         },
-//     } );
-//     // console.log( 'GetManagements :', data );
-//     return data
-// }
+};
 
 export const getEmployees = async () => {
-    // Se valida que exista el ID de la gerencia antes de hacer el get
-    // if ( !id_gerencia ) {
-    //     console.error( "ID de gerencia no proporcionado." );
-    //     return [];
-    // }
-
     try {
         const response = await api.get( `/empleados`, {
             // params: {management: id_gerencia}, // Se usa el params como buena practica
@@ -234,13 +216,11 @@ export const getEmployees = async () => {
 
 export const getOrderByid = async ( cedula ) => {
     try {
-        // Si no se proporciona cedula, lanzamos para evitar llamadas erróneas
         if ( !cedula ) {
             throw new Error( 'Cedula no proporcionada' );
         }
-        // Ajusta la ruta según cómo tu backend espere la cedula (query param o path)
-        const response = await api.get( `/pedidos`, {params: {cedula}} );
-        return response.data;
+        const {data: {order}} = await api.get( `/pedidos/${ cedula }` );
+        return order;
 
     } catch ( error ) {
         console.error( "Error al obtener pedido por cédula:", error.message );
@@ -387,10 +367,19 @@ export const saveOrder = async ( {
     try {
         const response = await api.post( '/pedidos', dataToSend, {headers} );
         console.log( "RESPONSE", response.data.order );
-        return response.data.order;
+
+        // Asegurarse de que la respuesta sea exitosa (200 o 201)
+        if ( response && (response.status === 200 || response.status === 201) && response.data) {
+            return response.data.order;
+        }
+        // Si no es un 200/201, lanzar error con mensaje de la API si existe
+        throw new Error( response?.data?.message || `Error al guardar la orden (status ${ response?.status })` );
 
     } catch ( error ) {
         console.log( "ERRRORRRR:", error );
+        // Re-lanzar el error para que el llamador (ModalResume) lo maneje
+        const message = error?.response?.data?.message || error?.message || 'Error desconocido al guardar la orden';
+        throw new Error( message );
 
     }
 };
