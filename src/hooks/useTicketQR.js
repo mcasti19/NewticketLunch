@@ -1,4 +1,4 @@
-import {useState, useMemo} from 'react';
+import {useState, useMemo, useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {useAuthStore} from '../store/authStore';
 import {getOrderByid} from '../services/actions';
@@ -10,6 +10,7 @@ export const useTicketQR = () => {
     const today = new Date().toISOString().split( 'T' )[ 0 ]; // Formato YYYY-MM-DD
 
     const {data: order, isLoading, error, refetch} = useQuery( {
+        // Nota: se renombró 'data' a 'order' para usar la misma convención de tu código
         queryKey: [ 'order', user?.cedula, today ],
         queryFn: () => getOrderByid( user.cedula ),
         enabled: enabled && !!user?.cedula, // Solo se activa si `enabled` es true y hay cédula
@@ -17,13 +18,14 @@ export const useTicketQR = () => {
         retry: 1, // Reintentar solo 1 vez en caso de error
     } );
 
-    console.log( "DATAORDER:", order );
-
+// ----------------------------------------------------------------------------------
 
     const generateTicket = () => {
+        // Si no está habilitado, lo habilita para que se dispare la primera consulta
         if ( !enabled ) {
             setEnabled( true );
         } else {
+            // Si ya está habilitado, simplemente refresca los datos
             refetch();
         }
     };
@@ -39,17 +41,23 @@ export const useTicketQR = () => {
         };
     }, [ user ] );
 
+// ----------------------------------------------------------------------------------
+
     const qrData = useMemo( () => {
+        // Solo calcula si tenemos el pedido (order) y la información del empleado
         if ( !order || !employee ) return null;
 
-        const orderID = order.id || order.order?.id || order.orderID || order.id_order || '';
-        const referencia = order.reference || order.referencia || order.order?.reference || '';
-        const total = order.total_amount || order.total || order.order?.total_amount || 0;
+        console.log( "HOLA: Calculando qrData" );
+
+        const orderID = order.number_order || 'no hay';
+        const referencia = order.reference || 'no hay';
+        // ✅ CORRECCIÓN CRÍTICA: Acceso a la propiedad 'total_amount' desde el objeto 'order'
+        const total = order.total_amount || 0; 
 
         const empleadoPayload = {
             fullName: employee.fullName,
             cedula: employee.cedula,
-            extras: order.extras || order.order?.extras || [],
+            extras: order.extras || [],
             autorizado: order.authorized_person || order.autorizado || null,
         };
 
@@ -60,6 +68,24 @@ export const useTicketQR = () => {
             referencia,
         };
     }, [ order, employee ] );
+
+// ----------------------------------------------------------------------------------
+
+    // ✅ CORRECCIÓN: Usar useEffect para registrar los cambios en los datos.
+    // Se ejecuta cada vez que 'order' o 'qrData' se actualizan (de null a valor, o entre valores).
+    useEffect( () => {
+        // Log de 'order' cuando está disponible y no está cargando (solo para ver la data)
+        if ( order && !isLoading ) {
+            console.log( "DATAORDER:", order );
+        }
+        
+        // Log de 'qrData' cuando está calculado (debe ser un objeto y no null)
+        if ( qrData ) {
+            console.log( "qrData FINAL:", qrData );
+        }
+    }, [ order, qrData, isLoading ] ) // Dependencias que disparan el efecto
+
+// ----------------------------------------------------------------------------------
 
     const formatQRText = ( qr ) => {
         if ( !qr ) return '';

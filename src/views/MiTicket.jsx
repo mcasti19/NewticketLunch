@@ -13,7 +13,7 @@ export const MyTicket = ( {goToResumeTab} ) => {
 
     // Construir un objeto empleado mínimo a partir del user normalizado en el store
     const employee = user ? {
-        fullName: user.fullName || `${user.first_name || ''} ${user.last_name || ''}`.trim(),
+        fullName: user.fullName || `${ user.first_name || '' } ${ user.last_name || '' }`.trim(),
         cedula: user.cedula || '',
         phone: user.phone || '',
         management: user.management || '',
@@ -133,96 +133,100 @@ export const MyTicket = ( {goToResumeTab} ) => {
     }
 
     return (
-        <div className="p-4 rounded-lg shadow-xl text-white w-[95vw] md:w-[70dvw] mx-auto my-4 border-0 border-gray-700">
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
-            <div className="flex flex-col items-center mb-6">
-                <h2 className="text-xl md:text-2xl font-semibold text-black dark:text-white mb-2">
-                    {user?.fullName}
-                </h2>
-            </div>
-            <div className="flex flex-col md:flex-row w-full gap-4 justify-center items-center border-0 m-auto">
-                <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg hover:">
-                    <span className="font-medium text-lg text-black dark:text-white">Almuerzo</span>
-                    <picture>
-                        <source srcSet="/Pabellon-Criollo.png" media="(min-width: 600px)" />
-                        <source srcSet="/Pabellon-Criollo.png" type="image/jpeg" />
-                        <img src="/Pabellon-Criollo.png" alt="Descripción de la imagen" className='w-52' />
-                    </picture>
-                    <input
-                        type="checkbox"
-                        checked={myTicket?.almuerzo || false}
-                        onChange={() => handleToggleOption( 'almuerzo' )}
-                        className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
-                    />
+        <div className='border-0 w-full md:h-full'>
+            <div className="p-4 rounded-lg shadow-xl text-white w-full md:h-full m-auto border-0 border-gray-700 
+        bg-gradient-to-t from-blue-950 from-50% to-red-600">
+                <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
+                <div className="flex flex-col items-center mb-6">
+                    <h2 className="text-xl md:text-2xl font-semibold text-black dark:text-white mb-2">
+                        {user?.fullName}
+                    </h2>
+                </div>
+                <div className="flex flex-col md:flex-row w-full gap-4 justify-center items-center border-0 m-auto">
+                    <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg hover:">
+                        <span className="font-medium text-lg text-black dark:text-white">Almuerzo</span>
+                        <picture>
+                            <source srcSet="/Pabellon-Criollo.png" media="(min-width: 600px)" />
+                            <source srcSet="/Pabellon-Criollo.png" type="image/jpeg" />
+                            <img src="/Pabellon-Criollo.png" alt="Descripción de la imagen" className='w-52' />
+                        </picture>
+                        <input
+                            type="checkbox"
+                            checked={myTicket?.almuerzo || false}
+                            onChange={() => handleToggleOption( 'almuerzo' )}
+                            className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
+                        />
+                    </div>
+
+                    {myTicket?.almuerzo && (
+                        <>
+                            <div className="w-72  p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
+                                <span className="font-medium text-lg text-black dark:text-white">Envase</span>
+                                <picture>
+                                    <source srcSet="/envase.png" media="(min-width: 1000px)" type="image/avif" />
+                                    <source srcSet="/envase.png" media="(min-width: 600px)" />
+                                    <source srcSet="/envase.png" type="image/jpeg" />
+                                    <img src="/envase.png" alt="Descripción de la imagen" className='w-52' />
+                                </picture>
+                                <input
+                                    type="checkbox"
+                                    checked={myTicket?.para_llevar || false}
+                                    onChange={() => handleToggleOption( 'para_llevar' )}
+                                    className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
+                                />
+                            </div>
+                            <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
+                                <span className="font-medium text-lg text-black dark:text-white">Cubiertos</span>
+                                <picture>
+                                    <source srcSet="/cubiertos2.png" media="(min-width: 1000px)" type="image/avif" />
+                                    <source srcSet="/cubiertos2.png" media="(min-width: 600px)" />
+                                    <source srcSet="/cubiertos2.png" type="image/jpeg" />
+                                    <img src="/cubiertos2.png" alt="Descripción de la imagen" className='w-52' />
+                                </picture>
+                                <input
+                                    type="checkbox"
+                                    checked={myTicket?.cubiertos || false}
+                                    onChange={() => handleToggleOption( 'cubiertos' )}
+                                    className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
 
-                {myTicket?.almuerzo && (
-                    <>
-                        <div className="w-72  p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
-                            <span className="font-medium text-lg text-black dark:text-white">Envase</span>
-                            <picture>
-                                <source srcSet="/envase.png" media="(min-width: 1000px)" type="image/avif" />
-                                <source srcSet="/envase.png" media="(min-width: 600px)" />
-                                <source srcSet="/envase.png" type="image/jpeg" />
-                                <img src="/envase.png" alt="Descripción de la imagen" className='w-52' />
-                            </picture>
-                            <input
-                                type="checkbox"
-                                checked={myTicket?.para_llevar || false}
-                                onChange={() => handleToggleOption( 'para_llevar' )}
-                                className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
-                            />
+
+                <div className='flex flex-col justify-center items-center gap-2'>
+                    <div className="border-0 w-full max-w-md p-4 rounded-lg flex flex-col justify-center items-center shadow-md mt-2 mx-auto">
+                        <span className="font-medium text-lg mb-2 text-black dark:text-white">Autorizar a otra persona</span>
+                        <AutorizarSelector
+                            onSelect={handleAutorizar}
+                            selectedAutorizado={selectedAutorizado}
+                            employeeList={employees}
+                            loading={loading}
+                        />
+                    </div>
+
+                    <div className="w-xs p-2 rounded-lg shadow-inner m-auto">
+                        {/* <h3 className="text-xl font-semibold text-blue-400 mb-2">Resumen</h3> */}
+                        <div className="flex justify-between items-center text-lg text-blue-400">
+                            <span>Costo total:</span>
+                            <span className="font-bold ">${calculateCost().toFixed( 2 )}</span>
                         </div>
-                        <div className="w-72 p-4 rounded-lg flex flex-col items-center justify-between shadow-lg">
-                            <span className="font-medium text-lg text-black dark:text-white">Cubiertos</span>
-                            <picture>
-                                <source srcSet="/cubiertos2.png" media="(min-width: 1000px)" type="image/avif" />
-                                <source srcSet="/cubiertos2.png" media="(min-width: 600px)" />
-                                <source srcSet="/cubiertos2.png" type="image/jpeg" />
-                                <img src="/cubiertos2.png" alt="Descripción de la imagen" className='w-52' />
-                            </picture>
-                            <input
-                                type="checkbox"
-                                checked={myTicket?.cubiertos || false}
-                                onChange={() => handleToggleOption( 'cubiertos' )}
-                                className="form-checkbox h-6 w-6 text-blue-600 rounded-md bg-gray-600 border-gray-500 cursor-pointer"
-                            />
-                        </div>
-                    </>
-                )}
-            </div>
+                    </div>
 
-
-            <div className='flex flex-col justify-center items-center gap-2'>
-                <div className="border-0 w-full max-w-md p-4 rounded-lg flex flex-col justify-center items-center shadow-md mt-2 mx-auto">
-                    <span className="font-medium text-lg mb-2 text-black dark:text-white">Autorizar a otra persona</span>
-                    <AutorizarSelector
-                        onSelect={handleAutorizar}
-                        selectedAutorizado={selectedAutorizado}
-                        employeeList={employees}
-                        loading={loading}
-                    />
-                </div>
-
-                <div className="w-xs p-2 rounded-lg shadow-inner m-auto">
-                    <h3 className="text-xl font-semibold text-blue-400 mb-2">Resumen</h3>
-                    <div className="flex justify-between items-center text-lg text-blue-400">
-                        <span>Costo total:</span>
-                        <span className="font-bold ">${calculateCost().toFixed( 2 )}</span>
+                    <div className="flex justify-center">
+                        <button
+                            onClick={handleSave}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow-lg"
+                            disabled={!myTicket?.almuerzo}
+                        >
+                            Confirmar Selección
+                        </button>
                     </div>
                 </div>
 
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleSave}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow-lg"
-                        disabled={!myTicket?.almuerzo}
-                    >
-                        Confirmar Selección
-                    </button>
-                </div>
             </div>
-
         </div>
+
     );
 };

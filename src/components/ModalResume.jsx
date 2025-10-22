@@ -5,10 +5,9 @@ import {
 } from 'react';
 import Modal from 'react-modal';
 import {toast} from 'react-toastify';
+import Swal from 'sweetalert2';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-// import {useAuthStore} from '../store/authStore';
-// Importamos la función ajustada, asumiendo que se llama 'saveOrder'
-// y que la ruta de importación es correcta.
+
 import {
   createOrderBatch,
   saveOrder
@@ -113,11 +112,22 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
       setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
       setVoucher( null );
       setIsLoading( false );
+      // Solo llamar al callback de generación si todo fue exitoso
       if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
 
     } catch ( error ) {
       setIsLoading( false );
-      alert( 'Error al generar los tickets: ' + ( error?.message || error ) );
+      const message = error?.message || error || 'Error al generar los tickets';
+      // Mostrar popup con SweetAlert2
+      Swal.fire({
+        title: 'Error',
+        text: String(message),
+        icon: 'error',
+        confirmButtonText: 'Volver'
+      }).then(() => {
+        // Cerrar el modal y regresar a la vista anterior
+        if ( onRequestClose ) onRequestClose();
+      });
     }
   };
 

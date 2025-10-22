@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Spinner } from './Spinner';
-import { QRCode } from 'react-qrcode-logo';
-import { useTicketQR } from '../hooks/useTicketQR';
+import {useEffect, useState} from 'react';
+import {Spinner} from './Spinner';
+import {QRCode} from 'react-qrcode-logo';
+import {useTicketQR} from '../hooks/useTicketQR';
 
 // Componente principal de la página de Perfil
 export const Profile = () => {
@@ -13,13 +13,22 @@ export const Profile = () => {
         generateTicket,
         formatQRText,
     } = useTicketQR();
-    const [showTicket, setShowTicket] = useState(false);
+
+    const [ showTicket, setShowTicket ] = useState( false );
+
+    useEffect( () => {
+        console.log( "qrData:", qrData );
+
+    }, [] )
+
+
+
 
     const handleShowTicketClick = () => {
-        if (!showTicket) {
+        if ( !showTicket ) {
             generateTicket();
         }
-        setShowTicket(!showTicket);
+        setShowTicket( !showTicket );
     };
 
     return (
@@ -35,11 +44,11 @@ export const Profile = () => {
                             ) : showTicket && qrData ? (
                                 <div className="w-full h-full flex items-center justify-center">
                                     <QRCode
-                                        value={formatQRText(qrData)}
+                                        value={formatQRText( qrData )}
                                         size={150}
                                         ecLevel="M"
                                         qrStyle="dots"
-                                        style={{ width: '100%', height: '100%' }}
+                                        style={{width: '100%', height: '100%'}}
                                     />
                                 </div>
                             ) : (
@@ -48,7 +57,7 @@ export const Profile = () => {
                                         🎟️
                                     </span>
                                     <p className="text-sm font-medium text-white">
-                                        {error ? `Error: ${error}` : 'Ticket de almuerzo oculto'}
+                                        {error ? `Error: ${ error }` : 'Ticket de almuerzo oculto'}
                                     </p>
                                 </div>
                             )}
