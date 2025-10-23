@@ -40,6 +40,24 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
     }
   };
 
+  const handleVoucherChange = ( e ) => {
+    const file = e.target.files[ 0 ];
+    if ( file ) {
+      const maxSize = 1024 * 1024; // 1MB
+      if ( file.size > maxSize ) {
+        Swal.fire( {
+          icon: 'error',
+          title: 'Archivo demasiado grande',
+          text: 'La imagen no debe superar 1MB.',
+        } );
+        setVoucher( null );
+        e.target.value = ''; // Limpiar el input
+      } else {
+        setVoucher( file );
+      }
+    }
+  };
+
   const isPagoMovil = paymentOption === 'Pago Móvil';
   const isTransferencia = paymentOption === 'Transferencia';
 
@@ -258,7 +276,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/jpg" // Definir los tipos de archivo
-                onChange={e => setVoucher( e.target.files[ 0 ] )} // Guarda el objeto File
+                onChange={handleVoucherChange}
                 className="p-2 border border-blue-200 rounded"
               />
               {voucher && (

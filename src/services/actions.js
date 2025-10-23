@@ -152,28 +152,28 @@ export const startLogin = async ( {email, password} ) => {
     } catch ( error ) {
         // Manejar errores de la API.
         // Un error de red o de conexión no tendrá response.
-        if ( !error.response ) {
-            console.log( "Fallo de conexión a la API. Intentando login local..." );
-            const user = users.find( u => u.email === email && u.password === password );
-            if ( user ) {
-                // Simula token y expiración local
-                const token = 'fake-jwt-token';
-                const expiration = new Date().getTime() + 30 * 60 * 1000;
-                login( user, token, expiration );
-                Swal.fire( {
-                    title: "Login local exitoso",
-                    text: "No hubo conexión con la BD (modo offline)",
-                    icon: "success",
-                    showConfirmButton: true,
-                } );
-            } else {
-                Swal.fire( {
-                    title: "Login Error",
-                    text: "No se encontró usuario local para el modo offline. Verifique credenciales.",
-                    icon: "error"
-                } );
-            }
-        } else {
+        // if ( !error.response ) {
+        //     console.log( "Fallo de conexión a la API. Intentando login local..." );
+        //     const user = users.find( u => u.email === email && u.password === password );
+        //     if ( user ) {
+        //         // Simula token y expiración local
+        //         const token = 'fake-jwt-token';
+        //         const expiration = new Date().getTime() + 30 * 60 * 1000;
+        //         login( user, token, expiration );
+        //         Swal.fire( {
+        //             title: "Login local exitoso",
+        //             text: "No hubo conexión con la BD (modo offline)",
+        //             icon: "success",
+        //             showConfirmButton: true,
+        //         } );
+        //     } else {
+        //         Swal.fire( {
+        //             title: "Login Error",
+        //             text: "No se encontró usuario local para el modo offline. Verifique credenciales.",
+        //             icon: "error"
+        //         } );
+        //     }
+        // } else {
             // Error de la API (ej. credenciales inválidas, 401 Unauthorized)
             console.log( "Error de credenciales desde la API." );
             Swal.fire( {
@@ -181,7 +181,7 @@ export const startLogin = async ( {email, password} ) => {
                 text: error.response.data.message || error.message || "Verifique sus credenciales e intente de nuevo.",
                 icon: "error"
             } );
-        }
+        // }
     }
 };
 
