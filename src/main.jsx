@@ -20,7 +20,7 @@ createRoot( document.getElementById( 'root' ) ).render(
       <QueryClientProvider client={queryClient}>
         <AppRouter />
         <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </BrowserRouter>
   // </StrictMode >

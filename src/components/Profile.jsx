@@ -57,6 +57,7 @@ export const Profile = () => {
                                         🎟️
                                     </span>
                                     <p className="text-sm font-medium text-white">
+                                        {/* ✅ REVISIÓN: Esta lógica mostrará el error (la cadena) si existe */}
                                         {error ? `Error: ${ error }` : 'Ticket de almuerzo oculto'}
                                     </p>
                                 </div>

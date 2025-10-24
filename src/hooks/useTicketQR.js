@@ -18,7 +18,7 @@ export const useTicketQR = () => {
         retry: 1, // Reintentar solo 1 vez en caso de error
     } );
 
-// ----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     const generateTicket = () => {
         // Si no está habilitado, lo habilita para que se dispare la primera consulta
@@ -41,7 +41,7 @@ export const useTicketQR = () => {
         };
     }, [ user ] );
 
-// ----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     const qrData = useMemo( () => {
         // Solo calcula si tenemos el pedido (order) y la información del empleado
@@ -52,7 +52,7 @@ export const useTicketQR = () => {
         const orderID = order.number_order || 'no hay';
         const referencia = order.reference || 'no hay';
         // ✅ CORRECCIÓN CRÍTICA: Acceso a la propiedad 'total_amount' desde el objeto 'order'
-        const total = order.total_amount || 0; 
+        const total = order.total_amount || 0;
 
         const empleadoPayload = {
             fullName: employee.fullName,
@@ -69,7 +69,7 @@ export const useTicketQR = () => {
         };
     }, [ order, employee ] );
 
-// ----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     // ✅ CORRECCIÓN: Usar useEffect para registrar los cambios en los datos.
     // Se ejecuta cada vez que 'order' o 'qrData' se actualizan (de null a valor, o entre valores).
@@ -78,14 +78,14 @@ export const useTicketQR = () => {
         if ( order && !isLoading ) {
             console.log( "DATAORDER:", order );
         }
-        
+
         // Log de 'qrData' cuando está calculado (debe ser un objeto y no null)
         if ( qrData ) {
             console.log( "qrData FINAL:", qrData );
         }
     }, [ order, qrData, isLoading ] ) // Dependencias que disparan el efecto
 
-// ----------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------
 
     const formatQRText = ( qr ) => {
         if ( !qr ) return '';
@@ -98,7 +98,7 @@ export const useTicketQR = () => {
         order,
         qrData,
         isLoading,
-        error: error ? error.message : null,
+        error: error ? ( error.message || 'Error desconocido' ) : null,
         generateTicket,
         formatQRText,
     };

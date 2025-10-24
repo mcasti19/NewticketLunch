@@ -85,7 +85,7 @@ const LoginPage = () => {
         </div>
         {/* Lado Izquierdo: Imagen y bienvenida (en mobile va debajo) */}
         <div className="flex flex-col justify-center items-center bg-gradient-to-br from-blue-600 to-blue-400 text-white p-6 md:p-8 w-full md:w-1/2 order-2 md:order-none">
-          <img src="/comedor.jpg" alt="image_comedor" className="w-40 h-40 md:w-60 md:h-60 object-cover rounded-2xl shadow-lg mb-4 md:mb-6 border-4 border-white/30" />
+          <img src="/mascotalegre.png" alt="image_comedor" className="   object-cover rounded-2xl mb-4 md:mb-6 border-0 drop-shadow-[0_4px_8px_rgba(255,220,8,8.9)]" />
           <h1 className="text-2xl md:text-3xl font-bold mb-2 drop-shadow-lg">TICKETLUNCH</h1>
           <p className="text-base md:text-lg text-white text-center mb-1 md:mb-2">Bienvenido a nuestra aplicación.</p>
           <p className="text-sm md:text-base text-blue-100 text-center">Inicia sesión para continuar.</p>

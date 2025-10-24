@@ -3,45 +3,57 @@
 ###  USUARIOS
 GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 
 ### MENU
 GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 ### EXTRAS
 GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 ### GERENCIAS TODAS
 GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 ###  GERENCIA x ID
 GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 
 ###  PEDIDOS
 GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 ###  PEDIDOS POR ID
 GET http://comedor.mercal.gob.ve/api/p1/pedidos/18467449 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+
+
+###  PEDIDOS POR ORDEN
+GET http://10.20.22.28:8000/api/p1/pedidos/takeOrder/8 HTTP/1.1
+content-type: application/json
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+
+
+###  METODOS DE PAGO
+GET http://comedor.mercal.gob.ve/api/p1/metodosPagos HTTP/1.1
+content-type: application/json
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 
 ###  EMPLEADOS
 GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 *******************************POSTS******************************
 
@@ -100,7 +112,7 @@ content-type: application/json
 #### PEDIDO
 POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 {
   "order": {
@@ -132,7 +144,7 @@ Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
 #### EMPLEADOS
 POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 {
     "nombre" : "Carlos",
@@ -147,12 +159,12 @@ Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
 #### CANTIDAD DE ORDENES POR DIA
 GET http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 ###
 POST http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|vuxoSKcl1OYHIWySv02ji7jjSUxBtq3uHKqgA4cqeb9ccd56
+Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 
 {
 
