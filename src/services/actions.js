@@ -14,13 +14,52 @@ export const fileToBase64 = ( file ) => {
     } );
 };
 
-// Mapeo de métodos de pago
-const paymentMethodMap = {
-    'Pago Móvil': 1,
-    'Transferencia': 2,
-    'Débito': 3,
-    'Efectivo': 4,
-};
+// // Mapeo de métodos de pago
+// const paymentMethodMap = {
+//     'Pago Móvil': 1,
+//     'Transferencia': 2,
+//     'Débito': 3,
+//     'Efectivo': 4,
+// };
+
+// Importa tu instancia de API (asumiendo que está definida en algún lugar como 'api')
+// import api from './api'; 
+
+/**
+ * Obtiene los métodos de pago de la API y los transforma en un objeto de mapeo.
+ * El objeto resultante tendrá el formato: { 'nombre del método': id_del_método }
+ * * @returns {Promise<Object>} Un objeto con la estructura de mapeo de métodos de pago.
+ * @throws {Error} Si la llamada a la API falla.
+ */
+export const getPaymentMethodsMap = async () => {
+    try {
+        const resp = await api.get( `/metodosPagos` );
+        const paymentMethodsArray = resp.data.paymentMethod;
+
+        // Verifica que los datos existan y sean un array
+        if ( !Array.isArray( paymentMethodsArray ) ) {
+            console.error( "La respuesta de la API no contiene un array de métodos de pago:", resp.data );
+            return {}; // Devuelve un objeto vacío si no hay datos válidos
+        }
+
+        // 💡 Transformación del array de objetos al mapa usando .reduce()
+        const paymentMethodMap = paymentMethodsArray.reduce( ( acc, method ) => {
+            // Utilizamos el nombre del método como clave y su ID como valor
+            acc[ method.payment_method ] = method.id_payment_method;
+            return acc;
+        }, {} ); // Inicializa el acumulador como un objeto vacío
+
+        console.log( "MAPEO DE MÉTODOS DE PAGO GENERADO:", paymentMethodMap );
+
+        // Puedes devolver solo el mapa si es lo único que necesitas
+        return paymentMethodMap;
+    } catch ( error ) {
+        console.error( "Error al obtener los métodos de pago:", error );
+        // Es importante relanzar el error o devolver un valor que indique el fallo
+        throw new Error( "No se pudo obtener el mapeo de métodos de pago." );
+    }
+}
+
 
 export const createOrderBatch = async ( {
     employees,
@@ -150,38 +189,12 @@ export const startLogin = async ( {email, password} ) => {
             throw new Error( "Invalid response from API" );
         }
     } catch ( error ) {
-        // Manejar errores de la API.
-        // Un error de red o de conexión no tendrá response.
-        // if ( !error.response ) {
-        //     console.log( "Fallo de conexión a la API. Intentando login local..." );
-        //     const user = users.find( u => u.email === email && u.password === password );
-        //     if ( user ) {
-        //         // Simula token y expiración local
-        //         const token = 'fake-jwt-token';
-        //         const expiration = new Date().getTime() + 30 * 60 * 1000;
-        //         login( user, token, expiration );
-        //         Swal.fire( {
-        //             title: "Login local exitoso",
-        //             text: "No hubo conexión con la BD (modo offline)",
-        //             icon: "success",
-        //             showConfirmButton: true,
-        //         } );
-        //     } else {
-        //         Swal.fire( {
-        //             title: "Login Error",
-        //             text: "No se encontró usuario local para el modo offline. Verifique credenciales.",
-        //             icon: "error"
-        //         } );
-        //     }
-        // } else {
-            // Error de la API (ej. credenciales inválidas, 401 Unauthorized)
-            console.log( "Error de credenciales desde la API." );
-            Swal.fire( {
-                title: "Login Error",
-                text: error.response.data.message || error.message || "Verifique sus credenciales e intente de nuevo.",
-                icon: "error"
-            } );
-        // }
+        console.log( "Error de credenciales desde la API." );
+        Swal.fire( {
+            title: "Login Error",
+            text: error.response.data.message || error.message || "Verifique sus credenciales e intente de nuevo.",
+            icon: "error"
+        } );
     }
 };
 
@@ -214,6 +227,7 @@ export const getEmployees = async () => {
 };
 
 
+// services/actions
 export const getOrderByid = async ( cedula ) => {
     try {
         if ( !cedula ) {
@@ -223,7 +237,16 @@ export const getOrderByid = async ( cedula ) => {
         return order;
 
     } catch ( error ) {
-        console.error( "Error al obtener pedido por cédula:", error.message );
+        const {response} = error;
+        // Si el error es 404, lanzamos un nuevo Error con el mensaje personalizado.
+        if ( response && response.status === 404 ) {
+            // ✅ CORRECCIÓN: Lanzar un nuevo objeto Error con el mensaje personalizado.
+            const customError = new Error( "No posee ninguna orden el dia de hoy" );
+            console.error( customError.message ); // Registra el mensaje personalizado en la consola
+            throw customError;
+        }
+        // Si es otro tipo de error, o si la respuesta no tiene el formato esperado,
+        // lanzamos el error original (que debería ser una instancia de Error).
         throw error;
     }
 }
@@ -281,16 +304,18 @@ export const getExtras = async () => {
  */
 export const saveOrder = async ( {
     employee,
-    paymentOption,
+    // 💡 CAMBIADO: Esperamos 'paymentMethod' (que es el ID), NO 'paymentOption' (el nombre)
+    paymentMethod, 
     referenceNumber,
     payer,
     voucher,
     extras = [], // Establecer valor por defecto
 } ) => {
-    // Mapear método de pago
-    // console.log( {employee} );
+    // ❌ ELIMINADA la línea que causaba el ReferenceError:
+    // const id_payment_method = paymentMethodMap[ paymentOption ] || null;
 
-    const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+    // 💡 AHORA: El ID ya viene listo en la variable 'paymentMethod'
+    const id_payment_method = paymentMethod;
 
     // 1. **Determinar el tipo de contenido y el Payload**
     let dataToSend;
@@ -301,7 +326,10 @@ export const saveOrder = async ( {
         special_event: employee.evento_especial ? 'si' : 'no',
         authorized: employee.id_autorizado ? 'si' : 'no',
         authorized_person: employee.id_autorizado || 'no',
-        id_payment_method: id_payment_method ? String( id_payment_method ) : '',
+        
+        // ✅ USAMOS EL ID QUE YA RECIBIMOS DIRECTAMENTE
+        id_payment_method: id_payment_method ? String( id_payment_method ) : '', 
+        
         reference: referenceNumber,
         total_amount: String( employee.total_pagar || '' ),
         cedula: String( employee.cedula || '' ),
@@ -324,7 +352,6 @@ export const saveOrder = async ( {
     console.log( "employeePaymentData", employeePaymentData );
 
     // 3. **Manejar la imagen/voucher**
-
     // Si voucher es un objeto File, usamos FormData (MÉTODO RECOMENDADO)
     console.log( 'Enviando con FormData...' );
     dataToSend = new FormData();
@@ -369,7 +396,7 @@ export const saveOrder = async ( {
         console.log( "RESPONSE", response.data.order );
 
         // Asegurarse de que la respuesta sea exitosa (200 o 201)
-        if ( response && (response.status === 200 || response.status === 201) && response.data) {
+        if ( response && ( response.status === 200 || response.status === 201 ) && response.data ) {
             return response.data.order;
         }
         // Si no es un 200/201, lanzar error con mensaje de la API si existe
@@ -383,3 +410,4 @@ export const saveOrder = async ( {
 
     }
 };
+

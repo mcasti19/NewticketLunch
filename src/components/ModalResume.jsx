@@ -1,24 +1,21 @@
 // El componente debe estar definido como una función
-import {
-  // useEffect,
-  useState
-} from 'react';
+import {useEffect, useState} from 'react';
 import Modal from 'react-modal';
 import {toast} from 'react-toastify';
 import Swal from 'sweetalert2';
 import {useTicketLunchStore} from '../store/ticketLunchStore';
 
-import {
-  createOrderBatch,
-  saveOrder
-} from '../services/actions';
+import {createOrderBatch, saveOrder} from '../services/actions';
 import {PiCopyThin} from "react-icons/pi";
 
-const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, orderOrigin} ) => {
+// 💡 Modificamos las props para recibir el mapa de pagos
+const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, onGenerarTickets, orderOrigin} ) => {
   const [ referenceNumber, setLocalReferenceNumber ] = useState( '' );
-  const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} ); // Agregué 'telefono'
+  const [ payer, setPayer ] = useState( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
   const [ voucher, setVoucher ] = useState( null );
-  const [ isLoading, setIsLoading ] = useState( false ); // Nuevo estado para deshabilitar el botón
+  const [ isLoading, setIsLoading ] = useState( false );
+  // 💡 Nuevo estado para la información específica del método de pago (ej: cuenta, teléfono)
+  const [ paymentInfo, setPaymentInfo ] = useState( null );
 
   const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
   const summary = useTicketLunchStore( state => state.summary );
@@ -27,13 +24,36 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
   const setQrBatchData = useTicketLunchStore( state => state.setQrBatchData );
   const setReferenceNumberStore = useTicketLunchStore( state => state.setReferenceNumber );
 
+  // 💡 LÓGICA: En un componente real, la información del pago (teléfono, cuenta, banco)
+  // debería cargarse aquí o pasarse como prop desde el componente padre.
+  // Como no tenemos una API para esa info, la hardcodeamos temporalmente, 
+  // pero usando el nombre del pago para simular la dinámica.
+  useEffect( () => {
+    // Simulamos cargar la información de contacto bancaria/móvil
+    if ( paymentOption ) {
+      // Objeto que simula la información adicional que vendría de una API
+      const dummyInfo = {
+        'Pago Móvil': {
+          telefono: '0414-2418171',
+          banco: '0108 - Provicial',
+          cedula: 'V-19.254.775',
+        },
+        'Transferencia Bancaria': {
+          cuenta: '0000 0000 0000 0000',
+          banco: '0108 - Provicial',
+        },
+        // ... Otros métodos de pago ...
+      };
+      setPaymentInfo( dummyInfo[ paymentOption ] || null );
+    } else {
+      setPaymentInfo( null );
+    }
+  }, [ paymentOption ] );
 
-
-  // ... (handleCopy se mantiene igual)
   const handleCopy = async ( text ) => {
     try {
       await navigator.clipboard.writeText( text );
-      alert( "¡Número copiado al portapapeles!" );
+      toast.success( "¡Número copiado al portapapeles!" ); // Usamos toast para un mejor feedback
     } catch ( err ) {
       console.error( 'Error al copiar: ', err );
       toast.error( "Error al copiar el número." );
@@ -58,26 +78,57 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
     }
   };
 
-  const isPagoMovil = paymentOption === 'Pago Móvil';
-  const isTransferencia = paymentOption === 'Transferencia';
+  // 💡 Obtenemos el ID del método de pago, que es lo que la API necesita
+  const paymentMethodId = paymentMethodMap?.[ paymentOption ] || null;
+  const isDigitalPayment = paymentMethodId && paymentOption !== 'Efectivo Bolivares' && paymentOption !== 'Efectivo Divisas'; // Asume que solo se necesita ref/voucher para pagos digitales
 
   // Función PRINCIPAL para enviar los datos a la API
   const handleGenerarTickets = async ( e ) => {
     e.preventDefault();
+
+    console.log( "METODO DE PAGO: ", paymentMethodId );
+
+
+    // 💡 VALIDACIÓN DE DATOS REQUERIDOS
+    if ( !paymentMethodId ) {
+      Swal.fire( 'Error', 'Método de pago no reconocido.', 'error' );
+      return;
+    }
+
+    if ( isDigitalPayment && !referenceNumber ) {
+      Swal.fire( 'Error', 'Debe ingresar el número de referencia.', 'error' );
+      return;
+    }
+
+    // Solo requerimos voucher y datos del pagador si es un pago digital y la orden no es individual
+    // NOTA: Ajusta esta lógica de validación según las reglas de tu negocio
+    const requiresPayerAndVoucher = isDigitalPayment && orderOrigin === "seleccion";
+
+    if ( requiresPayerAndVoucher && ( !voucher || !payer.cedula || !payer.nombre ) ) {
+      Swal.fire( 'Error', 'Faltan datos del pagador o el comprobante de pago.', 'error' );
+      return;
+    }
+
     setIsLoading( true );
     try {
       let response;
+
+      const payloadBase = {
+        paymentMethod: paymentMethodId, // 💡 ENVIAMOS EL ID DE PAGO
+        referenceNumber,
+        payer,
+        voucher: voucher, // El componente padre debe manejar si se envía o no el archivo
+      };
+
       if ( orderOrigin === 'seleccion' && Array.isArray( employees ) && employees.length > 1 ) {
         // FLUJO POR LOTE
         response = await createOrderBatch( {
           employees,
-          paymentOption,
-          referenceNumber,
-          payer,
-          // voucher,
+          ...payloadBase,
         } );
         setOrderId( response );
-        // Construir los QR individuales para cada empleado usando el id de la orden
+
+        // ... (Lógica de construcción de QR Batch se mantiene igual) ...
         const orderID = response || '';
         const batchQR = employees.map( emp => ( {
           orderID,
@@ -93,65 +144,71 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
         } ) );
         setQrBatchData( batchQR );
         setQrData( null );
-      } else {
-        
-        console.log( "FLUJO INDIVIDUAL" );
-        // FLUJO INDIVIDUAL
-        const emp = employees[ 0 ];
-        response = await saveOrder( {
-          employee: emp,
-          paymentOption,
-          referenceNumber,
-          payer,
-          voucher,
-          extras: emp.extras || [],
-        } );
-        console.log( "RESPONSE" );
-        setOrderId( response );
 
-        const orderID = response || '';
-        const qrDataFinal = {
-          orderID,
-          empleados: [ {
-            cedula: emp.cedula,
-            fullName: emp.fullName,
-            extras: emp.extras,
-            total_pagar: emp.total_pagar,
-            autorizado: emp.id_autorizado || null,
-          } ],
-          total: emp.total_pagar,
-          referencia: referenceNumber,
-        };
-        setQrData( qrDataFinal );
-        setQrBatchData( null );
+      } else {
+        try {
+          console.log( "ENTRANDO A ENVIO INDIVIDUAL" );
+
+          // FLUJO INDIVIDUAL
+          const emp = employees[ 0 ];
+          response = await saveOrder( {
+            employee: emp,
+            extras: emp.extras || [],
+            ...payloadBase,
+          } );
+          setOrderId( response );
+
+          // ... (Lógica de construcción de QR Individual se mantiene igual) ...
+          const orderID = response || '';
+          const qrDataFinal = {
+            orderID,
+            empleados: [ {
+              cedula: emp.cedula,
+              fullName: emp.fullName,
+              extras: emp.extras,
+              total_pagar: emp.total_pagar,
+              autorizado: emp.id_autorizado || null,
+            } ],
+            total: emp.total_pagar,
+            referencia: referenceNumber,
+          };
+          setQrData( qrDataFinal );
+          setQrBatchData( null );
+        } catch ( error ) {
+          console.log( "ESTE ERROR HDP: ", error );
+
+        }
+
       }
+
+      console.log( "SALIMOS DEL ELSE" );
+
+
+      // Limpieza de estados y éxito
       setReferenceNumberStore( referenceNumber );
       setLocalReferenceNumber( '' );
       setPayer( {nombre: '', apellido: '', cedula: '', gerencia: '', telefono: ''} );
       setVoucher( null );
       setIsLoading( false );
-      // Solo llamar al callback de generación si todo fue exitoso
       if ( onGenerarTickets ) onGenerarTickets( referenceNumber );
 
     } catch ( error ) {
       setIsLoading( false );
       const message = error?.message || error || 'Error al generar los tickets';
-      // Mostrar popup con SweetAlert2
-      Swal.fire({
+      Swal.fire( {
         title: 'Error',
-        text: String(message),
+        text: String( message ),
         icon: 'error',
         confirmButtonText: 'Volver'
-      }).then(() => {
-        // Cerrar el modal y regresar a la vista anterior
+      } ).then( () => {
         if ( onRequestClose ) onRequestClose();
-      });
+      } );
     }
   };
 
   return (
     <Modal
-      // ... (Props y estilos del Modal se mantienen igual)
+      // ... (Estilos del Modal)
       isOpen={isOpen}
       onRequestClose={onRequestClose}
       style={{
@@ -175,131 +232,138 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
       }}
       contentLabel="Resumen y Pago"
     >
-      <div className="mb-6 text-center font-bold text-lg text-blue-800">
-        Total a pagar: <span className="text-green-600">Bs. {summary.totalPagar?.toFixed( 2 ) ?? '0.00'}</span>
+      <div className="mb-4 text-center">
+        <h3 className="font-extrabold text-xl text-blue-700">{paymentOption}</h3>
+        <div className="font-bold text-lg text-blue-800">
+          Total a pagar: <span className="text-green-600">Bs. {summary.totalPagar?.toFixed( 2 ) ?? '0.00'}</span>
+        </div>
       </div>
 
       <form onSubmit={handleGenerarTickets} className="flex flex-col gap-4">
 
-        {/* --- (Pago Móvil / Transferencia info se mantiene igual) --- */}
-        {isPagoMovil && (
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Número de Teléfono:</label>
-              <div className="flex text-gray-800 hover:text-blue-500 transition-colors duration-200 ml-2">
-                <label htmlFor="">0414-2418171 </label>
-                <PiCopyThin onClick={() => handleCopy( '0414-2418171' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div>
-            <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Banco:</label>
-              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
-                <label htmlFor="">0108 - Provicial</label>
-                <PiCopyThin onClick={() => handleCopy( '0108' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div>
-            <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Cédula:</label>
-              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
-                <label htmlFor="">V-19.254.775</label>
-                <PiCopyThin onClick={() => handleCopy( '19.254.775' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div>
-          </div>
-        )}
+        {/* --- INFORMACIÓN DEL MÉTODO DE PAGO DINÁMICA --- */}
+        {paymentInfo && (
+          <div className="flex flex-col gap-2 p-3 bg-blue-100 rounded-lg border border-blue-200">
+            <h4 className="font-bold text-blue-700 text-center mb-1">Datos de Pago</h4>
 
-        {isTransferencia && (
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Número de Cuenta:</label>
-              <div className="flex text-gray-800 hover:text-blue-500 transition-colors duration-200 ml-2">
-                <label htmlFor="">0000 0000 0000 0000</label>
-                <PiCopyThin onClick={() => handleCopy( '0000 0000 0000 0000' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div>
-            <div className="flex justify-between font-bold text-blue-700">
-              <label htmlFor="">Banco:</label>
-              <div className=" flex text-gray-800 hover:text-blue-500 transition-colors duration-200">
-                <label htmlFor="">0108 - Provicial</label>
-                <PiCopyThin onClick={() => handleCopy( '0108' )} style={{cursor: 'pointer', userSelect: 'none'}} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- (DATOS DE QUIEN REALIZA EL PAGO) --- */}
-        {( isPagoMovil || isTransferencia ) && (
-          <>
-            {( orderOrigin === "seleccion" ) && (
-              <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
-                <div className="font-bold text-blue-700 mb-1 text-center">Quien realiza el pago</div>
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  className="p-2 border border-blue-200 rounded mb-1"
-                  value={payer.nombre}
-                  onChange={e => setPayer( p => ( {...p, nombre: e.target.value} ) )}
-                />
-                <input
-                  type="text"
-                  placeholder="Apellido"
-                  className="p-2 border border-blue-200 rounded mb-1"
-                  value={payer.apellido}
-                  onChange={e => setPayer( p => ( {...p, apellido: e.target.value} ) )}
-                />
-                <input
-                  type="text"
-                  placeholder="Cédula"
-                  className="p-2 border border-blue-200 rounded mb-1"
-                  value={payer.cedula}
-                  onChange={e => setPayer( p => ( {...p, cedula: e.target.value} ) )}
-                />
-                <input
-                  type="text"
-                  placeholder="Gerencia"
-                  className="p-2 border border-blue-200 rounded mb-1"
-                  value={payer.gerencia}
-                  onChange={e => setPayer( p => ( {...p, gerencia: e.target.value} ) )}
-                />
-                <input
-                  type="text"
-                  placeholder="Teléfono" // Agregué el campo teléfono aquí
-                  className="p-2 border border-blue-200 rounded mb-1"
-                  value={payer.telefono}
-                  onChange={e => setPayer( p => ( {...p, telefono: e.target.value} ) )}
-                />
+            {paymentInfo.telefono && (
+              <div className="flex justify-between font-semibold text-sm text-gray-700">
+                <label>Teléfono:</label>
+                <div className="flex items-center text-gray-800 cursor-pointer hover:text-blue-500" onClick={() => handleCopy( paymentInfo.telefono )}>
+                  <label className="mr-1">{paymentInfo.telefono}</label>
+                  <PiCopyThin />
+                </div>
               </div>
             )}
 
-            <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded">
-              <label className="font-bold text-blue-700 mb-1 text-center">Adjuntar Captura de pago</label>
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/jpg" // Definir los tipos de archivo
-                onChange={handleVoucherChange}
-                className="p-2 border border-blue-200 rounded"
-              />
-              {voucher && (
-                <img src={URL.createObjectURL( voucher )} alt="Voucher" className="mt-2 max-h-32 rounded shadow" />
-              )}
-            </div>
-          </>
+            {paymentInfo.cuenta && (
+              <div className="flex justify-between font-semibold text-sm text-gray-700">
+                <label>Cuenta:</label>
+                <div className="flex items-center text-gray-800 cursor-pointer hover:text-blue-500" onClick={() => handleCopy( paymentInfo.cuenta )}>
+                  <label className="mr-1">{paymentInfo.cuenta}</label>
+                  <PiCopyThin />
+                </div>
+              </div>
+            )}
+
+            {paymentInfo.banco && (
+              <div className="flex justify-between font-semibold text-sm text-gray-700">
+                <label>Banco:</label>
+                <div className="flex items-center text-gray-800 cursor-pointer hover:text-blue-500" onClick={() => handleCopy( paymentInfo.banco.split( ' - ' )[ 0 ] )}>
+                  <label className="mr-1">{paymentInfo.banco}</label>
+                  <PiCopyThin />
+                </div>
+              </div>
+            )}
+
+            {paymentInfo.cedula && (
+              <div className="flex justify-between font-semibold text-sm text-gray-700">
+                <label>Cédula:</label>
+                <div className="flex items-center text-gray-800 cursor-pointer hover:text-blue-500" onClick={() => handleCopy( paymentInfo.cedula.replace( 'V-', '' ).replace( /\./g, '' ) )}>
+                  <label className="mr-1">{paymentInfo.cedula}</label>
+                  <PiCopyThin />
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
-        <div className='flex flex-col  justify-center items-center m-auto py-1.5'>
-          <label htmlFor="referenceNumber" className="font-bold text-blue-700">
-            Número de referencia:
-          </label>
-          <input
-            id="referenceNumber"
-            type="text"
-            placeholder="Ingrese número de referencia"
-            value={referenceNumber}
-            onChange={e => setLocalReferenceNumber( e.target.value )}
-            className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
-          />
-        </div>
+        {/* --- DATOS DE QUIEN REALIZA EL PAGO (Se mantiene si es digital y lote) --- */}
+        {isDigitalPayment && orderOrigin === "seleccion" && (
+          <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded border border-blue-200">
+            <div className="font-bold text-blue-700 mb-1 text-center">Datos de quien realiza el pago</div>
+            <input
+              type="text"
+              placeholder="Nombre (*)"
+              className="p-2 border border-blue-200 rounded mb-1"
+              value={payer.nombre}
+              onChange={e => setPayer( p => ( {...p, nombre: e.target.value} ) )}
+            />
+            <input
+              type="text"
+              placeholder="Apellido"
+              className="p-2 border border-blue-200 rounded mb-1"
+              value={payer.apellido}
+              onChange={e => setPayer( p => ( {...p, apellido: e.target.value} ) )}
+            />
+            <input
+              type="text"
+              placeholder="Cédula (*)"
+              className="p-2 border border-blue-200 rounded mb-1"
+              value={payer.cedula}
+              onChange={e => setPayer( p => ( {...p, cedula: e.target.value} ) )}
+            />
+            <input
+              type="text"
+              placeholder="Gerencia"
+              className="p-2 border border-blue-200 rounded mb-1"
+              value={payer.gerencia}
+              onChange={e => setPayer( p => ( {...p, gerencia: e.target.value} ) )}
+            />
+            <input
+              type="text"
+              placeholder="Teléfono"
+              className="p-2 border border-blue-200 rounded mb-1"
+              value={payer.telefono}
+              onChange={e => setPayer( p => ( {...p, telefono: e.target.value} ) )}
+            />
+          </div>
+        )}
 
+        {/* --- ADJUNTAR CAPTURA DE PAGO (Solo si es un pago digital) --- */}
+        {isDigitalPayment && (
+          <div className="flex flex-col gap-2 mb-2 p-2 bg-blue-50 rounded border border-blue-200">
+            <label className="font-bold text-blue-700 mb-1 text-center">Adjuntar Captura de pago (*)</label>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/jpg"
+              onChange={handleVoucherChange}
+              className="p-2 border border-blue-200 rounded"
+            />
+            {voucher && (
+              <img src={URL.createObjectURL( voucher )} alt="Voucher" className="mt-2 max-h-32 rounded shadow" />
+            )}
+          </div>
+        )}
+
+        {/* --- NÚMERO DE REFERENCIA (Solo si es un pago digital) --- */}
+        {isDigitalPayment && (
+          <div className='flex flex-col  justify-center items-center m-auto py-1.5'>
+            <label htmlFor="referenceNumber" className="font-bold text-blue-700">
+              Número de referencia: (*)
+            </label>
+            <input
+              id="referenceNumber"
+              type="text"
+              placeholder="Ingrese número de referencia"
+              value={referenceNumber}
+              onChange={e => setLocalReferenceNumber( e.target.value )}
+              className="p-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800 placeholder-gray-500 shadow-sm"
+            />
+          </div>
+        )}
+
+        {/* --- BOTONES DE ACCIÓN --- */}
         <div className="flex flex-col md:flex-row justify-center md:justify-between gap-4 mt-4">
           <button
             type="button"
@@ -312,7 +376,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, onGenerarTickets, 
           <button
             type="submit"
             className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition-colors"
-            disabled={isLoading} // Deshabilitar durante la carga
+            disabled={isLoading}
           >
             {isLoading ? 'Enviando...' : 'Generar Tickets'}
           </button>
