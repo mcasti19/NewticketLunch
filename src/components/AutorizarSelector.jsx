@@ -114,7 +114,7 @@ export const AutorizarSelector = ( {
     };
 
     return (
-        <div className="bg-gray-500 p-0 rounded-lg flex flex-col border-2 w-full">
+        <div className=" p-0 rounded-lg flex flex-col border-2 w-full">
             <Select
                 options={options}
                 value={selectedAutorizado ? {value: selectedAutorizado.cedula, label: selectedAutorizado.fullname} : null}
@@ -124,6 +124,7 @@ export const AutorizarSelector = ( {
                 isDisabled={loading}
                 className="text-white"
                 classNamePrefix="react-select"
+                
                 // Aquí se pueden añadir estilos personalizados con `styles` si es necesario
                 theme={( theme ) => ( {
                     ...theme,
@@ -133,12 +134,13 @@ export const AutorizarSelector = ( {
                         primary25: '#3B82F6', // Color al pasar el mouse por las opciones
                         neutral80: 'white',
                         neutral0: '#1F2937', // Color de fondo del control
+                        // neutral: '#D1D5DC', // Color de fondo del control
                     },
                 } )}
             />
             {selectedAutorizado && (
                 <div>
-                    <p className="text-sm text-gray-100 mt-1 text-center">
+                    <p className="text-sm text-gray-800 dark:text-amber-50 mt-1 text-center">
                         Autorizado:<br></br> {selectedAutorizado.fullName}
                     </p>
                 </div>
