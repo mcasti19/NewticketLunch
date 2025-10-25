@@ -61,20 +61,22 @@ export const getPaymentMethodsMap = async () => {
 }
 
 
-export const createOrderBatch = async ( {
+export const createOrderBatch = async ({
     employees,
-    paymentOption,
+    // paymentMethod should be the ID (number or string) of the payment method
+    paymentMethod,
     referenceNumber,
     payer,
     voucher,
-} ) => {
-    const id_payment_method = paymentMethodMap[ paymentOption ] || null;
+}) => {
+    // Use the provided paymentMethod (already an ID) instead of an undefined map
+    const id_payment_method = paymentMethod ? String(paymentMethod) : null;
     const dataToSend = new FormData();
 
     // Append top-level payment info
-    dataToSend.append( 'reference', referenceNumber );
-    if ( id_payment_method ) {
-        dataToSend.append( 'id_payment_method', String( id_payment_method ) );
+    dataToSend.append('reference', referenceNumber || '');
+    if (id_payment_method) {
+        dataToSend.append('id_payment_method', id_payment_method);
     }
     if ( voucher instanceof File ) {
         dataToSend.append( 'payment_support', voucher );
@@ -146,17 +148,18 @@ export const createOrderBatch = async ( {
     // --- FIN: LOG DETALLADO ---
 
     try {
-        const response = await api.post( '/pedidos/bluk', dataToSend, {
-            headers: {'Content-Type': 'multipart/form-data'}
-        } );
-        // Solo si la respuesta es exitosa (código 200)
-        if ( response.status === 200 && response.data ) {
+        const response = await api.post('/pedidos/bluk', dataToSend, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if ((response.status === 200 || response.status === 201) && response.data) {
+            // Return the response body so callers can decide what to do
             return response.data;
-        } else {
-            throw new Error( response.data?.message || 'Error procesando el lote de órdenes' );
         }
-    } catch ( error ) {
-        console.log( "ERROR ENVIAR POR LOTE:", error );
+
+        throw new Error(response.data?.message || 'Error procesando el lote de órdenes');
+    } catch (error) {
+        console.error('ERROR ENVIAR POR LOTE:', error);
         throw error;
     }
 };
