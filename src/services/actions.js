@@ -49,7 +49,7 @@ export const getPaymentMethodsMap = async () => {
             return acc;
         }, {} ); // Inicializa el acumulador como un objeto vacío
 
-        console.log( "MAPEO DE MÉTODOS DE PAGO GENERADO:", paymentMethodMap );
+        // console.log( "MAPEO DE MÉTODOS DE PAGO GENERADO:", paymentMethodMap );
 
         // Puedes devolver solo el mapa si es lo único que necesitas
         return paymentMethodMap;
@@ -61,22 +61,22 @@ export const getPaymentMethodsMap = async () => {
 }
 
 
-export const createOrderBatch = async ({
+export const createOrderBatch = async ( {
     employees,
     // paymentMethod should be the ID (number or string) of the payment method
     paymentMethod,
     referenceNumber,
     payer,
     voucher,
-}) => {
+} ) => {
     // Use the provided paymentMethod (already an ID) instead of an undefined map
-    const id_payment_method = paymentMethod ? String(paymentMethod) : null;
+    const id_payment_method = paymentMethod ? String( paymentMethod ) : null;
     const dataToSend = new FormData();
 
     // Append top-level payment info
-    dataToSend.append('reference', referenceNumber || '');
-    if (id_payment_method) {
-        dataToSend.append('id_payment_method', id_payment_method);
+    dataToSend.append( 'reference', referenceNumber || '' );
+    if ( id_payment_method ) {
+        dataToSend.append( 'id_payment_method', id_payment_method );
     }
     if ( voucher instanceof File ) {
         dataToSend.append( 'payment_support', voucher );
@@ -148,18 +148,18 @@ export const createOrderBatch = async ({
     // --- FIN: LOG DETALLADO ---
 
     try {
-        const response = await api.post('/pedidos/bluk', dataToSend, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await api.post( '/pedidos/bluk', dataToSend, {
+            headers: {'Content-Type': 'multipart/form-data'}
+        } );
 
-        if ((response.status === 200 || response.status === 201) && response.data) {
+        if ( ( response.status === 200 || response.status === 201 ) && response.data ) {
             // Return the response body so callers can decide what to do
             return response.data;
         }
 
-        throw new Error(response.data?.message || 'Error procesando el lote de órdenes');
-    } catch (error) {
-        console.error('ERROR ENVIAR POR LOTE:', error);
+        throw new Error( response.data?.message || 'Error procesando el lote de órdenes' );
+    } catch ( error ) {
+        console.error( 'ERROR ENVIAR POR LOTE:', error );
         throw error;
     }
 };
@@ -307,17 +307,12 @@ export const getExtras = async () => {
  */
 export const saveOrder = async ( {
     employee,
-    // 💡 CAMBIADO: Esperamos 'paymentMethod' (que es el ID), NO 'paymentOption' (el nombre)
-    paymentMethod, 
+    paymentMethod,
     referenceNumber,
     payer,
-    voucher,
-    extras = [], // Establecer valor por defecto
+    voucher, // Ahora pasado como prop
+    extras = [],
 } ) => {
-    // ❌ ELIMINADA la línea que causaba el ReferenceError:
-    // const id_payment_method = paymentMethodMap[ paymentOption ] || null;
-
-    // 💡 AHORA: El ID ya viene listo en la variable 'paymentMethod'
     const id_payment_method = paymentMethod;
 
     // 1. **Determinar el tipo de contenido y el Payload**
@@ -329,10 +324,10 @@ export const saveOrder = async ( {
         special_event: employee.evento_especial ? 'si' : 'no',
         authorized: employee.id_autorizado ? 'si' : 'no',
         authorized_person: employee.id_autorizado || 'no',
-        
+
         // ✅ USAMOS EL ID QUE YA RECIBIMOS DIRECTAMENTE
-        id_payment_method: id_payment_method ? String( id_payment_method ) : '', 
-        
+        id_payment_method: id_payment_method ? String( id_payment_method ) : '',
+
         reference: referenceNumber,
         total_amount: String( employee.total_pagar || '' ),
         cedula: String( employee.cedula || '' ),
@@ -342,9 +337,6 @@ export const saveOrder = async ( {
         // payment_support se manejará en el paso 3
     };
 
-    console.log( "OORRRDERDATAAA:", orderData );
-
-
     const employeePaymentData = {
         cedula_employee: employee.cedula || '18467449',
         name_employee: employee.fullName || 'Moises',
@@ -352,10 +344,7 @@ export const saveOrder = async ( {
         management: employee.management || '',
     };
 
-    console.log( "employeePaymentData", employeePaymentData );
-
     // 3. **Manejar la imagen/voucher**
-    // Si voucher es un objeto File, usamos FormData (MÉTODO RECOMENDADO)
     console.log( 'Enviando con FormData...' );
     dataToSend = new FormData();
 
@@ -374,10 +363,17 @@ export const saveOrder = async ( {
         // Si no hay extras seleccionados, enviar '1' (No Aplica)
         dataToSend.append( 'extras[]', '1' );
     }
+
+    // ⭐ Ajuste: Solo se añade el archivo si existe y es un objeto File
     if ( voucher instanceof File ) {
         // Agregar el archivo de imagen
         dataToSend.append( 'order[payment_support]', voucher );
     }
+    // ⭐ Si quieres forzar la validación del voucher aquí también, descomenta lo siguiente:
+    else {
+        throw new Error( "Debe adjuntar el comprobante de pago." );
+    }
+
 
     // LOG DETALLADO DE FORM DATA
     console.log( '--- FormData a enviar ---' );
@@ -390,11 +386,13 @@ export const saveOrder = async ( {
     }
     console.log( '-------------------------' );
 
-    headers[ 'Content-Type' ] = 'multipart/form-data';
-
+    // Para FormData, el Content-Type lo maneja automáticamente el navegador, no es necesario forzar 'multipart/form-data'
+    // headers[ 'Content-Type' ] = 'multipart/form-data';
     // 4. Hacer POST con los datos y headers determinados
 
     try {
+        console.log( "Iniciando llamada a la API..." );
+        // Usamos {headers} aunque esté vacío por consistencia, pero es opcional
         const response = await api.post( '/pedidos', dataToSend, {headers} );
         console.log( "RESPONSE", response.data.order );
 
@@ -406,11 +404,9 @@ export const saveOrder = async ( {
         throw new Error( response?.data?.message || `Error al guardar la orden (status ${ response?.status })` );
 
     } catch ( error ) {
-        console.log( "ERRRORRRR:", error );
+        console.error( "ERRRORRRR:", error );
         // Re-lanzar el error para que el llamador (ModalResume) lo maneje
         const message = error?.response?.data?.message || error?.message || 'Error desconocido al guardar la orden';
         throw new Error( message );
-
     }
 };
-

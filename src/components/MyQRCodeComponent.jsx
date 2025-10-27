@@ -4,6 +4,9 @@ import QRCodeGen from 'qrcode';
 import {saveAs} from 'file-saver';
 
 export function MyQRCodeComponent( {qrData} ) {
+
+  // console.log( {qrData} );
+
   const logoUrl = "/MercalMarker.png";
 
   // Si recibe un array, renderizar múltiples QR
@@ -133,14 +136,20 @@ export function MyQRCodeComponent( {qrData} ) {
       } );
     }
     text += `Total: Bs. ${ Number( qrData.total || 0 ).toFixed( 2 ) }\n`;
+    if ( qrData.id_order_status ) {
+      text += `id_order_status: ${ qrData.id_order_status }\n`;
+    }
+    if ( qrData.id_orders_consumption ) {
+      text += `id_orders_consumption: ${ qrData.id_orders_consumption }\n`;
+    }
     return text;
   };
 
   return (
-    <div className="overflow-y-auto w-full">
-      <div className="w-full flex justify-end mb-4">
-      </div>
-      <div className="flex flex-col items-center justify-center p-6 rounded-lg shadow-xl max-w-2xl mx-auto my-8 border-0">
+    <div className="overflow-y-auto w-full border-0">
+      {/* <div className="w-full flex justify-end mb-4 border-2">
+      </div> */}
+      <div className="flex flex-col items-center justify-center p-6 rounded-lg shadow-xl mx-auto my-8 border-0">
         <div><b>Orden: {qrData.orderID}</b></div>
         <div>
           <b>
@@ -153,17 +162,23 @@ export function MyQRCodeComponent( {qrData} ) {
           value={formatQRText( qrData )}
           size={150}
           ecLevel="M"
-          qrStyle="fluid"
+          qrStyle="dots"
           logoImage={logoUrl}
           logoWidth={80}
           logoHeight={80}
           logoOpacity={1}
           logoPadding={0}
-          logoPaddingStyle="square"
+          logoPaddingStyle="circle"
         />
         <div className="mt-2 text-center text-xs text-gray-700">
           <div><b>Referencia: {qrData.referencia}</b></div>
           <div>Total Pagado: <b>Bs. {Number( qrData.total || 0 ).toFixed( 2 )}</b></div>
+          {qrData.id_order_status && (
+            <div>ID Estado: <b>{qrData.id_order_status}</b></div>
+          )}
+          {qrData.id_orders_consumption && (
+            <div>ID Consumo: <b>{qrData.id_orders_consumption}</b></div>
+          )}
           {Array.isArray( qrData.empleados ) && qrData.empleados.some( e => e.autorizado ) && (
             <div className="text-blue-700">
               Autorizado: {qrData.empleados.filter( e => e.autorizado ).map( e => e.autorizado ).join( ', ' )}

@@ -100,6 +100,20 @@ export const MyTicket = ( {goToResumeTab} ) => {
         if ( goToResumeTab ) goToResumeTab();
     };
 
+    const handleClearSelection = () => {
+        const initialTicketState = {
+            cedula: user?.cedula || '',
+            almuerzo: false,
+            para_llevar: false,
+            cubiertos: false,
+            id_autorizado: null,
+            autorizado_por: null,
+        };
+        setMyTicket(initialTicketState);
+        setSelectedAutorizado(null);
+        localStorage.removeItem('miTicketSeleccion');
+    };
+
     const calculateCost = () => {
         if ( !myTicket ) return 0;
         let cost = 0;
@@ -138,7 +152,7 @@ export const MyTicket = ( {goToResumeTab} ) => {
         // **bg-gradient-to-t from-blue-950 from-50% to-red-600"
             >
                 <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 text-blue-400 dark:text-red-700">Mi Ticket</h1>
-                <div className="flex flex-col items-center mb-6">
+                <div className="flex flex-col items-center mb-1">
                     <h2 className="text-xl md:text-2xl font-semibold text-black dark:text-white mb-2">
                         {user?.fullName}
                     </h2>
@@ -149,7 +163,7 @@ export const MyTicket = ( {goToResumeTab} ) => {
                         <picture>
                             {/* <source srcSet="/Pabellon-Criollo.png" media="(min-width: 600px)" />
                             <source srcSet="/Pabellon-Criollo.png" type="image/jpeg" /> */}
-                            <img src="/Pabellon-Criollo.png" alt="Descripción de la imagen" className='w-72' />
+                            <img src="/Pabellon-Criollo.png" alt="Descripción de la imagen" className='w-[30dvh]' />
                         </picture>
                         <input
                             type="checkbox"
@@ -167,7 +181,7 @@ export const MyTicket = ( {goToResumeTab} ) => {
                                     {/* <source srcSet="/envase.png" media="(min-width: 600px)" type="image/avif" />
                                     <source srcSet="/envase.png" media="(min-width: 600px)" />
                                     <source srcSet="/envase.png" type="image/jpeg" /> */}
-                                    <img src="/envase.png" alt="Descripción de la imagen" className='w-72' />
+                                    <img src="/envase.png" alt="Descripción de la imagen" className='w-[30dvh]' />
                                 </picture>
                                 <input
                                     type="checkbox"
@@ -182,7 +196,7 @@ export const MyTicket = ( {goToResumeTab} ) => {
                                     {/* <source srcSet="/cubiertos2.png" media="(min-width: 1000px)" type="image/avif" />
                                     <source srcSet="/cubiertos2.png" media="(min-width: 600px)" />
                                     <source srcSet="/cubiertos2.png" type="image/jpeg" /> */}
-                                    <img src="/cubiertos2.png" alt="Descripción de la imagen" className='w-72' />
+                                    <img src="/cubiertos2.png" alt="Descripción de la imagen" className='w-[30dvh]' />
                                 </picture>
                                 <input
                                     type="checkbox"
@@ -215,13 +229,19 @@ export const MyTicket = ( {goToResumeTab} ) => {
                         </div>
                     </div>
 
-                    <div className="flex justify-center">
+                    <div className="flex justify-center gap-4">
                         <button
                             onClick={handleSave}
                             className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow-lg"
                             disabled={!myTicket?.almuerzo}
                         >
                             Confirmar Selección
+                        </button>
+                        <button
+                            onClick={handleClearSelection}
+                            className="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold text-base shadow-lg"
+                        >
+                            Limpiar Selección
                         </button>
                     </div>
                 </div>
