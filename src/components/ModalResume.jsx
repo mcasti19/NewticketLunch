@@ -141,47 +141,50 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
           } ],
           total: emp.total_pagar,
           referencia: referenceNumber,
+          // Añadimos los ids que se envían en saveOrder para que estén disponibles en el QR
+          id_order_status: '1',
+          id_orders_consumption: '1',
         } ) );
         setQrBatchData( batchQR );
         setQrData( null );
 
       } else {
-        try {
-          console.log( "ENTRANDO A ENVIO INDIVIDUAL" );
 
-          // FLUJO INDIVIDUAL
-          const emp = employees[ 0 ];
-          response = await saveOrder( {
-            employee: emp,
-            extras: emp.extras || [],
-            ...payloadBase,
-          } );
-          setOrderId( response );
+        console.log( "ENTRANDO A ENVIO INDIVIDUAL" );
 
-          // ... (Lógica de construcción de QR Individual se mantiene igual) ...
-          const orderID = response || '';
-          const qrDataFinal = {
-            orderID,
-            empleados: [ {
-              cedula: emp.cedula,
-              fullName: emp.fullName,
-              extras: emp.extras,
-              total_pagar: emp.total_pagar,
-              autorizado: emp.id_autorizado || null,
-            } ],
-            total: emp.total_pagar,
-            referencia: referenceNumber,
-          };
-          setQrData( qrDataFinal );
-          setQrBatchData( null );
-        } catch ( error ) {
-          console.log( "ESTE ERROR HDP: ", error );
+        // FLUJO INDIVIDUAL
+        const emp = employees[ 0 ];
+        response = await saveOrder( {
+          employee: emp,
+          extras: emp.extras || [],
+          ...payloadBase,
+        } );
+        setOrderId( response );
 
-        }
+        console.log( "TODO EMPLEADO:", emp );
 
+        // ... (Lógica de construcción de QR Individual se mantiene igual) ...
+        const orderID = response || '';
+        const qrDataFinal = {
+          orderID,
+          empleados: [ {
+            cedula: emp.cedula,
+            fullName: emp.fullName,
+            extras: emp.extras,
+            total_pagar: emp.total_pagar,
+            autorizado: emp.id_autorizado || null,
+          } ],
+          total: emp.total_pagar,
+          referencia: referenceNumber,
+          // Añadimos los ids que se envían en saveOrder para que estén disponibles en el QR
+          id_order_status: '1',
+          id_orders_consumption: '1',
+        };
+        setQrData( qrDataFinal );
+        setQrBatchData( null );
+        console.log( "SALIMOS DEL ELSE", qrDataFinal );
       }
 
-      console.log( "SALIMOS DEL ELSE" );
 
 
       // Limpieza de estados y éxito
