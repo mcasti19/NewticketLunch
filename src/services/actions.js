@@ -389,3 +389,17 @@ export const saveOrder = async ( {
         throw new Error( message );
     }
 };
+
+
+export const getBCVrate = async () => {
+    try {
+        const {data} = await api.get( '/dolar-bcv' );
+        // console.log( "RESPONSE", data.data );
+        if ( data && data.message ) {
+            throw new Error( data.message );
+        }
+        return data.data.rate;
+    } catch ( error ) {
+        throw new Error( error.message || "API Connection Failed" );
+    }
+}
