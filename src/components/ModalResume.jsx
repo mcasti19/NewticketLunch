@@ -161,7 +161,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
         } );
         setOrderId( response );
 
-        console.log( "TODO EMPLEADO:", emp );
+        // console.log( "TODO EMPLEADO:", emp );
 
         // ... (Lógica de construcción de QR Individual se mantiene igual) ...
         const orderID = response || '';
@@ -184,8 +184,6 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
         setQrBatchData( null );
         console.log( "SALIMOS DEL ELSE", qrDataFinal );
       }
-
-
 
       // Limpieza de estados y éxito
       setReferenceNumberStore( referenceNumber );
