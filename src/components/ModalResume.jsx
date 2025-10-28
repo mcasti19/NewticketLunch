@@ -19,7 +19,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
 
   const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
   const summary = useTicketLunchStore( state => state.summary );
-  const setOrderId = useTicketLunchStore( state => state.setOrderId );
+  const setOrderData = useTicketLunchStore( state => state.setOrderData );
   const setQrData = useTicketLunchStore( state => state.setQrData );
   const setQrBatchData = useTicketLunchStore( state => state.setQrBatchData );
   const setReferenceNumberStore = useTicketLunchStore( state => state.setReferenceNumber );
@@ -111,7 +111,7 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
 
     setIsLoading( true );
     try {
-      let response;
+      let OrderResponse;
 
       const payloadBase = {
         paymentMethod: paymentMethodId, // 💡 ENVIAMOS EL ID DE PAGO
@@ -122,14 +122,14 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
 
       if ( orderOrigin === 'seleccion' && Array.isArray( employees ) && employees.length > 1 ) {
         // FLUJO POR LOTE
-        response = await createOrderBatch( {
+        OrderResponse = await createOrderBatch( {
           employees,
           ...payloadBase,
         } );
-        setOrderId( response );
+        setOrderData( OrderResponse );
 
         // ... (Lógica de construcción de QR Batch se mantiene igual) ...
-        const orderID = response || '';
+        const orderID = OrderResponse.number_order || '';
         const batchQR = employees.map( emp => ( {
           orderID,
           empleados: [ {
@@ -154,17 +154,17 @@ const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMethodMap, 
 
         // FLUJO INDIVIDUAL
         const emp = employees[ 0 ];
-        response = await saveOrder( {
+        OrderResponse = await saveOrder( {
           employee: emp,
           extras: emp.extras || [],
           ...payloadBase,
         } );
-        setOrderId( response );
+        setOrderData( OrderResponse );
 
         // console.log( "TODO EMPLEADO:", emp );
 
         // ... (Lógica de construcción de QR Individual se mantiene igual) ...
-        const orderID = response || '';
+        const orderID = OrderResponse.number_order || '';
         const qrDataFinal = {
           orderID,
           empleados: [ {

@@ -320,8 +320,6 @@ export const saveOrder = async ( {
         reference: referenceNumber,
         total_amount: String( employee.total_pagar || '' ),
         cedula: String( employee.cedula || '' ),
-        id_order_status: '1',
-        id_orders_consumption: '1',
         management: employee.management || '',
         // payment_support se manejará en el paso 3
     };
@@ -375,26 +373,18 @@ export const saveOrder = async ( {
     }
     console.log( '-------------------------' );
 
-    // Para FormData, el Content-Type lo maneja automáticamente el navegador, no es necesario forzar 'multipart/form-data'
-    // headers[ 'Content-Type' ] = 'multipart/form-data';
-    // 4. Hacer POST con los datos y headers determinados
 
     try {
-        console.log( "Iniciando llamada a la API..." );
-        // Usamos {headers} aunque esté vacío por consistencia, pero es opcional
         const {data} = await api.post( '/pedidos', dataToSend, {headers} );
         console.log( "RESPONSE", data.order );
 
-        // Asegurarse de que la respuesta sea exitosa (200 o 201)
         if ( data && ( data.status === 200 || data.status === 201 ) && data.order ) {
-            return data.order.number_order;
+            return data.order;
         }
-        // Si no es un 200/201, lanzar error con mensaje de la API si existe
         throw new Error( data?.data?.message || `Error al guardar la orden (status ${ data?.status })` );
 
     } catch ( error ) {
         console.error( "ERRRORRRR:", error );
-        // Re-lanzar el error para que el llamador (ModalResume) lo maneje
         const message = error?.response?.data?.message || error?.message || 'Error desconocido al guardar la orden';
         throw new Error( message );
     }
