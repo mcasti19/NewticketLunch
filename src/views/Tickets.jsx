@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react'
+import {useEffect} from 'react'
 import {MyQRCodeComponent} from '../components/MyQRCodeComponent'
 import {useTicketLunchStore} from '../store/ticketLunchStore'
 import {useBuildDataToQR} from '../hooks/useBuildDataToQR';
@@ -7,16 +7,16 @@ export const Tickets = () => {
   const qrData = useTicketLunchStore( ( state ) => state.qrData );
   const qrBatchData = useTicketLunchStore( ( state ) => state.qrBatchData );
   const {builderDataQR} = useBuildDataToQR();
+  const orderData = useTicketLunchStore( state => state.orderData );
+  const selectedEmpleadosSummary = useTicketLunchStore( state => state.selectedEmpleadosSummary );
+  const orderOrigin = useTicketLunchStore( state => state.orderOrigin );
+  const referenceNumber = useTicketLunchStore( state => state.referenceNumber );
 
   useEffect( () => {
-    // Intenta construir los datos del QR si no existen.
-    if ( !qrData && !qrBatchData ) {
-      
-      builderDataQR();
-    }
-    console.log({qrData});
+    // Reconstruir el QR siempre que cambie la orden o la selección
+    builderDataQR();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [] ); // Se ejecuta solo una vez al montar el componente.
+  }, [ orderData, selectedEmpleadosSummary, orderOrigin, referenceNumber ] );
 
 
   const handleCloseOrder = () => {

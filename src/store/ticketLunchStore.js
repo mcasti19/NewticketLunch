@@ -37,6 +37,10 @@ export const useTicketLunchStore = create(
   orderId: null,
   setOrderId: (orderId) => set({ orderId }),
 
+  // Guardar objeto completo de la orden tal como lo devuelve el backend
+  orderData: null,
+  setOrderData: (orderData) => set({ orderData }),
+
   // Estado para guardar el objeto qrData para el QR individual
   qrData: null,
   setQrData: (qrData) => set({ qrData }),

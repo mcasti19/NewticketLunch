@@ -58,7 +58,8 @@ export function MyQRCodeComponent( {qrData} ) {
     // Mostrar todos los empleados
     const empleados = Array.isArray( qrData.empleados ) ? qrData.empleados : [];
     const total = qrData.total || 0;
-    let text = `OrdenID: ${ qrData.orderID }\n`;
+  const orderIdStr = String(qrData.orderID ?? '');
+  let text = `OrdenID: ${ orderIdStr }\n`;
     if ( Array.isArray( empleados ) ) {
       empleados.forEach( emp => {
         text += `Nombre y Apellido: ${ emp.fullName }\n`;
@@ -67,7 +68,7 @@ export function MyQRCodeComponent( {qrData} ) {
       } );
     }
     text += `Total Pagado: Bs. ${ Number( total ).toFixed( 2 ) }\n`;
-    if ( qrData.referencia ) text += `Referencia: ${ qrData.referencia }\n`;
+  if ( qrData.referencia ) text += `Referencia: ${ String(qrData.referencia) }\n`;
 
     // Crear canvas temporal para medir el texto
     // Calcular el ancho máximo del texto
@@ -128,11 +129,15 @@ export function MyQRCodeComponent( {qrData} ) {
   };
 
   const formatQRText = ( qrData ) => {
-    let text = `Orden: ${ qrData.orderID }\nReferencia: ${ qrData.referencia }\n`;
+    const orderId = String(qrData.orderID ?? '');
+    const referencia = String(qrData.referencia ?? '');
+    let text = `Orden: ${ orderId }\nReferencia: ${ referencia }\n`;
     if ( Array.isArray( qrData.empleados ) ) {
       qrData.empleados.forEach( ( emp, idx ) => {
-        text += `Empleado ${ idx + 1 }: ${ emp.fullName } (C.I: ${ emp.cedula })\n`;
-        if ( emp.autorizado ) text += `Autorizado: ${ emp.autorizado }\n`;
+        const name = String(emp.fullName ?? '');
+        const ci = String(emp.cedula ?? '');
+        text += `Empleado ${ idx + 1 }: ${ name } (C.I: ${ ci })\n`;
+        if ( emp.autorizado ) text += `Autorizado: ${ String(emp.autorizado) }\n`;
       } );
     }
     text += `Total: Bs. ${ Number( qrData.total || 0 ).toFixed( 2 ) }\n`;
@@ -150,7 +155,7 @@ export function MyQRCodeComponent( {qrData} ) {
       {/* <div className="w-full flex justify-end mb-4 border-2">
       </div> */}
       <div className="flex flex-col items-center justify-center p-6 rounded-lg shadow-xl mx-auto my-8 border-0">
-        <div><b>Orden: {qrData.orderID}</b></div>
+  <div><b>Orden: {String(qrData.orderID ?? '')}</b></div>
         <div>
           <b>
             {Array.isArray( qrData.empleados )
@@ -171,7 +176,7 @@ export function MyQRCodeComponent( {qrData} ) {
           logoPaddingStyle="circle"
         />
         <div className="mt-2 text-center text-xs text-gray-700">
-          <div><b>Referencia: {qrData.referencia}</b></div>
+          <div><b>Referencia: {String(qrData.referencia ?? '')}</b></div>
           <div>Total Pagado: <b>Bs. {Number( qrData.total || 0 ).toFixed( 2 )}</b></div>
           {qrData.id_order_status && (
             <div>ID Estado: <b>{qrData.id_order_status}</b></div>
