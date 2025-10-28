@@ -14,17 +14,6 @@ export const fileToBase64 = ( file ) => {
     } );
 };
 
-// // Mapeo de métodos de pago
-// const paymentMethodMap = {
-//     'Pago Móvil': 1,
-//     'Transferencia': 2,
-//     'Débito': 3,
-//     'Efectivo': 4,
-// };
-
-// Importa tu instancia de API (asumiendo que está definida en algún lugar como 'api')
-// import api from './api'; 
-
 /**
  * Obtiene los métodos de pago de la API y los transforma en un objeto de mapeo.
  * El objeto resultante tendrá el formato: { 'nombre del método': id_del_método }
@@ -148,16 +137,16 @@ export const createOrderBatch = async ( {
     // --- FIN: LOG DETALLADO ---
 
     try {
-        const response = await api.post( '/pedidos/bluk', dataToSend, {
+        const {data} = await api.post( '/pedidos/bluk', dataToSend, {
             headers: {'Content-Type': 'multipart/form-data'}
         } );
 
-        if ( ( response.status === 200 || response.status === 201 ) && response.data ) {
+        if ( ( data.status === 200 || data.status === 201 ) && data.orders ) {
             // Return the response body so callers can decide what to do
-            return response.data;
+            return data.orders.map( order => order.number_order );
         }
 
-        throw new Error( response.data?.message || 'Error procesando el lote de órdenes' );
+        throw new Error( data?.message || 'Error procesando el lote de órdenes' );
     } catch ( error ) {
         console.error( 'ERROR ENVIAR POR LOTE:', error );
         throw error;
@@ -393,15 +382,15 @@ export const saveOrder = async ( {
     try {
         console.log( "Iniciando llamada a la API..." );
         // Usamos {headers} aunque esté vacío por consistencia, pero es opcional
-        const response = await api.post( '/pedidos', dataToSend, {headers} );
-        console.log( "RESPONSE", response.data.order );
+        const {data} = await api.post( '/pedidos', dataToSend, {headers} );
+        console.log( "RESPONSE", data.order );
 
         // Asegurarse de que la respuesta sea exitosa (200 o 201)
-        if ( response && ( response.status === 200 || response.status === 201 ) && response.data ) {
-            return response.data.order;
+        if ( data && ( data.status === 200 || data.status === 201 ) && data.order ) {
+            return data.order.number_order;
         }
         // Si no es un 200/201, lanzar error con mensaje de la API si existe
-        throw new Error( response?.data?.message || `Error al guardar la orden (status ${ response?.status })` );
+        throw new Error( data?.data?.message || `Error al guardar la orden (status ${ data?.status })` );
 
     } catch ( error ) {
         console.error( "ERRRORRRR:", error );
