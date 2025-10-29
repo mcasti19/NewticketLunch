@@ -51,7 +51,7 @@ export const useAuthStore = create( ( set, get ) => {
   const login = ( user, token, expiration ) => {
     // user here is the raw backend payload; normalizamos antes de guardar
     const emp = user?.employees || {};
-    console.log( "EMP:", emp );
+    // console.log( "EMP:", emp );
 
     const formattedEmp = formatFullName( emp ) || {};
     const normalized = {

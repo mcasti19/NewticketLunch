@@ -2,7 +2,7 @@
 
 export function buildSelectedEmployees( {employee, ticket, autorizado, empleados, tipo} ) {
     // Si es MiTicket (user+ticket)
-    console.log("UUUUUUUUUUUUUUUUUUUUUUUUSEEEERRRRRRR", employee, tipo );
+    
 
     if ( employee && ticket ) {
         // Construir el array de extras según selección
@@ -32,7 +32,7 @@ export function buildSelectedEmployees( {employee, ticket, autorizado, empleados
     if ( Array.isArray( empleados ) ) {
         return empleados.map( emp => {
 
-            console.log( {emp} );
+            // console.log( {emp} );
 
             // Buscar nombre completo
             const fullName = emp.fullName;
