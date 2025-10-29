@@ -37,6 +37,11 @@ GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
 content-type: application/json
 Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
 
+###  PEDIDOS por cedula
+GET http://127.0.0.1:8000/api/p1/pedidos/18467449 HTTP/1.1
+content-type: application/json
+Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+
 
 ###  EMPLEADOS
 GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1

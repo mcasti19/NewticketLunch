@@ -50,15 +50,16 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
         icon = <IoAlertCircleOutline className="w-4 h-4 mr-2 text-red-500" />;
         content = <span className="text-red-500">Error Tasa</span>;
     } else {
-        content = <strong className="text-white"> Bs. {bcvRate}</strong>;
+        content = <strong className="text-white">Bs. {bcvRate}</strong>;
     }
 
     return (
         <div className={`py-2 text-xs font-semibold uppercase tracking-wider ${ isCollapsed ? 'text-center' : 'text-left' }`}>
             {!isCollapsed && (
                 <div className="flex items-center justify-center text-gray-400">
-                    {icon}
-                    Tasa BCV:  {content}
+                    {/* {icon} */}
+                    Tasa BCV:
+                    {content}
                 </div>
             )}
             {isCollapsed && ( isLoading || isError ) && (
@@ -69,7 +70,6 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
         </div>
     );
 };
-
 
 export const SideBar = ( {initialTab} ) => {
     // --- LÓGICA DE ESTADO Y HOOKS ---
