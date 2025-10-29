@@ -44,15 +44,21 @@ const InputField = ( {label, value, onChange, type = 'text', placeholder, readOn
 };
 
 // --- Componente Reutilizable: Notificación Toast ---
+// --- Componente Reutilizable: Notificación Toast ---
 const ToastNotification = ( {message, isVisible, onClose} ) => {
-    if ( !isVisible ) return null;
-
     useEffect( () => {
-        const timer = setTimeout( () => {
-            onClose();
-        }, 3000 );
-        return () => clearTimeout( timer );
+        let timer;
+        if ( isVisible ) {
+            timer = setTimeout( () => {
+                onClose();
+            }, 3000 );
+        }
+        // Función de limpieza: se ejecuta al desmontar o antes de una nueva ejecución
+        return () => {
+            clearTimeout( timer );
+        };
     }, [ isVisible, onClose ] );
+    if ( !isVisible ) return null;
 
     return (
         <div className="fixed bottom-5 right-5 z-50 transition-opacity duration-300">
@@ -131,11 +137,9 @@ export const Profile = () => {
                 <div className="
                     w-full lg:w-2/5
                     flex flex-col justify-center items-center
-                    p-6 sm:p-8 // Padding ligeramente reducido en móvil
-                    bg-blue-900/40 lg:bg-blue-900/60
+                    p-6 sm:p-8 bg-blue-900/40 lg:bg-blue-900/60
                     border-b lg:border-r border-blue-700/50
-                    space-y-6 sm:space-y-8 // Espaciado ajustado
-                    relative
+                    space-y-6 sm:space-y-8 relative
                 ">
                     {/* Borde decorativo superior para móvil */}
                     <div className="absolute top-0 left-0 w-full h-1 bg-red-600 lg:hidden"></div>
@@ -202,14 +206,12 @@ export const Profile = () => {
 
                 {/* Sección Derecha: Información del Empleado (Perfil) */}
                 <div className="
-                    w-full lg:w-3/5 // Ocupa todo el ancho en móvil, 3/5 en desktop
-                    flex flex-col justify-center
-                    p-6 sm:p-8 lg:p-12 // Padding ajustado
-                    space-y-6 sm:space-y-8
+                    w-full lg:w-3/5 flex flex-col justify-center
+                    p-6 sm:p-8 lg:p-12 space-y-6 sm:space-y-8
                 ">
                     <h3 className="
                         text-3xl sm:text-4xl font-extrabold text-blue-100 dark:text-white mb-4 
-                        uppercase tracking-widest leading-tight
+                        uppercase tracking-widest leading-tight text-center md:text-left
                     ">
                         Datos del Empleado
                         <span className="block w-24 h-1 bg-red-600 mt-2 rounded-full"></span>

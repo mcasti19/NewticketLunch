@@ -8,16 +8,16 @@ export const OrderDetails = () => {
 
 
     useEffect( () => {
-        console.log( {summary   } );
+        // console.log( {summary   } );
 
         console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
-    }, [] )
+    }, [ selectedEmpleadosSummary ] )
 
     return (
-        <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl">
+        <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl text-blue-900 dark:text-blue-300">
             <div className='flex justify-between'>
-                <h2 className="text-xl md:text-2xl font-extrabold mb-4 text-center text-blue-700 tracking-tight">Detalles de la Orden</h2>
-                <div className="text-right font-bold text-lg text-blue-800 mt-2">
+                <h2 className="text-xl md:text-2xl font-extrabold mb-4 text-center tracking-tight">Detalles de la Orden</h2>
+                <div className="text-right font-bold text-lg mt-2">
                     Total a pagar: <span className="text-green-600">Bs. {summary.totalPagar?.toFixed( 2 ) ?? '0.00'}</span>
                 </div>
             </div>

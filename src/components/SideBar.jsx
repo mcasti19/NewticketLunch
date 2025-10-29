@@ -14,13 +14,14 @@ import {PaymentSummary} from '../views/PaymentSummary';
 import {Tickets} from '../views/Tickets';
 import {HeaderLogo} from './HeaderLogo';
 import {ExitButton} from './ExitButton';
-import {MyTicket} from '../views/MiTicket';
+import {MyOrder} from '../views/MyOrder';
 import {Profile} from './Profile'; // Asumo que este es el componente Profile
 import {SpecialEvent} from '../views/SpecialEvent';
 import {useTasaDia} from '../hooks/useTasaDia';
+import {useAuthStore} from '../store/authStore';
 
 // --- Componente de Área de Usuario ---
-const UserProfileArea = ( {isCollapsed, goToProfile, user = {name: 'John Doe', role: 'Empleado'}} ) => {
+const UserProfileArea = ( {isCollapsed, goToProfile, user = {fullName: 'John Doe', position: 'Empleado'}} ) => {
     return (
         <button
             onClick={goToProfile}
@@ -30,8 +31,8 @@ const UserProfileArea = ( {isCollapsed, goToProfile, user = {name: 'John Doe', r
             <IoPersonCircleOutline className="w-8 h-8 rounded-full text-white" />
             {!isCollapsed && (
                 <div className="ml-3 text-left">
-                    <p className="font-bold text-white text-sm truncate">{user.name}</p>
-                    <p className="text-xs text-gray-400">{user.role}</p>
+                    <p className="font-bold text-white text-sm truncate">{user.fullName}</p>
+                    <p className="text-xs text-gray-400">{user.position}</p>
                 </div>
             )}
         </button>
@@ -72,6 +73,7 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
 
 export const SideBar = ( {initialTab} ) => {
     // --- LÓGICA DE ESTADO Y HOOKS ---
+    const {user} = useAuthStore();
     const isResumenEnabled = useTicketLunchStore( state => state.isResumenEnabled );
     const setResumenEnabled = useTicketLunchStore( state => state.setResumenEnabled );
     const isTicketEnabled = useTicketLunchStore( state => state.isTicketEnabled );
@@ -88,7 +90,7 @@ export const SideBar = ( {initialTab} ) => {
     // 🛑 ATENCIÓN: Esta lista de rutas DEBE coincidir 1:1 con el orden de los objetos en el array 'tabs'
     const tabRoutes = [
         '/menu',
-        '/my-ticket',
+        '/my-order',
         '/selection',
         '/payment-summary',
         '/tickets',
@@ -109,7 +111,7 @@ export const SideBar = ( {initialTab} ) => {
             label: 'Mi Pedido',
             icon: <IoTicketOutline className="w-5 h-5" />,
             content: (
-                <MyTicket goToResumeTab={() => {
+                <MyOrder goToResumeTab={() => {
                     setResumenEnabled( true );
                     setActiveTab( 3 ); // Corregido: Índice 3 es '/payment-summary'
                     navigate( tabRoutes[ 3 ] );
@@ -146,8 +148,8 @@ export const SideBar = ( {initialTab} ) => {
                     setActiveTab( 2 ); // Corregido: Índice 2 es '/selection'
                     navigate( tabRoutes[ 2 ] );
                 }}
-                goBackMiTicketTab={() => {
-                    setActiveTab( 1 ); // Índice 1 es '/my-ticket'
+                goBackMyOrderTab={() => {
+                    setActiveTab( 1 ); // Índice 1 es '/my-order'
                     navigate( tabRoutes[ 1 ] );
                 }}
             />,
@@ -183,7 +185,7 @@ export const SideBar = ( {initialTab} ) => {
     // --- Lógica de Estado y Handlers ---
     const getInitialTabIndex = () => {
         const indexMap = {
-            'menu': 0, 'my-ticket': 1, 'selection': 2, 'payment-summary': 3,
+            'menu': 0, 'my-order': 1, 'selection': 2, 'payment-summary': 3,
             'tickets': 4, 'special-event': 5, 'profile': 6
         };
         return indexMap[ initialTab ] !== undefined ? indexMap[ initialTab ] : 0;
@@ -203,6 +205,8 @@ export const SideBar = ( {initialTab} ) => {
 
     // Resto de funciones (useEffect, toggleDarkMode, toggleSideMenu, closeSideMenu, handleSideMenuClick, toggleCollapse) se mantienen.
     useEffect( () => {
+        console.log( user );
+
         initTheme();
         const savedTheme = getSavedTheme();
         setIsDarkMode( savedTheme === 'dark' );
@@ -312,7 +316,11 @@ export const SideBar = ( {initialTab} ) => {
                 </div>
 
                 {/* Área de Perfil de Usuario (Acceso a Perfil) */}
-                <UserProfileArea isCollapsed={isCollapsed} goToProfile={goToProfile} />
+                <UserProfileArea
+                    isCollapsed={isCollapsed}
+                    goToProfile={goToProfile}
+                    user={user}
+                />
 
                 {/* Navigation Links */}
                 <nav className="flex-1 p-4 overflow-y-auto">

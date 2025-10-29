@@ -11,7 +11,7 @@ export const AppRouter = () => {
     const {isAuthenticated} = useCheckToken();
 
     // Importar aquí para evitar problemas de ciclo
-    const TicketPage = React.lazy(() => import('../pages/TicketPage'));
+    const TicketPage = React.lazy( () => import( '../pages/TicketPage' ) );
     return (
         <Routes>
             {/* Ruta pública para mostrar ticket por ID */}
@@ -27,7 +27,7 @@ export const AppRouter = () => {
                             <Route path="/" element={<Navigate to="/menu" />} />
                             <Route path="/menu" element={<Home tab="menu" />} />
                             <Route path="/selection" element={<Home tab="selection" />} />
-                            <Route path="/my-ticket" element={<Home tab="my-ticket" />} />
+                            <Route path="/my-order" element={<Home tab="my-order" />} />
                             <Route path="/profile" element={<Home tab="profile" />} />
                             <Route path="/payment-summary" element={<Home tab="payment-summary" />} />
                             <Route path="/tickets" element={<Home tab="tickets" />} />
