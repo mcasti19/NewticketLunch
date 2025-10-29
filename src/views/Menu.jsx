@@ -84,7 +84,7 @@ export const Menu = () => {
             Tasa BCV:
           </span>
           <span className={`text-lg font-extrabold ${ isBcvError ? 'text-red-500' : 'text-green-600 dark:text-green-400' }`}>
-            {isBcvError ? 'Error' : `Bs. ${ bcvRate }`}
+            {isBcvError ? 'Error' : `Bs. ${ bcvRate.toFixed( 2 ) }`}
           </span>
         </div>
       </div>

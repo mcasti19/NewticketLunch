@@ -256,7 +256,7 @@ export const MyOrder = ( {goToResumeTab} ) => {
                     </div>
 
                     {/* Botones de Acción */}
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 w-full max-w-sm">
+                    <div className="flex flex-col md:items-center md:flex-row justify-center gap-4 pt-4 w-full max-w-md">
                         <button
                             onClick={handleSave}
                             className={`
