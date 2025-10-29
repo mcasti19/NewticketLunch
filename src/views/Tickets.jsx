@@ -30,8 +30,6 @@ export const Tickets = () => {
 
   // 💡 3. FUNCIÓN PARA CERRAR LA ORDEN
   const handleCloseOrder = () => {
-    console.log( "FINALIZANDO ORDER Y LIMPIANDO ESTADO." );
-
     // 🚨 4. LIMPIAR EL STORE y NAVEGAR
     resetOrderData();
     navigate( '/' ); // Redirige a la ruta raíz (o la ruta que desees)

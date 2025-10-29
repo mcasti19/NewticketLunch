@@ -108,7 +108,7 @@ export const Profile = () => {
             setPhoneNumber( employee.phone );
         }
 
-        console.log( {user} );
+        // console.log( {user} );
 
     }, [ employee ] );
 
@@ -127,7 +127,7 @@ export const Profile = () => {
 
     const handleSavePhoneNumber = ( e ) => {
         e.preventDefault();
-        console.log( "Guardando número de teléfono:", phoneNumber );
+        // console.log( "Guardando número de teléfono:", phoneNumber );
         // Aquí iría la lógica real para guardar el teléfono en el backend.
         // Simulación de éxito: Muestra el toast
         setShowToast( true );
@@ -183,7 +183,7 @@ export const Profile = () => {
                                 logoWidth={80}
                                 logoHeight={80}
                                 bgColor="#ffffff"
-                                fgColor="#1e3a8a"
+                                fgColor="#000000"
                                 style={{width: '100%', height: '100%'}}
                             />
                         ) : (

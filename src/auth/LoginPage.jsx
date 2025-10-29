@@ -30,7 +30,7 @@ const LoginPage = () => {
 
 
   const handleShowPass = () => {
-    console.log( "Mostrando pass" );
+    // console.log( "Mostrando pass" );
     setIsShowPass( !isShowpass );
   }
 

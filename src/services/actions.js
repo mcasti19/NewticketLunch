@@ -117,23 +117,23 @@ export const createOrderBatch = async ( {
 
 
     // --- INICIO: LOG DETALLADO PARA VERIFICAR FormData ---
-    console.log( '--- FormData a enviar (Verificación) ---' );
+    // console.log( '--- FormData a enviar (Verificación) ---' );
     let dataCheck = {};
     for ( let pair of dataToSend.entries() ) {
         const key = pair[ 0 ];
         const value = pair[ 1 ];
 
         if ( value instanceof File ) {
-            console.log( key, '[File]', value.name, value.size + ' bytes' );
+            // console.log( key, '[File]', value.name, value.size + ' bytes' );
             dataCheck[ key ] = `[File: ${ value.name }]`;
         } else {
-            console.log( key, String( value ) );
+            // console.log( key, String( value ) );
             dataCheck[ key ] = String( value );
         }
     }
     // Opcional: imprimir el objeto plano
-    console.log( 'Estructura de datos planos:', dataCheck );
-    console.log( '-----------------------------------------' );
+    // console.log( 'Estructura de datos planos:', dataCheck );
+    // console.log( '-----------------------------------------' );
     // --- FIN: LOG DETALLADO ---
 
     try {
@@ -157,7 +157,7 @@ export const createOrderBatch = async ( {
 export const startLogin = async ( {email, password} ) => {
     const {login} = useAuthStore.getState();
     try {
-        console.log( "Intentando login con la API..." );
+        // console.log( "Intentando login con la API..." );
         const response = await api.post( '/users/login', {email, password} );
         // console.log( "RESPONSE", response );
 
@@ -174,14 +174,14 @@ export const startLogin = async ( {email, password} ) => {
                 showConfirmButton: false,
                 timer: 1500
             } );
-            console.log( "USUARIO LOGUEADO: ", data );
+            // console.log( "USUARIO LOGUEADO: ", data );
 
         } else {
             // Este caso es poco probable si la API está bien, pero es una buena práctica manejarlo.
             throw new Error( "Invalid response from API" );
         }
     } catch ( error ) {
-        console.log( "Error de credenciales desde la API." );
+        // console.log( "Error de credenciales desde la API." );
         Swal.fire( {
             title: "Login Error",
             text: error.response.data.message || error.message || "Verifique sus credenciales e intente de nuevo.",
@@ -332,7 +332,7 @@ export const saveOrder = async ( {
     };
 
     // 3. **Manejar la imagen/voucher**
-    console.log( 'Enviando con FormData...' );
+    // console.log( 'Enviando con FormData...' );
     dataToSend = new FormData();
 
     // Agregar campos planos de order
@@ -363,20 +363,20 @@ export const saveOrder = async ( {
 
 
     // LOG DETALLADO DE FORM DATA
-    console.log( '--- FormData a enviar ---' );
+    // console.log( '--- FormData a enviar ---' );
     for ( let pair of dataToSend.entries() ) {
         if ( pair[ 1 ] instanceof File ) {
-            console.log( pair[ 0 ], '[File]', pair[ 1 ].name, pair[ 1 ].type, pair[ 1 ].size + ' bytes' );
+            // console.log( pair[ 0 ], '[File]', pair[ 1 ].name, pair[ 1 ].type, pair[ 1 ].size + ' bytes' );
         } else {
-            console.log( pair[ 0 ], JSON.stringify( pair[ 1 ] ) );
+            // console.log( pair[ 0 ], JSON.stringify( pair[ 1 ] ) );
         }
     }
-    console.log( '-------------------------' );
+    // console.log( '-------------------------' );
 
 
     try {
         const {data} = await api.post( '/pedidos', dataToSend, {headers} );
-        console.log( "RESPONSE", data.order );
+        // console.log( "RESPONSE", data.order );
 
         if ( data && ( data.status === 200 || data.status === 201 ) && data.order ) {
             return data.order;

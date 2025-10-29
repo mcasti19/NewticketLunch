@@ -205,7 +205,7 @@ export const SideBar = ( {initialTab} ) => {
 
     // Resto de funciones (useEffect, toggleDarkMode, toggleSideMenu, closeSideMenu, handleSideMenuClick, toggleCollapse) se mantienen.
     useEffect( () => {
-        console.log( user );
+        // console.log( user );
 
         initTheme();
         const savedTheme = getSavedTheme();
