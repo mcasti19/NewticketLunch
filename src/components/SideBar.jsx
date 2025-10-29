@@ -25,7 +25,7 @@ const UserProfileArea = ( {isCollapsed, goToProfile, user = {fullName: 'John Doe
     return (
         <button
             onClick={goToProfile}
-            className={`w-full flex items-center p-4 transition-colors duration-200 border-b border-blue-800 ${ isCollapsed ? 'justify-center' : 'hover:bg-blue-800' }`}
+            className={`w-full flex items-center p-4 transition-colors duration-200 border-b border-blue-400/10 ${ isCollapsed ? 'justify-center' : 'hover:bg-blue-800' }`}
             title={isCollapsed ? 'Ver Perfil' : ''}
         >
             <IoPersonCircleOutline className="w-8 h-8 rounded-full text-white" />
@@ -50,7 +50,7 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
         icon = <IoAlertCircleOutline className="w-4 h-4 mr-2 text-red-500" />;
         content = <span className="text-red-500">Error Tasa</span>;
     } else {
-        content = <strong className="text-white">Bs. {bcvRate}</strong>;
+        content = <strong className="text-white ml-1">Bs. {bcvRate.toFixed( 2 )}</strong>;
     }
 
     return (
@@ -253,7 +253,7 @@ export const SideBar = ( {initialTab} ) => {
 
     const GroupDivider = ( {isCollapsed} ) => (
         <div className={`my-3 px-3 ${ isCollapsed ? 'hidden' : '' }`}>
-            <hr className="border-t border-blue-700/50" />
+            <hr className="border-t border-blue-400/10" />
         </div>
     );
 
@@ -311,7 +311,7 @@ export const SideBar = ( {initialTab} ) => {
             }>
 
                 {/* Logo Area */}
-                <div className={`p-4 ${ isCollapsed ? 'flex justify-center' : '' } border-b border-blue-800`}>
+                <div className={`p-4 ${ isCollapsed ? 'flex justify-center' : '' } border-0 border-blue-800`}>
                     {isCollapsed ? (
                         <div className="flex items-center justify-center p-1">
                             <img src="./MercalMarker.png" alt="Logo Mercal Collapsed" className="w-8 h-8 rounded-full" />
@@ -336,7 +336,7 @@ export const SideBar = ( {initialTab} ) => {
                 </nav>
 
                 {/* Footer/Utility Area */}
-                <div className='p-4 border-t border-blue-800 flex flex-col space-y-2 text-gray-400'>
+                <div className='p-4 border-t border-blue-400/10 flex flex-col space-y-2 text-gray-400'>
 
                     {/* Tasa BCV - Integrada */}
                     <TasaBcvDisplay bcvRate={bcvRate} isError={isError} isLoading={isLoading} isCollapsed={isCollapsed} />
