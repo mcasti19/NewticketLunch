@@ -300,7 +300,15 @@ export const SideBar = ( {initialTab} ) => {
     return (
         <div className="flex h-screen bg-gray-100 dark:bg-gray-950 w-full border-0">
             {/* Sidebar Navigation - Left Column */}
-            <aside className={`hidden md:flex flex-col bg-blue-950 text-white shadow-xl transition-all duration-300 ease-in-out ${ isCollapsed ? 'w-20' : 'w-72' }`}>
+            <aside className={
+                `hidden md:flex flex-col 
+                bg-gradient-to-t from-blue-950 from-85% to-transparent to-100%
+                text-white shadow-xl transition-all duration-300 ease-in-out
+                ${ isCollapsed
+                    ? 'w-20'
+                    : 'w-72'
+                    }`
+            }>
 
                 {/* Logo Area */}
                 <div className={`p-4 ${ isCollapsed ? 'flex justify-center' : '' } border-b border-blue-800`}>
@@ -310,7 +318,7 @@ export const SideBar = ( {initialTab} ) => {
                         </div>
                     ) : (
                         <div className='text-center'>
-                            <img src="./TicketLunchLogo-WHITE.png" alt="Logo Ticket Lunch" className="w-auto h-16 mx-auto" />
+                            <img src="./TicketLunchLogo-removebg-preview.png" alt="Logo Ticket Lunch" className="w-auto h-16 mx-auto" />
                         </div>
                     )}
                 </div>

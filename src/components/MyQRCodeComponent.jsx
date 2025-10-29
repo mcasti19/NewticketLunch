@@ -110,14 +110,14 @@ export function MyQRCodeComponent( {qrData, isBatchItem = false} ) {
         <QRCode
           value={formatQRText( qrData )} // Usamos la función importada
           size={200}
-          ecLevel="H"
+          ecLevel="M"
           qrStyle="dots"
           logoImage={logoUrl}
           logoWidth={50}
           logoHeight={50}
           logoOpacity={1}
-          logoPadding={2}
-          logoPaddingStyle="square"
+          logoPadding={0}
+          logoPaddingStyle="circle"
         />
       </div>
 
