@@ -1,8 +1,8 @@
 
 
-export const Spinner = ( {text = 'Cargando...', color = 'blue-700', textColor = 'white'} ) => {
+export const Spinner = ( {text = 'Cargando...', color = 'blue-700', textColor = 'black'} ) => {
   const spinnerBaseClasses = "w-16 h-16 border-4 border-dashed rounded-full animate-spin";
-  const textClasses = `mt-4 text-lg text-gray-700 dark:text-gray-300 text-${ textColor }`;
+  const textClasses = `mt-4 text-lg text-gray-700 dark:text-gray-300 text-${ textColor } dark:text-${ textColor }`;
   const colorClass = `border-${ color }`;
 
   // Nota: Para que Tailwind detecte todas las clases posibles, es recomendable
