@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {Spinner} from './Spinner'; // Asumido
 import {QRCode} from 'react-qrcode-logo'; // Generador de QR
 import {useTicketQR, formatQRText} from '../hooks/useTicketQR'; // Importa el hook principal
+import {useAuthStore} from '../store/authStore';
 
 const logoUrl = "/MercalMarker.png"; // Usado para el QR
 
@@ -85,6 +86,7 @@ const ToastNotification = ( {message, isVisible, onClose} ) => {
 
 // --- Componente Principal de Perfil ---
 export const Profile = () => {
+    const {user} = useAuthStore();
     // 1. Lógica y Estado del Hook Personalizado
     const {
         employee,
@@ -105,6 +107,9 @@ export const Profile = () => {
         if ( employee?.phone ) {
             setPhoneNumber( employee.phone );
         }
+
+        console.log( {user} );
+
     }, [ employee ] );
 
 
@@ -231,20 +236,20 @@ export const Profile = () => {
                         {/* Campos de Solo Lectura */}
                         <InputField
                             label="Nombre Completo"
-                            value={employee?.fullName || 'Cargando...'}
+                            value={user?.fullName || 'Cargando...'}
                             readOnly
                             className="col-span-full"
                         />
                         <InputField
                             label="Correo Electrónico"
-                            value={employee?.email || 'Cargando...'}
+                            value={user?.email || 'Cargando...'}
                             type="email"
                             readOnly
                             className="col-span-full"
                         />
                         <InputField
                             label="Unidad de Gestión"
-                            value={employee?.management || 'Cargando...'}
+                            value={user?.management || 'Cargando...'}
                             readOnly
                             className="col-span-full"
                         />
@@ -252,13 +257,13 @@ export const Profile = () => {
                         {/* Estos campos sí deben apilarse en móvil */}
                         <InputField
                             label="C.I."
-                            value={employee?.cedula || 'Cargando...'}
+                            value={user?.cedula || 'Cargando...'}
                             readOnly
                             className="col-span-1"
                         />
                         <InputField
                             label="Cargo"
-                            value={employee?.position || "Cargando..."}
+                            value={user?.position || "Cargando..."}
                             readOnly
                             className="col-span-1"
                         />
