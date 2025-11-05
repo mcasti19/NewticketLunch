@@ -58,7 +58,7 @@ Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 *******************************POSTS******************************
 
 #### LOGIN
-POST http://comedor.mercal.gob.ve/api/p1/users/login HTTP/1.1
+POST https://comedor.mercal.gob.ve/api/p1/users/login HTTP/1.1
 content-type: application/json
 
 

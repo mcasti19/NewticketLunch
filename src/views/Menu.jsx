@@ -46,7 +46,7 @@ export const Menu = () => {
   const today = new Date();
   const day = today.getDate();
   const month = today.toLocaleString( 'es-ES', {month: 'long'} );
-  const maxMenu = 5;
+  const maxMenu = 6;
 
 
   // --- Lógica de Renderizado (Mantenida sin cambios) ---
