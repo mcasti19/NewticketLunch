@@ -51,7 +51,7 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
         content = <span className="text-red-500">Error Tasa</span>;
     } else {
         // content = <strong className="text-white ml-1">Bs. {bcvRate.toFixed(2)}</strong>;
-        content = <strong className="text-white ml-1">Bs. {bcvRate}</strong>;
+        content = <strong className="text-white ml-1">Bs. {bcvRate.toFixed( 2 )}</strong>;
     }
 
     return (
@@ -308,7 +308,7 @@ export const SideBar = ( {initialTab} ) => {
                 ${ isCollapsed
                     ? 'w-20'
                     : 'w-72'
-                    }`
+                }`
             }>
 
                 {/* Logo Area */}

@@ -169,7 +169,7 @@ export const MyOrder = ( {goToResumeTab} ) => {
             <div className="
                 w-full md:h-full bg-gradient-to-br from-blue-900/20 to-blue-950/20
                 rounded-xl shadow-2xl border-0 border-blue-700/50 p-6 md:p-8 lg:p-10 
-                text-white flex flex-col justify-between space-y-8
+                text-white flex flex-col justify-between space-y-6
             ">
                 <div className="text-center">
                     <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-blue-200 uppercase tracking-wider mb-1">
@@ -222,11 +222,11 @@ export const MyOrder = ( {goToResumeTab} ) => {
                 </div>
 
                 {/* --- SECCIÓN DE AUTORIZACIÓN Y RESUMEN --- */}
-                <div className='w-full flex flex-col items-center space-y-6 pt-4 border-t border-blue-700/50'>
+                <div className='w-full  h-full flex flex-col items-center space-y-2 pt-4 border-t border-blue-700/50'>
 
                     {/* Selector de Autorización */}
                     <div className="w-full max-w-sm flex flex-col justify-center items-center">
-                        <span className="font-semibold text-lg mb-3 text-white dark:text-blue-200">
+                        <span className="font-semibold text-lg mb-3 text-blue-900 dark:text-blue-200">
                             Autorizar a otra persona
                         </span>
                         {
@@ -249,9 +249,9 @@ export const MyOrder = ( {goToResumeTab} ) => {
 
                     {/* Costo Total */}
                     <div className="w-full max-w-sm p-3 bg-blue-900/60 rounded-lg shadow-inner border border-blue-700">
-                        <div className="flex justify-between items-center text-xl font-bold text-red-400">
-                            <span>Costo total:</span>
-                            <span className="text-white">Bs. {calculateCost().toFixed( 2 )}</span>
+                        <div className="flex justify-between items-center text-xl font-bold">
+                            <span className=''>Costo total:</span>
+                            <span className="">Bs. {calculateCost().toFixed( 2 )}</span>
                         </div>
                     </div>
 

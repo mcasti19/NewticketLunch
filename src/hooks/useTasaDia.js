@@ -6,8 +6,6 @@ import {getBCVrate} from '../services/actions';
  * Utiliza TanStack Query para manejo de caché, reintentos, y estados de carga/error.
  */
 export const useTasaDia = () => {
-
-    // El useQuery manejará automáticamente todos los estados (data, error, isLoading)
     const {
         data: bcvRate, // Renombramos 'data' a 'bcvRate' para mayor claridad.
         error,         // El objeto de error.
