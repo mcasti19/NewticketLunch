@@ -1,6 +1,8 @@
 import Modal from 'react-modal';
 import {PiCopyThin} from "react-icons/pi"; // Asegúrate de tener instalado 'react-icons'
 import {useModalResume} from '../hooks/useModalResume';
+import {useEffect} from 'react';
+import {BankSelector} from './BankSelector';
 
 // -----------------------------------------------------------
 // 💡 1. COMPONENTES AUXILIARES PARA LIMPIEZA DE CÓDIGO (JSX)
@@ -46,6 +48,8 @@ const PayerDataForm = ( {payer, setPayer} ) => (
     ) )}
   </div>
 );
+
+
 
 /**
  * Componente para subir el comprobante/voucher de pago.
@@ -99,7 +103,11 @@ export const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMeth
     isLoading,
     paymentInfo,
     summary,
-  } = useModalResume( {paymentMethodMap, onGenerarTickets, orderOrigin, onRequestClose, paymentOption} )
+    // banco seleccionado
+    selectedBankCode,
+    setSelectedBank,
+  } = useModalResume( {paymentMethodMap, onGenerarTickets, orderOrigin, onRequestClose, paymentOption} );
+
 
   // --- RENDERIZADO DEL MODAL ---
   return (
@@ -174,9 +182,14 @@ export const ModalResume = ( {isOpen, onRequestClose, paymentOption, paymentMeth
             <PayerDataForm payer={payer} setPayer={setPayer} />
           )}
 
+
+
           {/* --- ADJUNTAR CAPTURA DE PAGO (Condicional) --- */}
           {isDigitalPayment && (
-            <VoucherUpload voucher={voucher} handleVoucherChange={handleVoucherChange} />
+            <>
+              <BankSelector onSelectBank={setSelectedBank} />
+              <VoucherUpload voucher={voucher} handleVoucherChange={handleVoucherChange} />
+            </>
           )}
 
           {/* --- NÚMERO DE REFERENCIA (Condicional) --- */}

@@ -11,6 +11,8 @@ export const useModalResume = ( {onRequestClose, paymentOption, paymentMethodMap
     const [ voucher, setVoucher ] = useState( null );
     const [ isLoading, setIsLoading ] = useState( false );
     const [ paymentInfo, setPaymentInfo ] = useState( null );
+    // Código del banco seleccionado desde BankSelector
+    const [ selectedBankCode, setSelectedBankCode ] = useState( null );
 
     // Estados del Store que se usan internamente en el hook
     const employees = useTicketLunchStore( state => state.selectedEmpleadosSummary );
@@ -133,6 +135,7 @@ export const useModalResume = ( {onRequestClose, paymentOption, paymentMethodMap
                 referenceNumber,
                 payer: isBatchOrder ? payer : null,
                 voucher: isDigitalPayment ? voucher : null,
+                bankCode: selectedBankCode,
             };
 
             if ( isBatchOrder ) {
@@ -234,6 +237,9 @@ export const useModalResume = ( {onRequestClose, paymentOption, paymentMethodMap
         handleVoucherChange,
         setLocalReferenceNumber, // El componente usa este setter para el input
         handleGenerarTickets,
+        // Bank selection
+        selectedBankCode,
+        setSelectedBank: setSelectedBankCode,
         // --- VARIABLES NECESARIAS PARA EL JSX ---
         isDigitalPayment,
         isBatchOrder,

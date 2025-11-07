@@ -282,8 +282,6 @@ export const getExtras = async () => {
     ;
 }
 
-
-
 /**
  * Guarda una orden en el backend, enviando el voucher como archivo si es un objeto File.
  * * @param {object} params
@@ -301,6 +299,7 @@ export const saveOrder = async ( {
     payer,
     voucher, // Ahora pasado como prop
     extras = [],
+    bankCode = null,
 } ) => {
     const id_payment_method = paymentMethod;
 
@@ -310,14 +309,11 @@ export const saveOrder = async ( {
 
     // 2. Construir los datos anidados que se convertirán a JSON string
     const orderData = {
-        special_event: employee.evento_especial ? 'si' : 'no',
         authorized: employee.id_autorizado ? 'si' : 'no',
         authorized_person: employee.id_autorizado || 'no',
-
-        // ✅ USAMOS EL ID QUE YA RECIBIMOS DIRECTAMENTE
         id_payment_method: id_payment_method ? String( id_payment_method ) : '',
-
         reference: referenceNumber,
+
         total_amount: String( employee.total_pagar || '' ),
         cedula: String( employee.cedula || '' ),
         management: employee.management || '',
@@ -325,10 +321,10 @@ export const saveOrder = async ( {
     };
 
     const employeePaymentData = {
-        cedula_employee: employee.cedula || '18467449',
-        name_employee: employee.fullName || 'Moises',
-        phone_employee: employee.phone || payer.telefono || '0414-2418171',
-        management: employee.management || '',
+        cedula_employee: employee.cedula || '',
+        // Usar el código de banco proporcionado por el selector si existe
+        code_bank: bankCode || '',
+        phone_employee: employee.phone || payer.telefono || '',
     };
 
     // 3. **Manejar la imagen/voucher**
@@ -401,5 +397,26 @@ export const getBCVrate = async () => {
         return data.data.rate;
     } catch ( error ) {
         throw new Error( error.message || "API Connection Failed" );
+    }
+}
+
+export const getBankList = async () => {
+    try {
+        const {data} = await api.get( '/bank' );
+
+        // 1. Verifica si la API retornó un status de error (a nivel de body)
+        if ( data.status !== 200 || !data.bank ) {
+            // Lanza un error si el status no es 200 o si falta la lista de bancos
+            throw new Error( "Respuesta de API inválida o con error de status." );
+        }
+
+        // 2. Si todo es correcto, retorna la lista de bancos
+        return data.bank;
+
+    } catch ( error ) {
+        // Captura errores de red o los errores lanzados arriba
+        // Muestra un mensaje amigable o el mensaje de error original
+        console.error( "Fallo al obtener la lista de bancos:", error.message );
+        throw new Error( error.message || "Fallo de conexión a la API" );
     }
 }

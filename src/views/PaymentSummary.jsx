@@ -1,6 +1,8 @@
+import {useEffect} from 'react';
 import {ModalResume} from '../components/ModalResume'; // Asegúrate que la ruta es correcta
 import {OrderDetails} from '../components/OrderDetails'; // Asegúrate que la ruta es correcta
 import {PaymentOptionCard} from '../components/PaymentOptionCard'; // Importar el nuevo componente
+import {useBank} from '../hooks/useBanks';
 import {usePaymentSummary} from '../hooks/usePaymentSummary';
 
 
@@ -21,6 +23,20 @@ export const PaymentSummary = ( {goToTicketTab, goBackSeleccionTab, goBackMyOrde
     orderOrigin
 
   } = usePaymentSummary( {goToTicketTab, goBackSeleccionTab, goBackMyOrderTab} )
+
+
+  const {
+    bankList, //
+    error,
+    isLoading: isLoadingBanks,
+    isError: isBanksError,
+    isFetching,
+  } = useBank();
+
+  useEffect( () => {
+    bankList
+  }, [ bankList ] )
+
 
 
   // --- LÓGICA DE RENDERIZADO CONDICIONAL ---
@@ -86,7 +102,7 @@ export const PaymentSummary = ( {goToTicketTab, goBackSeleccionTab, goBackMyOrde
         </div>
 
       </div>
-        {/* 3. Botón de Modificar Orden */}
+      {/* 3. Botón de Modificar Orden */}
       <div className="flex justify-center w-full mt-2">
         <button
           onClick={handleModifyOrder}

@@ -1,7 +1,10 @@
-#### LOGIN
-POST http://127.0.0.1:8000/api/p1/users/login HTTP/1.1
-content-type: application/json
+@baseUrl = "http://10.20.22.88:8000/api/p1"
+@authToken = ""
 
+
+#### 🔐 LOGIN
+POST {{baseUrl}}/users/login HTTP/1.1
+content-type: application/json
 
 {
     "email": "moicastillo@mercal.gob.ve",
@@ -10,55 +13,71 @@ content-type: application/json
 
 # *******************************GETS******************************
 
-###  USUARIOS
-GET http://127.0.0.1:8000/api/p1/users HTTP/1.1
+### 👤 USUARIOS
+GET {{baseUrl}}/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
 
-### MENU
-GET http://127.0.0.1:8000/api/p1/menus HTTP/1.1
+### 📋 MENU
+GET {{baseUrl}}/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
-### GERENCIAS TODAS
-GET http://127.0.0.1:8000/api/p1/gerencias HTTP/1.1
+### 🏢 GERENCIAS TODAS
+GET {{baseUrl}}/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
-###  GERENCIA x ID
-GET http://127.0.0.1:8000/api/p1/gerencias/1 HTTP/1.1
+### 🏢 GERENCIA x ID
+GET {{baseUrl}}/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
 
-###  PEDIDOS
-GET http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
+### 📦 PEDIDOS TODOS
+GET {{baseUrl}}/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
-###  PEDIDOS por cedula
-GET http://127.0.0.1:8000/api/p1/pedidos/18467449 HTTP/1.1
+### 📦 PEDIDOS por cedula
+GET {{baseUrl}}/pedidos/123456 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
 
-###  EMPLEADOS
-GET http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
+### 🧑‍💼 EMPLEADOS TODOS
+GET {{baseUrl}}/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
-###  EMPLEADOS por Gerencias
-GET http://127.0.0.1:8000/api/p1/empleados?management=22 HTTP/1.1
+### 🧑‍💼 EMPLEADOS por Gerencias
+GET {{baseUrl}}/empleados?management=22 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
-*******************************POSTS******************************
-
-
-#### USUARIOS
-POST http://127.0.0.1:8000/api/p1/users HTTP/1.1
+### 💵 SCRAPPING BCV
+GET {{baseUrl}}/dolar-bcv HTTP/1.1
 content-type: application/json
+Authorization: Bearer {{authToken}}
+
+### 🏦 BANCOS
+GET {{baseUrl}}/bank HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{authToken}}
+
+### 🔢 ÓRDENES DEL DÍA (GET)
+GET {{baseUrl}}/ordersDay HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{authToken}}
+
+# *******************************POSTS******************************
+
+
+#### ➕ USUARIOS
+POST {{baseUrl}}/users HTTP/1.1
+content-type: application/json
+# Nota: La autorización no está especificada en tu ejemplo original, se mantiene vacío.
 Authorization: 
 
 {
@@ -70,9 +89,10 @@ Authorization:
 }
 
 
-#### MENUS
-POST http://127.0.0.1:8000/api/p1/menus HTTP/1.1
+#### ➕ MENUS
+POST {{baseUrl}}/menus HTTP/1.1
 content-type: application/json
+# Nota: La autorización no está especificada en tu ejemplo original, se mantiene vacío.
 
 {
     "sopa": "Sopa de pescado",
@@ -84,9 +104,10 @@ content-type: application/json
     "dessert" : "Torta de vainilla"
 }
 
-#### PEDIDO
-POST http://127.0.0.1:8000/api/p1/pedidos HTTP/1.1
+#### ➕ PEDIDO
+POST {{baseUrl}}/pedidos HTTP/1.1
 content-type: application/json
+# Nota: La autorización no está especificada en tu ejemplo original, se mantiene vacío.
 
 {
     "numeroPedido": 1,
@@ -97,10 +118,10 @@ content-type: application/json
     "idEmpleado": 1
 }
 
-#### EMPLEADOS
-POST http://127.0.0.1:8000/api/p1/empleados HTTP/1.1
+#### ➕ EMPLEADOS
+POST {{baseUrl}}/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
 {
     "nombreCompleto" : "Carlos2 Ramírez",
@@ -111,21 +132,11 @@ Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
     "cargo" : "Analista de Proyectos"
 }
 
-###
-POST http://127.0.0.1:8000/api/p1/ordersDay HTTP/1.1
+#### ➕ ÓRDENES DEL DÍA (POST)
+POST {{baseUrl}}/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
+Authorization: Bearer {{authToken}}
 
 {
     "numberOrdersDay" : 20
 }
-###
-GET http://127.0.0.1:8000/api/p1/ordersDay HTTP/1.1
-content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f
-
-
-### SCRAPPING
-GET http://127.0.0.1:8000/api/p1/dolar-bcv HTTP/1.1
-content-type: application/json
-Authorization: Bearer 6|pbooliA2W6lkvrzbrI4xu6UvUQZa5GVp7AGES44b493dd42f

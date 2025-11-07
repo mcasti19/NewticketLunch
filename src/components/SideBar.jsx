@@ -50,7 +50,8 @@ const TasaBcvDisplay = ( {bcvRate, isError, isLoading, isCollapsed} ) => {
         icon = <IoAlertCircleOutline className="w-4 h-4 mr-2 text-red-500" />;
         content = <span className="text-red-500">Error Tasa</span>;
     } else {
-        content = <strong className="text-white ml-1">Bs. {bcvRate.toFixed( 2 )}</strong>;
+        // content = <strong className="text-white ml-1">Bs. {bcvRate.toFixed(2)}</strong>;
+        content = <strong className="text-white ml-1">Bs. {bcvRate}</strong>;
     }
 
     return (

@@ -35,7 +35,7 @@ export function useGetEmployees() {
       const data = await getEmployees();
       // 💡 Aplicamos el formateo directamente después de obtener los datos
       const formattedEmployees = formatFullName( data );
-      console.log( "EMPLOYEES (TanStack Query):", formattedEmployees );
+      // console.log( "EMPLOYEES (TanStack Query):", formattedEmployees );
       return formattedEmployees;
     },
 

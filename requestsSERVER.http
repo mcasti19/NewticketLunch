@@ -1,66 +1,68 @@
+@baseUrl = https://comedor.mercal.gob.ve/api/p1
+@authToken = 2|McEylzLhPRZK06IGfkmMHmwQHLR2w32xmAA4u3I86b795a04
+
 # *******************************GETS******************************
 
 ###  USUARIOS
-GET http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
+GET {{baseUrl}}/users HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 
 ### MENU
-GET http://comedor.mercal.gob.ve/api/p1/menus HTTP/1.1
+GET {{baseUrl}}/menus HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 ### EXTRAS
-GET http://comedor.mercal.gob.ve/api/p1/extras HTTP/1.1
+GET {{baseUrl}}/extras HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 ### GERENCIAS TODAS
-GET http://comedor.mercal.gob.ve/api/p1/gerencias HTTP/1.1
+GET {{baseUrl}}/gerencias HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 ###  GERENCIA x ID
-GET http://comedor.mercal.gob.ve/api/p1/gerencias/1 HTTP/1.1
+GET {{baseUrl}}/gerencias/1 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 
 ###  PEDIDOS
-GET http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+GET {{baseUrl}}/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 ###  PEDIDOS POR ID
-GET http://comedor.mercal.gob.ve/api/p1/pedidos/18467449 HTTP/1.1
+GET {{baseUrl}}/pedidos/18467449 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 
 ###  PEDIDOS POR ORDEN
-GET http://10.20.22.28:8000/api/p1/pedidos/takeOrder/8 HTTP/1.1
+GET {{baseUrl}}/pedidos/takeOrder/8 HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 
 ###  METODOS DE PAGO
-GET http://comedor.mercal.gob.ve/api/p1/metodosPagos HTTP/1.1
+GET {{baseUrl}}/metodosPagos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 
 ###  EMPLEADOS
-GET http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
+GET {{baseUrl}}/empleados HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 *******************************POSTS******************************
 
 #### LOGIN
-POST https://comedor.mercal.gob.ve/api/p1/users/login HTTP/1.1
+POST {{baseUrl}}/users/login HTTP/1.1
 content-type: application/json
-
 
 {
     "email": "moicastillo@mercal.gob.ve",
@@ -68,65 +70,22 @@ content-type: application/json
 }
 
 
-#### USUARIOS
-POST http://comedor.mercal.gob.ve/api/p1/users HTTP/1.1
-content-type: application/json
-Authorization: 
-
-{
-
-}
-
-
-#### MENUS
-POST http://comedor.mercal.gob.ve/api/p1/menus/bluk HTTP/1.1
-content-type: application/json
-
-[
-    {
-        "foodCategory": "Sopas",
-        "ingredient": "Sopa de Pescado, Sopa de Pollo"
-    },
-    {
-        "foodCategory": "Contornos",
-        "ingredient": "Arroz, Pasta"
-    },
-    {
-        "foodCategory": "Proteinas",
-        "ingredient": "Carne Molida, Pollo guisado"
-    },
-    {
-        "foodCategory": "Ensaladas",
-        "ingredient": "Rayada, Rusa"
-    },
-    {
-        "foodCategory": "Jugos",
-        "ingredient": "Melon"
-    },
-    {
-        "foodCategory": "Postres",
-        "ingredient": "Torta de Vainilla"
-    },
-]
-
 #### PEDIDO
-POST http://comedor.mercal.gob.ve/api/p1/pedidos HTTP/1.1
+POST {{baseUrl}}/pedidos HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 {
   "order": {
-    "number_order": "1",
-    "special_event": "no",
     "authorized" : "no",
     "authorized_person": "no",
-    "id_payment_method": "3",
+    "id_payment_method": "2",
     "reference": "1231231332",
     "total_amount": "100",
     "cedula": "18467449",
     "id_order_status": "1",
     "id_orders_consumption": "1",
-    "payment_support": ""
+    "payment_support": "foto.png"
   },
   "extras": [
     "1",
@@ -141,33 +100,20 @@ Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
 }
 
 
-#### EMPLEADOS
-POST "http://comedor.mercal.gob.ve/api/p1/empleados HTTP/1.1
-content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
-
-{
-    "nombre" : "Carlos",
-    "apellido" : "Ramírez",
-    "cedula" : "18463448",
-    "idGerencia" : 22,
-    "estado" : "Miranda",
-    "tipoEmpleado" : "fijo",
-    "cargo" : "Analista de Proyectos"
-}
-
 #### CANTIDAD DE ORDENES POR DIA
-GET http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
+GET {{baseUrl}}/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
 ###
-POST http://comedor.mercal.gob.ve/api/p1/ordersDay HTTP/1.1
+POST {{baseUrl}}/ordersDay HTTP/1.1
 content-type: application/json
-Authorization: Bearer 5|n1lK2pmlC4wAlvS2r8ha7xOzIP6EwEUSEsWSRTURecde8044
+Authorization: Bearer {{authToken}}
 
-{
+{"numberOrdersDay" : 100}
 
-    "numberOrdersDay" : 100
 
-}
+#### BANCOS
+GET https://comedor.mercal.gob.ve/api/p1/bank HTTP/1.1
+content-type: application/json
+Authorization: Bearer {{authToken}}

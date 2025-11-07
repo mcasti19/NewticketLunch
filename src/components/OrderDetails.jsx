@@ -30,7 +30,6 @@ export const OrderDetails = () => {
                             <th className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Para Llevar</th>
                             <th className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Cubiertos</th>
                             <th className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Retira</th>
-                            <th className="px-2 py-2 text-left text-xs md:text-sm font-semibold cursor-pointer hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Evento Especial</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -47,7 +46,6 @@ export const OrderDetails = () => {
                                     {/* {emp.id_autorizado ? cedulaToNombre[ emp.id_autorizado ] || 'N/A' : 'Mismo Empleado'} */}
                                     {emp.id_autorizado ? emp.autoriza_a || 'N/A' : 'Mismo Empleado'}
                                 </td>
-                                <td className="px-2 py-2 text-xs md:text-sm ">{emp.evento_especial ? 'Sí' : 'No'}</td>
                             </tr>
                         ) )}
                     </tbody>

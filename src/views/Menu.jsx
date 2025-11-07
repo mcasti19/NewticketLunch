@@ -7,6 +7,7 @@ import {useMenu} from '../hooks/useMenu';
 
 // Íconos para la clasificación
 import {IoRestaurantOutline, IoFitnessOutline, IoNutritionOutline, IoLeafOutline, IoBeerOutline} from 'react-icons/io5';
+import {useBank} from '../hooks/useBanks';
 
 
 // Función de ayuda para obtener un icono basado en la categoría (Mantenida)
@@ -43,11 +44,12 @@ export const Menu = () => {
     isLoading: isMenuLoading,
   } = useMenu();
 
+ 
+
   const today = new Date();
   const day = today.getDate();
   const month = today.toLocaleString( 'es-ES', {month: 'long'} );
   const maxMenu = 6;
-
 
   // --- Lógica de Renderizado (Mantenida sin cambios) ---
 
