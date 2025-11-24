@@ -1,16 +1,8 @@
-import {useEffect} from 'react'
 import {useTicketLunchStore} from '../store/ticketLunchStore';
-
 
 export const OrderDetails = () => {
     const summary = useTicketLunchStore( state => state.summary );
     const selectedEmpleadosSummary = useTicketLunchStore( state => state.selectedEmpleadosSummary );
-
-
-    // useEffect( () => {
-    //     console.log( {summary   } );
-    //     console.log( "selectedEmpleadosSummary", selectedEmpleadosSummary );
-    // }, [ selectedEmpleadosSummary ] )
 
     return (
         <div className="rounded-2xl shadow p-4 border-blue-100 w-full max-6xl text-blue-900 dark:text-blue-300">

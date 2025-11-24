@@ -388,6 +388,10 @@ export const SideBar = ( {initialTab} ) => {
                 </header>
 
                 {/* Content Area */}
+                {/* <div className="overflow-y-auto w-full flex flex-col items-center gap-4 h-screen dark:bg-gray-950 p-4 md:p-8 lg:py-4 shadow-xl">
+                    {tabs[ activeTab ].content}
+                </div> */}
+
                 <div className="overflow-y-auto w-full flex flex-col items-center gap-4 h-screen dark:bg-gray-950 p-4 md:p-8 lg:py-4 shadow-xl">
                     {tabs[ activeTab ].content}
                 </div>
